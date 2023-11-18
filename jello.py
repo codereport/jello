@@ -22,27 +22,89 @@ def run_jelly(expr: str, arg: str):
         print(Fore.RED + f"Error: {e}")
         print(Fore.RED + "stderr:", e.stderr)
 
-def to_jelly(token: str) -> str:
-    if token == "abs":            return "A"
-    if token == "all":            return "Ạ"
-    if token == "all_not_empty":  return "Ȧ"
-    if token == "i_to_b":         return "B"
-    if token == "b_to_i":         return "Ḅ"
-    if token == "odd":            return "Ḃ"
-    if token == "not":            return "C"
-    if token == "ceil":           return "Ċ"
-    if token == "tail":           return "Ḋ"
-    if token == "all_eq":         return "E"
-    if token == "any":            return "Ẹ"
-    if token == "zip_idx":        return "Ė"
-    if token == "grid":           return "G" # don't know what this does
-    if token == "half":           return "H"
-    if token == "double":         return "Ḥ"
-    if token == "head":           return "Ḣ"
-    if token == "iota":           return "R"
-    if token == "rev":            return "Ṛ"
-    if token == "idx":            return "T"
-    return None
+jelly_tokens = {
+    "abs":              "A",
+    "all":              "Ạ",
+    "all_not_empty":    "Ȧ",
+    "i_to_b":           "B",
+    "b_to_i":           "Ḅ",
+    "odd":              "Ḃ",
+    "not":              "C",
+    "ceil":             "Ċ",
+    "i_to_d":           "D",
+    "d_to_i":           "Ḍ",
+    "tail":             "Ḋ",
+    "all_eq":           "E",
+    "any":              "Ẹ",
+    "zip_idx":          "Ė",
+    "flat":             "F",
+    "floor":            "Ḟ",
+    "grid":             "G", # don't know what this does
+    "group":            "Ġ", # don't know what this does
+    "half":             "H",
+    "double":           "Ḥ",
+    "head":             "Ḣ",
+    "first_diff":       "I",
+    "reciprocal":       "İ",
+    "abs_le_one":       "Ị",
+    "iota_len":         "J",
+    "join_space":       "K",
+    "split_space":      "Ḳ",
+    "len":              "L",
+    "iota_min":         "Ḷ",
+    "idx_max":          "M",
+    "min":              "Ṃ",
+    "max":              "Ṁ",
+    "neg":              "N",
+    "println":          "Ṅ",
+    "NOT":              "Ṇ",
+    "ord":              "O",
+    "chr":              "Ọ",
+    "print":            "Ȯ",
+    "prod_list":        "P",
+    "pop":              "Ṗ",
+    "uniq":             "Q",
+    "iota":             "R",
+    "rev":              "Ṛ",
+    "print_str":        "Ṙ",
+    "sum_list":         "S",
+    "sign":             "Ṡ",
+    "sort":             "Ṣ",
+    "idx":              "T",
+    "new_bool_arr":     "Ṭ",
+    "last":             "Ṫ",
+    "factorial":        "!",
+    "rev_arr":          "U",
+    "grade_up":         "Ụ",
+    "eval":             "V",
+    "uneval":           "Ṿ", # don't know what this does
+    "wrap":             "W",
+    "sublists":         "Ẇ",
+    "len_each":         "Ẉ",
+    "rand_elem":        "X",
+    "shuffle":          "Ẋ",
+    "join_ln":          "Y",
+    "split_ln":         "Ỵ",
+    "tighten":          "Ẏ", # don't know what this does
+    "columns":          "Z",
+    "prep_zero":        "Ż",
+    "is_prime":         "Ẓ",
+    "sum_vect":         "§",
+    "cumsum":           "Ä",
+    "factorial":        "!",
+    "bit_not":          "~",
+    "sq":               "²",
+    "sqrt":             "½",
+    "deg_to_rad":       "°",
+    "NOT_vect":         "¬",
+    "add1":             "‘",
+    "sub1":             "’",
+    "identity":         "¹",
+}
+
+def to_jelly(token: str) -> str | None:
+    if token in jelly_tokens:
+        return jelly_tokens[token]
 
 def convert(expr: list[str]) -> str:
     return "".join([to_jelly(t) for t in expr])
