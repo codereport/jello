@@ -62,7 +62,8 @@ if __name__ == "__main__":
             cprint(f" {arg} ➡️ ", Fore.BLUE, True)
             run_jelly(converted_expr[:i], arg)
 
-        chain_type = "-".join([str(keyword_arity(e)) for e in expr[:-1]])
-        print("    This is a ", end="")
-        cprint(chain_type, Fore.RED, True)
-        print(" monadic chain") # TODO update this when we allow dyadic chain
+        if user_input != "q":
+            chain_type = "-".join([str(keyword_arity(e)) for e in expr[:-1]])
+            print("    This is a ", end="")
+            cprint(chain_type, Fore.RED, True)
+            print(" monadic chain") # TODO update this when we allow dyadic chain
