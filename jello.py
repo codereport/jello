@@ -5,8 +5,9 @@ import subprocess
 from colorama import Fore, Style, init
 
 
-def cprint(s: str, c):
-    print(Style.BRIGHT + c + s + Fore.RESET)
+def cprint(s: str, c, newline: bool):
+    end = "" if newline else "\n"
+    print(Style.BRIGHT + c + s + Fore.RESET, end=end)
 
 def run_jelly(expr: str, arg: str):
     try:
@@ -14,7 +15,7 @@ def run_jelly(expr: str, arg: str):
         result = subprocess.run(command, text=True, capture_output=True, check=True)
         output_text = result.stdout.strip()
 
-        cprint("   " + output_text, Fore.GREEN)
+        cprint(output_text, Fore.GREEN, False)
 
     except subprocess.CalledProcessError as e:
         # Print the stderr output for more information about the error
@@ -55,6 +56,6 @@ if __name__ == "__main__":
         expr = input("> ").strip().split()
         arg = expr[-1]
         converted_expr = convert(expr[:-1])
-        cprint("   " + converted_expr, Fore.YELLOW)
-
-        run_jelly(converted_expr, arg)
+        for i in range(1, len(converted_expr) + 1):
+            cprint("   " + converted_expr[:i].ljust(len(converted_expr), " ") + " ➡️ ", Fore.YELLOW, True)
+            run_jelly(converted_expr[:i], arg)
