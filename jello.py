@@ -38,6 +38,10 @@ def to_jelly(token: str) -> str | None:
 def convert(expr: list[str]) -> str:
     return "".join([to_jelly(t) for t in expr])
 
+def keyword_arity(k: str) -> int:
+    assert k in tokens.monadic
+    return 1
+
 if __name__ == "__main__":
     init()  # for colorama
 
@@ -48,10 +52,15 @@ if __name__ == "__main__":
     while user_input != "q":
         user_input = prompt("> ", completer=completer, history=history)
 
-        expr = user_input.strip().split()
-        arg = expr[-1]
-        converted_expr = convert(expr[:-1])
+        expr = user_input.strip().split()   # should consist of keywords
+        arg = expr[-1]                      # this is the argument
+        converted_expr = convert(expr[:-1]) # this will consist of jelly atoms
         for i in range(1, len(converted_expr) + 1):
             cprint(f"   {converted_expr[:i]:<{len(converted_expr)}}", Fore.YELLOW, True)
             cprint(f" {arg} ➡️ ", Fore.BLUE, True)
             run_jelly(converted_expr[:i], arg)
+
+        chain_type = "-".join([str(keyword_arity(e)) for e in expr[:-1]])
+        print("    This is a ", end="")
+        cprint(chain_type, Fore.RED, True)
+        print(" chain")
