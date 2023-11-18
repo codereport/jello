@@ -57,5 +57,6 @@ if __name__ == "__main__":
         arg = expr[-1]
         converted_expr = convert(expr[:-1])
         for i in range(1, len(converted_expr) + 1):
-            cprint("   " + converted_expr[:i].ljust(len(converted_expr), " ") + " ➡️ ", Fore.YELLOW, True)
+            cprint(f"   {converted_expr[:i]:<{len(converted_expr)}}", Fore.YELLOW, True)
+            cprint(f" {arg} ➡️ ", Fore.BLUE, True)
             run_jelly(converted_expr[:i], arg)
