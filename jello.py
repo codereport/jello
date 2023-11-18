@@ -22,8 +22,25 @@ def run_jelly(expr: str, arg: str):
         print(Fore.RED + "stderr:", e.stderr)
 
 def to_jelly(token: str) -> str:
-    if token == "iota": return "R"
-    if token == "rev":  return "Ṛ"
+    if token == "abs":            return "A"
+    if token == "all":            return "Ạ"
+    if token == "all_not_empty":  return "Ȧ"
+    if token == "i_to_b":         return "B"
+    if token == "b_to_i":         return "Ḅ"
+    if token == "odd":            return "Ḃ"
+    if token == "not":            return "C"
+    if token == "ceil":           return "Ċ"
+    if token == "tail":           return "Ḋ"
+    if token == "all_eq":         return "E"
+    if token == "any":            return "Ẹ"
+    if token == "zip_idx":        return "Ė"
+    if token == "grid":           return "G" # don't know what this does
+    if token == "half":           return "H"
+    if token == "double":         return "Ḥ"
+    if token == "head":           return "Ḣ"
+    if token == "iota":           return "R"
+    if token == "rev":            return "Ṛ"
+    if token == "idx":            return "T"
     return None
 
 def convert(expr: list[str]) -> str:
