@@ -37,13 +37,18 @@ A Python script for wrapping the Jelly executable so you can more easily play wi
 **Q: What makes my chain monadic?**
 A: If you only pass it one argument (aka `ω`)
 
-|       | Chain pattern | New `v` value | Chain Type |     Name     | Combinator |
-| :---: | :-----------: | :-----------: | :--------: | :----------: | :--------: |
-|   1   |   `+ F ...`   |   `v+F(ω)`    |   `2-1`    | `dyad-monad` |     S      |
-|   2   |   `+ 1 ...`   |     `v+1`     |   `2-0`    | `dyad–nilad` |            |
-|   3   |   `1 + ...`   |     `1+v`     |   `0-2`    | `nilad-dyad` |            |
-|   4   |    `+ ...`    |     `v+ω`     |    `2`     |              |     -      |
-|   5   |    `F ...`    |    `F(v)`     |    `1`     |              |     -      |
+|       | Chain pattern | New `v` value | Chain Type |     Name     |  IC   |  SC   |
+| :---: | :-----------: | :-----------: | :--------: | :----------: | :---: | :---: |
+|   1   |   `+ F ...`   |   `v+F(ω)`    |   `2-1`    | `dyad-monad` |   S   |   Φ   |
+|   2   |   `+ 1 ...`   |     `v+1`     |   `2-0`    | `dyad–nilad` |       |       |
+|   3   |   `1 + ...`   |     `1+v`     |   `0-2`    | `nilad-dyad` |       |       |
+|   4   |    `+ ...`    |     `v+ω`     |    `2`     |              |   W   |   Σ   |
+|   5   |    `F ...`    |    `F(v)`     |    `1`     |              |   -   |   -   |
+
+* IC = Initial Combinator
+* SC = Succeeding Combinator
+
+
 
 #### Dyadic Chains
 
