@@ -37,28 +37,25 @@ A Python script for wrapping the Jelly executable so you can more easily play wi
 **Q: What makes my chain monadic?**
 A: If you only pass it one argument (aka `ω`)
 
-|       | Chain pattern | New `v` value | Chain Type |     Name     | CinM¹ |
-| :---: | :-----------: | :-----------: | :--------: | :----------: | :---: |
-|   1   |   `+ F ...`   |   `v+F(ω)`    |   `2-1`    | `dyad-monad` |   S   |
-|   2   |   `+ 1 ...`   |     `v+1`     |   `2-0`    | `dyad–nilad` |       |
-|   3   |   `1 + ...`   |     `1+v`     |   `0-2`    | `nilad-dyad` |       |
-|   4   |    `+ ...`    |     `v+ω`     |    `2`     |              |   -   |
-|   5   |    `F ...`    |    `F(v)`     |    `1`     |              |   -   |
-
-* ¹ Combinator in Monadic Case
-* ² Combinator in Dyadic Case
+|       | Chain pattern | New `v` value | Chain Type |     Name     | Combinator |
+| :---: | :-----------: | :-----------: | :--------: | :----------: | :--------: |
+|   1   |   `+ F ...`   |   `v+F(ω)`    |   `2-1`    | `dyad-monad` |     S      |
+|   2   |   `+ 1 ...`   |     `v+1`     |   `2-0`    | `dyad–nilad` |            |
+|   3   |   `1 + ...`   |     `1+v`     |   `0-2`    | `nilad-dyad` |            |
+|   4   |    `+ ...`    |     `v+ω`     |    `2`     |              |     -      |
+|   5   |    `F ...`    |    `F(v)`     |    `1`     |              |     -      |
 
 #### Dyadic Chains
 
 **Q: What makes my chain dyadic?**
 A: If you pass it two arguments (aka `λ` and `ρ`)
 
-|       | Chain pattern | New `v` value | Chain Type |       Name        | CinD² |
-| :---: | :-----------: | :-----------: | :--------: | :---------------: | :---: |
-|   1   |  `+ × 1 ...`  |  `(v+ρ)×1`*   |  `2-2-0`   | `dyad-dyad-nilad` |   E   |
-|   2   |   `+ × ...`   |   `v+(λ×ρ)`   |   `2-2`    |    `dyad-dyad`    |   ε   |
-|   3   |   `+ 1 ...`   |     `v+1`     |   `2-0`    |   `dyad-nilad`    |       |
-|   4   |   `1 + ...`   |     `1+v`     |   `0-2`    |   `nilad-dyad`    |       |
+|       | Chain pattern | New `v` value | Chain Type |       Name        | Combinators |
+| :---: | :-----------: | :-----------: | :--------: | :---------------: | :---------: |
+|   1   |  `+ × 1 ...`  |  `(v+ρ)×1`*   |  `2-2-0`   | `dyad-dyad-nilad` |      E      |
+|   2   |   `+ × ...`   |   `v+(λ×ρ)`   |   `2-2`    |    `dyad-dyad`    |      ε      |
+|   3   |   `+ 1 ...`   |     `v+1`     |   `2-0`    |   `dyad-nilad`    |             |
+|   4   |   `1 + ...`   |     `1+v`     |   `0-2`    |   `nilad-dyad`    |             |
 |   5   |    `+ ...`    |     `v+ρ`     |    `2`     |
 |   6   |    `F ...`    |    `F(v)`     |    `1`     |
 
