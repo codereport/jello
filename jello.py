@@ -3,6 +3,9 @@
 import subprocess
 
 from colorama import Fore, Style, init
+from prompt_toolkit import prompt
+from prompt_toolkit.completion import WordCompleter
+from prompt_toolkit.history import FileHistory
 
 
 def cprint(s: str, c, newline: bool):
@@ -73,7 +76,6 @@ jelly_tokens = {
     "idx":              "T",
     "new_bool_arr":     "Ṭ",
     "last":             "Ṫ",
-    "factorial":        "!",
     "rev_arr":          "U",
     "grade_up":         "Ụ",
     "eval":             "V",
@@ -102,20 +104,26 @@ jelly_tokens = {
     "identity":         "¹",
 }
 
+completer = WordCompleter(jelly_tokens.keys())
+history = FileHistory("jello_history.txt")
+
 def to_jelly(token: str) -> str | None:
     if token in jelly_tokens:
         return jelly_tokens[token]
+    return None
 
 def convert(expr: list[str]) -> str:
     return "".join([to_jelly(t) for t in expr])
 
 if __name__ == "__main__":
-    init() # folor colorama
+    init()  # for colorama
 
     print("🟢🟡🔴 Jello 🔴🟡🟢\n")
 
     while True:
-        expr = input("> ").strip().split()
+        user_input = prompt("> ", completer=completer, history=history)
+
+        expr = user_input.strip().split()
         arg = expr[-1]
         converted_expr = convert(expr[:-1])
         for i in range(1, len(converted_expr) + 1):
