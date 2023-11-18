@@ -1,6 +1,8 @@
 # <p align="center">🟢🟡🔴 Jello 🔴🟡🟢</p>
 
 <p align="center">
+    <a href="https://github.com/codereport/array-language-comparisons/issues" alt="contributions welcome">
+        <img src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat" /></a>
     <a href="https://lbesson.mit-license.org/" alt="MIT license">
         <img src="https://img.shields.io/badge/License-MIT-blue.svg" /></a>
     <a href="https://www.python.org/">
