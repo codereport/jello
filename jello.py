@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import subprocess
 from colorama import init, Fore, Style
 
@@ -27,7 +29,7 @@ def convert(expr: list[str]) -> str:
 if __name__ == "__main__":
     init() # folor colorama
 
-    print('JELLO')
+    print('🟢🟡🔴 Jello 🔴🟡🟢\n')
 
     while True:
         expr = input('> ').strip().split()
