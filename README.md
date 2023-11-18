@@ -29,7 +29,7 @@ A Python script for wrapping the Jelly executable so you can more easily play wi
 #### Special Chain Names
 
 * **LCC:** [Leading Constant Chain](https://github.com/DennisMitchell/jellylanguage/wiki/Tutorial#whats-the-starting-value)
-* **LDC:** Leading Dyadic Chain (described in the first buller **here**)
+* **LDC:** Leading Dyadic Chain (described in the first buller [here](https://github.com/DennisMitchell/jellylanguage/wiki/Tutorial#43dyadic-chains))
 * **JL:** Just use Left Arg (as `v`)
 
 #### Monadic Chains
