@@ -31,16 +31,18 @@ completer = WordCompleter(tokens.monadic.keys())
 history = FileHistory("jello_history.txt")
 
 def to_jelly(token: str) -> str | None:
-    if token in tokens.monadic:
-        return tokens.monadic[token]
+    if token in tokens.monadic: return tokens.monadic[token]
+    if token in tokens.dyadic:  return tokens.dyadic[token]
+    if token.isnumeric():       return token
     return None
 
 def convert(expr: list[str]) -> str:
     return "".join([to_jelly(t) for t in expr])
 
 def keyword_arity(k: str) -> int:
-    assert k in tokens.monadic
-    return 1
+    if k in tokens.monadic: return 1
+    assert k in tokens.dyadic
+    return 2
 
 if __name__ == "__main__":
     init()  # for colorama
@@ -63,4 +65,4 @@ if __name__ == "__main__":
         chain_type = "-".join([str(keyword_arity(e)) for e in expr[:-1]])
         print("    This is a ", end="")
         cprint(chain_type, Fore.RED, True)
-        print(" chain")
+        print(" monadic chain") # TODO update this when we allow dyadic chain
