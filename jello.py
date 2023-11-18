@@ -7,6 +7,7 @@ from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
 
+import draw
 import tokens
 
 
@@ -63,7 +64,11 @@ if __name__ == "__main__":
             run_jelly(converted_expr[:i], arg)
 
         if user_input != "q":
-            chain_type = "-".join([str(keyword_arity(e)) for e in expr[:-1]])
+
+            chain = [keyword_arity(e) for e in expr[:-1]]
+            chain_type = "-".join([str(e) for e in chain])
             print("    This is a ", end="")
             cprint(chain_type, Fore.RED, True)
             print(" monadic chain") # TODO update this when we allow dyadic chain
+
+            draw.combinator_tree(chain, draw.INITIAL_INDENT, True)
