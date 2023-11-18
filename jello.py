@@ -43,7 +43,9 @@ if __name__ == "__main__":
 
     print("🟢🟡🔴 Jello 🔴🟡🟢\n")
 
-    while True:
+    user_input = ""
+
+    while user_input != "q":
         user_input = prompt("> ", completer=completer, history=history)
 
         expr = user_input.strip().split()
