@@ -59,14 +59,14 @@ A: If you only pass it one argument (aka `ω`)
 **Q: What makes my chain dyadic?** <br>
 A: If you pass it two arguments (aka `λ` and `ρ`)
 
-|       | Chain pattern | New `v` value | Chain Type |       Name        | Combinators |
-| :---: | :-----------: | :-----------: | :--------: | :---------------: | :---------: |
-|   1   |  `+ × 1 ...`  |  `(v+ρ)×1`*   |  `2-2-0`   | `dyad-dyad-nilad` |      E      |
-|   2   |   `+ × ...`   |   `v+(λ×ρ)`   |   `2-2`    |    `dyad-dyad`    |      ε      |
-|   3   |   `+ 1 ...`   |     `v+1`     |   `2-0`    |   `dyad-nilad`    |             |
-|   4   |   `1 + ...`   |     `1+v`     |   `0-2`    |   `nilad-dyad`    |             |
-|   5   |    `+ ...`    |     `v+ρ`     |    `2`     |      `dyad`       |
-|   6   |    `F ...`    |    `F(v)`     |    `1`     |      `monad`      |
+|       | Chain pattern | New `v` value | Chain Type |       Name        |  IC   |  SC   |
+| :---: | :-----------: | :-----------: | :--------: | :---------------: | :---: | :---: |
+|   1   |  `+ × 1 ...`  |  `(v+ρ)×1`*   |  `2-2-0`   | `dyad-dyad-nilad` |       |       |
+|   2   |   `+ × ...`   |   `v+(λ×ρ)`   |   `2-2`    |    `dyad-dyad`    |  Φ₁   |  Φ₁   |
+|   3   |   `+ 1 ...`   |     `v+1`     |   `2-0`    |   `dyad-nilad`    |       |   ε   |
+|   4   |   `1 + ...`   |     `1+v`     |   `0-2`    |   `nilad-dyad`    |       |   E   |
+|   5   |    `+ ...`    |     `v+ρ`     |    `2`     |      `dyad`       |   d   |  ε'   |
+|   6   |    `F ...`    |    `F(v)`     |    `1`     |      `monad`      |  mK   |  B₁   |
 
 ### Combinator Table (WIP)
 
