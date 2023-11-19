@@ -7,6 +7,7 @@ from colorama import Fore, init
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
+from typing import Union
 
 import draw
 import tokens
@@ -32,7 +33,7 @@ def run_jelly(expr: str, arg: str):
 completer = WordCompleter(tokens.monadic.keys())
 history = FileHistory("jello_history.txt")
 
-def to_jelly(token: str) -> str | None:
+def to_jelly(token: str) -> Union[str, None]:
     if token in tokens.monadic: return tokens.monadic[token]
     if token in tokens.dyadic:  return tokens.dyadic[token]
     if token.isnumeric():       return token
@@ -52,11 +53,13 @@ if __name__ == "__main__":
 
     print("🟢🟡🔴 Jello 🔴🟡🟢\n")
 
-    while True:
-        user_input = prompt("> ", completer=completer, history=history)
-        if user_input.lower() == "q": break
+    while "q" != (user_input := prompt("> ", completer=completer, history=history)):
 
-        [expr, args] = [s.strip().split() for s in user_input.strip().split(":")] # should consist of keywords
+        [expr, *args] = [s.strip().split() for s in user_input.strip().split(":")] # should consist of keywords
+        if args == []:
+          [expr, args] = [expr[:-1], [expr[-1]]]
+        else:
+          args = [arg for sublist in args for arg in sublist]
         converted_expr = convert(expr)                            # this will consist of jelly atoms
         chain_type = Chain.MONADIC if len(args) == 1 else Chain.DYADIC
         for i in range(1, len(converted_expr) + 1):
