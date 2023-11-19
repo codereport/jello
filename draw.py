@@ -1,28 +1,48 @@
 
+from colorama import Fore, Style
+
 INITIAL_INDENT = 14
 
-def single_tree(name: str, width: int, indent: int):
+def cprint(s: str, c, newline: bool):
+    end = "\n" if newline else ""
+    print(Style.BRIGHT + c + s + Fore.RESET, end=end)
+
+def color(i: int):
+    return [Fore.YELLOW, Fore.GREEN, Fore.BLUE, Fore.MAGENTA][i % 4]
+
+def comb_width(c: str) -> int:
+    return 5 if c == "Φ" else 3
+
+def print_bars(ccs: str, i: int):
+    if ccs:
+        for n, c in enumerate(ccs):
+            cprint(f"{' ' * (comb_width(c) - 2)}⋮", color(i + n + 1), False)
+    print()
+
+def single_tree(name: str, width: int, indent: int, ccs: str, i: int):
     if width == 1:
-        print(f"{' ' * indent}|")
-        print(f"{' ' * indent}{name}")
+        cprint(f"{' ' * indent}|", color(i), True)
+        cprint(f"{' ' * indent}{name}", color(i), True)
     else:
         n    = width - 3 # number of arms required
         rarm = "─" * (n // 2)
         larm = rarm + ("─" if n % 2 else "")
-        print(f"{' ' * indent}└{larm}┬{rarm}┘")
-        print(f"{' ' * (indent + 1 + (n % 2) + (n // 2))}{name}")
+        cprint(f"{' ' * indent}└{larm}┬{rarm}┘", color(i), False)
+        print_bars(ccs, i)
+        cprint(f"{' ' * (indent + 1 + (n % 2) + (n // 2))}{name}{' ' * (1 + (n // 2))}", color(i), False)
+        print_bars(ccs, i)
 
 def width_adjustment(width: int) -> int :
     return (width - 1) // 2
 
-def combinator_tree(chain: list[int], indent: int, width_adj: int):
+def combinator_tree(chain: list[int], indent: int, width_adj: int, output: bool, ccs: str, i: int):
     initial_call = width_adj == 0
     if len(chain) == 0 or (len(chain) == 1 and not initial_call):
-        return
+        return ""
     if len(chain) == 1 and initial_call:
         c = "f" if chain[0] == 1 else "W" # f is for Function appliction
-        single_tree(c, 1, indent)
-        return
+        if output: single_tree(c, 1, indent, ccs, i)
+        return "W"
 
     if   chain[:3] == [1, 2, 1]: c = "Φ"
     elif chain[:2] == [2, 1]:    c = "S"
@@ -31,5 +51,5 @@ def combinator_tree(chain: list[int], indent: int, width_adj: int):
 
     w = 5 if c == "Φ" else 3
     wa = w + width_adj
-    single_tree(c, wa, indent)
-    combinator_tree([1] + chain[((w + 1) // 2):], indent + wa // 2, width_adjustment(wa))
+    if output: single_tree(c, wa, indent, ccs, i)
+    return c + combinator_tree([1] + chain[((w + 1) // 2):], indent + wa // 2, width_adjustment(wa), output, ccs[1:], i + 1)

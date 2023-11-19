@@ -3,7 +3,7 @@
 import subprocess
 from enum import Enum
 
-from colorama import Fore, Style, init
+from colorama import Fore, init
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
@@ -16,17 +16,13 @@ class Chain(Enum):
     MONADIC = 1,
     DYADIC  = 2
 
-def cprint(s: str, c, newline: bool):
-    end = "\n" if newline else ""
-    print(Style.BRIGHT + c + s + Fore.RESET, end=end)
-
 def run_jelly(expr: str, arg: str):
     try:
         command = ["jelly", "eun", expr, arg]
         result = subprocess.run(command, text=True, capture_output=True, check=True)
         output_text = result.stdout.strip()
 
-        cprint(output_text, Fore.GREEN, True)
+        draw.cprint(output_text, Fore.GREEN, True)
 
     except subprocess.CalledProcessError as e:
         # Print the stderr output for more information about the error
@@ -56,25 +52,24 @@ if __name__ == "__main__":
 
     print("🟢🟡🔴 Jello 🔴🟡🟢\n")
 
-    user_input = ""
-
-    while user_input != "q":
+    while True:
         user_input = prompt("> ", completer=completer, history=history)
+        if user_input.lower() == "q": break
 
         [expr, args] = [s.strip().split() for s in user_input.strip().split(":")] # should consist of keywords
         converted_expr = convert(expr)                            # this will consist of jelly atoms
         chain_type = Chain.MONADIC if len(args) == 1 else Chain.DYADIC
         for i in range(1, len(converted_expr) + 1):
-            cprint(f"   {converted_expr[:i]:<{len(converted_expr)}}", Fore.YELLOW, False)
-            cprint(f" {' '.join(args)} ➡️ ", Fore.BLUE, False)
+            draw.cprint(f"   {converted_expr[:i]:<{len(converted_expr)}}", Fore.YELLOW, False)
+            draw.cprint(f" {' '.join(args)} ➡️ ", Fore.BLUE, False)
             run_jelly(converted_expr[:i], args[0]) # TODO this should support the dyadic case
 
-        if user_input != "q":
+        chain = [keyword_arity(e) for e in expr]
+        chain_arity = "-".join([str(e) for e in chain])
+        print("    This is a ", end="")
+        draw.cprint(chain_arity, Fore.RED, False)
+        # TODO create a different function for this vvv
+        ccs = draw.combinator_tree(chain, 0, 0, False, "", 0) # chain combinator sequence
+        print(f" {chain_type.name.lower()} chain ({ccs})")
 
-            chain = [keyword_arity(e) for e in expr]
-            chain_arity = "-".join([str(e) for e in chain])
-            print("    This is a ", end="")
-            cprint(chain_arity, Fore.RED, False)
-            print(f" {chain_type.name.lower()} chain") # TODO update this when we allow dyadic chain
-
-            draw.combinator_tree(chain, draw.INITIAL_INDENT, 0)
+        draw.combinator_tree(chain, draw.INITIAL_INDENT, 0, True, ccs[1:], 0)
