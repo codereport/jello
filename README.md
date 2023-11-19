@@ -19,6 +19,8 @@
 
 A Python script for wrapping the Jelly executable so you can more easily play with the language.
 
+![image](https://github.com/codereport/jello/assets/36027403/25d41817-a33d-46a9-ab2b-defe9644435d)
+
 ### Links
 
 * [Jelly GitHub Repo](https://github.com/DennisMitchell/jellylanguage/)
