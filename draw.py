@@ -7,10 +7,10 @@ def single_tree(name: str, width: int, indent: int):
         print(f"{' ' * indent}{name}")
     else:
         n    = width - 3 # number of arms required
-        larm = "━" * (n // 2)
-        rarm = larm + ("━" if n % 2 else "")
+        rarm = "━" * (n // 2)
+        larm = rarm + ("━" if n % 2 else "")
         print(f"{' ' * indent}┗{larm}┳{rarm}┛")
-        print(f"{' ' * (indent + 1 + n // 2)}{name}")
+        print(f"{' ' * (indent + 1 + (n % 2) + (n // 2))}{name}")
 
 def combinator_tree(chain: list[int], indent: int, initial_call: bool):
     if len(chain) == 0:
@@ -38,6 +38,6 @@ def combinator_tree(chain: list[int], indent: int, initial_call: bool):
         combinator_tree([1] + chain[2:], indent + w // 2, False)
     if chain[:2] == [1, 1]:
         c = "B"
-        w = 3 if initial_call else 4
+        w = 3 if initial_call else 5
         single_tree(c, w, indent)
         combinator_tree([1] + chain[2:], indent + w // 2, False)
