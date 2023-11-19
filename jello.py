@@ -71,10 +71,10 @@ if __name__ == "__main__":
 
         if user_input != "q":
 
-            chain = [keyword_arity(e) for e in expr[:-1]]
+            chain = [keyword_arity(e) for e in expr]
             chain_arity = "-".join([str(e) for e in chain])
             print("    This is a ", end="")
             cprint(chain_arity, Fore.RED, False)
             print(f" {chain_type.name.lower()} chain") # TODO update this when we allow dyadic chain
 
-            draw.combinator_tree(chain, draw.INITIAL_INDENT, True)
+            draw.combinator_tree(chain, draw.INITIAL_INDENT, 0)
