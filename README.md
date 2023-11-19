@@ -19,7 +19,7 @@
 
 A Python script for wrapping the Jelly executable so you can more easily play with the language.
 
-![image](https://github.com/codereport/jello/assets/36027403/25d41817-a33d-46a9-ab2b-defe9644435d)
+![image](https://github.com/codereport/jello/assets/36027403/642e9c0c-b71e-40c3-851d-98b65570726b)
 
 ### Links
 
