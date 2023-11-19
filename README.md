@@ -25,18 +25,20 @@ A Python script for wrapping the Jelly executable so you can more easily play wi
 
 * [Jelly GitHub Repo](https://github.com/DennisMitchell/jellylanguage/)
 * [Jelly Online Interpreter](https://jellyballs.github.io/)
+* [Jello LiveStream I](https://youtube.com/live/jM7UCu220CU)
+* [Jello LiveStream II](https://www.youtube.com/watch?v=nnskDAOHRCU)
 
 ### Chain Patterns
 
 #### Special Chain Names
 
 * **LCC:** [Leading Constant Chain](https://github.com/DennisMitchell/jellylanguage/wiki/Tutorial#whats-the-starting-value)
-* **LDC:** Leading Dyadic Chain (described in the first buller [here](https://github.com/DennisMitchell/jellylanguage/wiki/Tutorial#43dyadic-chains))
+* **LDC:** Leading Dyadic Chain (described in the first bullet [here](https://github.com/DennisMitchell/jellylanguage/wiki/Tutorial#43dyadic-chains))
 * **JL:** Just use Left Arg (as `v`)
 
 #### Monadic Chains
 
-**Q: What makes my chain monadic?**
+**Q: What makes my chain monadic?** <br>
 A: If you only pass it one argument (aka `ω`)
 
 |       | Chain pattern | New `v` value | Chain Type |     Name     |  IC   |  SC   |
@@ -53,7 +55,7 @@ A: If you only pass it one argument (aka `ω`)
 
 #### Dyadic Chains
 
-**Q: What makes my chain dyadic?**
+**Q: What makes my chain dyadic?** <br>
 A: If you pass it two arguments (aka `λ` and `ρ`)
 
 |       | Chain pattern | New `v` value | Chain Type |       Name        | Combinators |
