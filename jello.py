@@ -12,7 +12,7 @@ import tokens
 
 
 def cprint(s: str, c, newline: bool):
-    end = "" if newline else "\n"
+    end = "\n" if newline else ""
     print(Style.BRIGHT + c + s + Fore.RESET, end=end)
 
 def run_jelly(expr: str, arg: str):
@@ -21,7 +21,7 @@ def run_jelly(expr: str, arg: str):
         result = subprocess.run(command, text=True, capture_output=True, check=True)
         output_text = result.stdout.strip()
 
-        cprint(output_text, Fore.GREEN, False)
+        cprint(output_text, Fore.GREEN, True)
 
     except subprocess.CalledProcessError as e:
         # Print the stderr output for more information about the error
@@ -42,8 +42,9 @@ def convert(expr: list[str]) -> str:
 
 def keyword_arity(k: str) -> int:
     if k in tokens.monadic: return 1
-    assert k in tokens.dyadic
-    return 2
+    if k in tokens.dyadic:  return 2
+    assert k.isnumeric()
+    return 0
 
 if __name__ == "__main__":
     init()  # for colorama
@@ -59,8 +60,8 @@ if __name__ == "__main__":
         arg = expr[-1]                      # this is the argument
         converted_expr = convert(expr[:-1]) # this will consist of jelly atoms
         for i in range(1, len(converted_expr) + 1):
-            cprint(f"   {converted_expr[:i]:<{len(converted_expr)}}", Fore.YELLOW, True)
-            cprint(f" {arg} ➡️ ", Fore.BLUE, True)
+            cprint(f"   {converted_expr[:i]:<{len(converted_expr)}}", Fore.YELLOW, False)
+            cprint(f" {arg} ➡️ ", Fore.BLUE, False)
             run_jelly(converted_expr[:i], arg)
 
         if user_input != "q":
@@ -68,7 +69,7 @@ if __name__ == "__main__":
             chain = [keyword_arity(e) for e in expr[:-1]]
             chain_type = "-".join([str(e) for e in chain])
             print("    This is a ", end="")
-            cprint(chain_type, Fore.RED, True)
+            cprint(chain_type, Fore.RED, False)
             print(" monadic chain") # TODO update this when we allow dyadic chain
 
-            draw.combinator_tree(chain, draw.INITIAL_INDENT, True)
+            draw.combinator_tree(chain, draw.INITIAL_INDENT, False)
