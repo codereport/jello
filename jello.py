@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import subprocess
+from enum import Enum
 
 from colorama import Fore, Style, init
 from prompt_toolkit import prompt
@@ -10,6 +11,10 @@ from prompt_toolkit.history import FileHistory
 import draw
 import tokens
 
+
+class Chain(Enum):
+    MONADIC = 1,
+    DYADIC  = 2
 
 def cprint(s: str, c, newline: bool):
     end = "\n" if newline else ""
@@ -56,20 +61,20 @@ if __name__ == "__main__":
     while user_input != "q":
         user_input = prompt("> ", completer=completer, history=history)
 
-        expr = user_input.strip().split()   # should consist of keywords
-        arg = expr[-1]                      # this is the argument
-        converted_expr = convert(expr[:-1]) # this will consist of jelly atoms
+        [expr, args] = [s.strip().split() for s in user_input.strip().split(":")] # should consist of keywords
+        converted_expr = convert(expr)                            # this will consist of jelly atoms
+        chain_type = Chain.MONADIC if len(args) == 1 else Chain.DYADIC
         for i in range(1, len(converted_expr) + 1):
             cprint(f"   {converted_expr[:i]:<{len(converted_expr)}}", Fore.YELLOW, False)
-            cprint(f" {arg} ➡️ ", Fore.BLUE, False)
-            run_jelly(converted_expr[:i], arg)
+            cprint(f" {' '.join(args)} ➡️ ", Fore.BLUE, False)
+            run_jelly(converted_expr[:i], args[0]) # TODO this should support the dyadic case
 
         if user_input != "q":
 
             chain = [keyword_arity(e) for e in expr[:-1]]
-            chain_type = "-".join([str(e) for e in chain])
+            chain_arity = "-".join([str(e) for e in chain])
             print("    This is a ", end="")
-            cprint(chain_type, Fore.RED, False)
-            print(" monadic chain") # TODO update this when we allow dyadic chain
+            cprint(chain_arity, Fore.RED, False)
+            print(f" {chain_type.name.lower()} chain") # TODO update this when we allow dyadic chain
 
             draw.combinator_tree(chain, draw.INITIAL_INDENT, True)
