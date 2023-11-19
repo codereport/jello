@@ -72,4 +72,4 @@ if __name__ == "__main__":
             cprint(chain_type, Fore.RED, False)
             print(" monadic chain") # TODO update this when we allow dyadic chain
 
-            draw.combinator_tree(chain, draw.INITIAL_INDENT, False)
+            draw.combinator_tree(chain, draw.INITIAL_INDENT, True)
