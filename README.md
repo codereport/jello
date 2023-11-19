@@ -43,12 +43,11 @@ A: If you only pass it one argument (aka `ω`)
 |   2   |   `+ 1 ...`   |     `v+1`     |   `2-0`    | `dyad–nilad` |       |       |
 |   3   |   `1 + ...`   |     `1+v`     |   `0-2`    | `nilad-dyad` |       |       |
 |   4   |    `+ ...`    |     `v+ω`     |    `2`     |              |   W   |   Σ   |
-|   5   |    `F ...`    |    `F(v)`     |    `1`     |              |   -   |   -   |
+|   5   |    `F ...`    |    `F(v)`     |    `1`     |              |   f   |   B   |
 
 * IC = Initial Combinator
-* SC = Succeeding Combinator
-
-
+* SC = Subsequent Combinator
+* f  = Function application
 
 #### Dyadic Chains
 
