@@ -44,14 +44,15 @@ A: If you only pass it one argument (aka `ω`)
 |       | Chain pattern | New `v` value | Chain Type |     Name     |  IC   |  SC   |
 | :---: | :-----------: | :-----------: | :--------: | :----------: | :---: | :---: |
 |   1   |   `+ F ...`   |   `v+F(ω)`    |   `2-1`    | `dyad-monad` |   S   |   Φ   |
-|   2   |   `+ 1 ...`   |     `v+1`     |   `2-0`    | `dyad–nilad` |       |       |
-|   3   |   `1 + ...`   |     `1+v`     |   `0-2`    | `nilad-dyad` |       |       |
-|   4   |    `+ ...`    |     `v+ω`     |    `2`     |              |   W   |   Σ   |
-|   5   |    `F ...`    |    `F(v)`     |    `1`     |              |   f   |   B   |
+|   2   |   `+ 1 ...`   |     `v+1`     |   `2-0`    | `dyad–nilad` |   d   |   d   |
+|   3   |   `1 + ...`   |     `1+v`     |   `0-2`    | `nilad-dyad` |   d   |   d   |
+|   4   |    `+ ...`    |     `v+ω`     |    `2`     |    `dyad`    |   W   |   Σ   |
+|   5   |    `F ...`    |    `F(v)`     |    `1`     |   `monad`    |   m   |   B   |
 
 * IC = Initial Combinator
 * SC = Subsequent Combinator
-* f  = Function application
+* m  = Monadic function application
+* d  = Dyadic function application
 
 #### Dyadic Chains
 
@@ -64,8 +65,8 @@ A: If you pass it two arguments (aka `λ` and `ρ`)
 |   2   |   `+ × ...`   |   `v+(λ×ρ)`   |   `2-2`    |    `dyad-dyad`    |      ε      |
 |   3   |   `+ 1 ...`   |     `v+1`     |   `2-0`    |   `dyad-nilad`    |             |
 |   4   |   `1 + ...`   |     `1+v`     |   `0-2`    |   `nilad-dyad`    |             |
-|   5   |    `+ ...`    |     `v+ρ`     |    `2`     |
-|   6   |    `F ...`    |    `F(v)`     |    `1`     |
+|   5   |    `+ ...`    |     `v+ρ`     |    `2`     |      `dyad`       |
+|   6   |    `F ...`    |    `F(v)`     |    `1`     |      `monad`      |
 
 ### Combinator Table (WIP)
 

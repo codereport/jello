@@ -11,7 +11,7 @@ def color(i: int):
     return [Fore.YELLOW, Fore.GREEN, Fore.BLUE, Fore.MAGENTA][i % 4]
 
 def comb_width(c: str) -> int:
-    return 5 if c == "Φ" else 3
+    return 5 if c in "Φmd" else 3
 
 def print_bars(ccs: str, i: int):
     if ccs:
@@ -46,10 +46,14 @@ def combinator_tree(chain: list[int], indent: int, width_adj: int, output: bool,
 
     if   chain[:3] == [1, 2, 1]: c = "Φ"
     elif chain[:2] == [2, 1]:    c = "S"
+    elif chain[:2] == [2, 0]:    c = "d"
+    elif chain[:2] == [0, 2]:    c = "d"
+    elif chain[:3] == [1, 2, 0]: c = "d"
+    elif chain[:3] == [1, 0, 2]: c = "d"
     elif chain[:2] == [1, 2]:    c = "Σ"
     elif chain[:2] == [1, 1]:    c = "B"
 
-    w = 5 if c == "Φ" else 3
+    w = comb_width(c)
     wa = w + width_adj
     if output: single_tree(c, wa, indent, ccs, i)
     return c + combinator_tree([1] + chain[((w + 1) // 2):], indent + wa // 2, width_adjustment(wa), output, ccs[1:], i + 1)
