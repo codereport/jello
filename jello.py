@@ -9,7 +9,7 @@ from prompt_toolkit.history import FileHistory
 
 import draw
 import tokens
-from utils import Chain
+from utils import Chain, replace
 
 
 def run_jelly(expr: str, args: list[str]):
@@ -35,6 +35,7 @@ history = FileHistory("jello_history.txt")
 def to_jelly(token: str) -> str | None:
     if token in tokens.monadic: return tokens.monadic[token]
     if token in tokens.dyadic:  return tokens.dyadic[token]
+    if token in tokens.quick:   return tokens.quick[token]
     if token.isnumeric():       return token
     return None
 
@@ -44,8 +45,22 @@ def convert(expr: list[str]) -> str:
 def keyword_arity(k: str) -> int:
     if k in tokens.monadic: return 1
     if k in tokens.dyadic:  return 2
+    if k in tokens.quick:   return 3 # not really but we need a way to differentiate
     assert k.isnumeric()
     return 0
+
+def chain_arity_to_string(chain_arity: list[int]) -> str:
+    return "-".join(["q" if e == 3 else str(e) for e in chain_arity])
+
+# hof (higher order functions) are called quicks in jelly
+def process_hofs(chain_arity: list[int]) -> list[int]:
+    if 3 not in chain_arity:
+        return chain_arity, [None] * len(chain_arity)
+    chain_arity = replace(chain_arity[:], [2,0,3], [(1, 3)])
+    chain_arity = replace(chain_arity[:], [2, 3], [(1, 2)])
+    chain_arity_with_quick_info = [(i, None) if isinstance(i, int) else i for i in chain_arity]
+    return ([i for i, _ in chain_arity_with_quick_info],
+            [i for _, i in chain_arity_with_quick_info])
 
 if __name__ == "__main__":
     init()  # for colorama
@@ -65,14 +80,15 @@ if __name__ == "__main__":
         for i in range(1, len(converted_expr) + 1):
             draw.cprint(f"   {converted_expr[:i]:<{len(converted_expr)}}", Fore.YELLOW, False)
             draw.cprint(f" {' '.join(args)} ➡️ ", Fore.BLUE, False)
-            run_jelly(converted_expr[:i], args) # TODO this should support the dyadic case
+            run_jelly(converted_expr[:i], args)
 
-        chain = [keyword_arity(e) for e in expr]
-        chain_arity = "-".join([str(e) for e in chain])
+        chain_arity                      = [keyword_arity(e) for e in expr]
+        chain_arity_post_hof, quick_info = process_hofs(chain_arity)
+
         print("    This is a ", end="")
-        draw.cprint(chain_arity, Fore.RED, False)
+        draw.cprint(chain_arity_to_string(chain_arity), Fore.RED, False)
         # TODO create a different function for this vvv
-        ccs = draw.combinator_tree(chain, chain_type, 0, 0, True, False, "", 0) # chain combinator sequence
+        ccs = draw.combinator_tree(chain_arity_post_hof, quick_info, chain_type, 0, 0, True, False, "", 0) # chain combinator sequence
         print(f" {chain_type.name.lower()} chain ({''.join(ccs)})")
 
-        draw.combinator_tree(chain, chain_type, draw.INITIAL_INDENT, 0, True, True, ccs[1:], 0)
+        draw.combinator_tree(chain_arity_post_hof, quick_info, chain_type, draw.INITIAL_INDENT, 0, True, True, ccs[1:], 0)

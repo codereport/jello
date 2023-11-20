@@ -17,7 +17,7 @@ monadic = {
     "flat":             "F",
     "floor":            "Ḟ",
     "grid":             "G", # don't know what this does
-    "group":            "Ġ", # don't know what this does
+    "idx_partition":    "Ġ",
     "half":             "H",
     "double":           "Ḥ",
     "head":             "Ḣ",
@@ -76,6 +76,8 @@ monadic = {
     "add1":             "‘",
     "sub1":             "’",
     "identity":         "¹",
+    "group":            "Œg",
+    "group_len":        "Œɠ"
 }
 
 dyadic = {
@@ -97,5 +99,9 @@ dyadic = {
 }
 
 quick = {
-    "each": "€"
+    "each":         "€",
+    "fold":         "/",
+    "chunk_fold":   "/",
+    "scan":         "\\",
+    "slide_fold":   "\\",
 }

@@ -47,8 +47,14 @@ def single_tree(name: str, width: int, indent: int, ccs: str, i: int, initial_ca
 def width_adjustment(width: int) -> int :
     return (width - 1) // 2
 
+def quick_adjustment(width: int, quick_info: list[int | None]) -> int:
+    if quick_info[width // 2] is None and quick_info[0] is None: return 0
+    if quick_info[width // 2]: return (quick_info[width // 2] - 1) * 2
+    return quick_info[0]
+
 def combinator_tree(
-        chain:        list[int],
+        chain:        list[int], # chain_arity
+        quick_info:   list[int],
         chain_type:   Chain,
         indent:       int,
         width_adj:    int,
@@ -89,11 +95,16 @@ def combinator_tree(
         elif chain[0]  == 2 and is_monadic: c = "W"
         elif chain[0]  == 1:                c = "m"
 
+
     w = comb_width(c, initial_call)
-    wa = w + width_adj
+    wa = w + width_adj + quick_adjustment(w, quick_info)
+
+
     if output: single_tree(c, wa, indent, ccs, i, initial_call)
+
     return [c] + combinator_tree(
         [comb_arity(c)] + chain[((w + 1) // 2):],
+        [None] + quick_info[((w + 1) // 2):],
         chain_type,
         indent + wa // 2,
         width_adjustment(wa),
