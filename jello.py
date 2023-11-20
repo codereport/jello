@@ -25,7 +25,11 @@ def run_jelly(expr: str, args: list[str]):
         print(Fore.RED + f"Error: {e}")
         print(Fore.RED + "stderr:", e.stderr)
 
-completer = WordCompleter(tokens.monadic.keys())
+completer = WordCompleter(
+    list(tokens.monadic.keys()) +
+    list(tokens.dyadic.keys())  +
+    list(tokens.quick.keys()))
+
 history = FileHistory("jello_history.txt")
 
 def to_jelly(token: str) -> str | None:
