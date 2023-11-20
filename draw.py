@@ -29,32 +29,32 @@ def print_bars(ccs: str, i: int, initial_call: bool):
 
 def single_tree(name: str, width: int, indent: int, ccs: str, i: int, initial_call: bool):
     if width == 1:
-        cprint(f"{' ' * indent}|", color(i), False)
-        print_bars(ccs, i, initial_call)
-        cprint(f"{' ' * indent}{name}", color(i), False)
-        print_bars(ccs, i, initial_call)
+        tree = f"{' ' * indent}|"
+        label = f"{' ' * indent}{name}"
     else:
         n    = width - 3 # number of arms required
         rarm = "─" * (n // 2)
         larm = rarm + ("─" if n % 2 else "")
         adj = -1 if comb_arity(name) == 2 else 0
-        cprint(f"{' ' * indent}└{larm}┬{rarm}┘", color(i), False)
-        print_bars(ccs, i, initial_call)
-        cprint(f"{' ' * (indent + 1 + (n % 2) + (n // 2))}{name}{' ' * (1 + adj + (n // 2))}", color(i), False)
-        print_bars(ccs, i, initial_call)
+        tree = f"{' ' * indent}└{larm}┬{rarm}┘"
+        label = f"{' ' * (indent + 1 + (n % 2) + (n // 2))}{name}{' ' * (1 + adj + (n // 2))}"
+    cprint(tree, color(i), False)
+    print_bars(ccs, i, initial_call)
+    cprint(label, color(i), False)
+    print_bars(ccs, i, initial_call)
 
 def width_adjustment(width: int) -> int :
     return (width - 1) // 2
 
 def combinator_tree(
-        chain:      list[int],
-        chain_type: Chain,
-        indent:     int,
-        width_adj:  int,
+        chain:        list[int],
+        chain_type:   Chain,
+        indent:       int,
+        width_adj:    int,
         initial_call: bool,
-        output:     bool,
-        ccs:        str,
-        i:          int):
+        output:       bool,
+        ccs:          str,
+        i:            int):
     if len(chain) == 0 or (len(chain) == 1 and not initial_call):
         return []
     # TODO: vvv i think we can get rid of this
@@ -66,22 +66,22 @@ def combinator_tree(
         if output: single_tree(c, 1, indent, ccs, i, initial_call)
         return [c]
 
-    if   chain[0]   == 2 and chain_type == Chain.MONADIC: c = "W"
-    elif chain[:3]  == [1, 2, 1]: c = "Φ"
-    elif chain[:3]  == [2, 2, 2]: c = "Φ₁"
-    elif chain[0:3] == [2, 2, 0]: c = "ε"
-    elif chain[0:3] == [2, 0, 2]: c = "E"
-    elif chain[:2]  == [2, 2]:    c = "ε'"
-    elif chain[:2]  == [2, 1]:    c = "S" if chain_type == Chain.MONADIC else "B₁"
+    if   chain[0]  == 2 and chain_type == Chain.MONADIC: c = "W"
+    elif chain[:3] == [1, 2, 1]: c = "Φ"
+    elif chain[:3] == [2, 2, 2]: c = "Φ₁"
+    elif chain[:3] == [2, 2, 0]: c = "ε"
+    elif chain[:3] == [2, 0, 2]: c = "E"
+    elif chain[:2] == [2, 2]:    c = "ε'"
+    elif chain[:2] == [2, 1]:    c = "S" if chain_type == Chain.MONADIC else "B₁"
     # elif chain[:2]  == [2, 0]:    c = "d"
     # elif chain[:2]  == [0, 2]:    c = "d"
-    elif chain[0:3] == [1, 2, 0]: c = "d"
-    elif chain[0:3] == [1, 0, 2]: c = "d"
-    elif chain[:2]  == [1, 2]:    c = "Σ"
-    elif chain[:2]  == [1, 1]:    c = "B"
-    elif chain[:2]  == [2, 0]:    c = "c" # concatenation
-    elif chain[:2]  == [1, 0] and not initial_call:    c = "c" # concatenation
-    elif chain[0]   == 1: c = "m"
+    elif chain[:3] == [1, 2, 0]: c = "d"
+    elif chain[:3] == [1, 0, 2]: c = "d"
+    elif chain[:2] == [1, 2]:    c = "Σ"
+    elif chain[:2] == [1, 1]:    c = "B"
+    elif chain[:2] == [2, 0]:    c = "c" # concatenation
+    elif chain[:2] == [1, 0] and not initial_call:    c = "c" # concatenation
+    elif chain[0]  == 1: c = "m"
 
 
     w = comb_width(c, initial_call)

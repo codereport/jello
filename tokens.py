@@ -21,7 +21,7 @@ monadic = {
     "half":             "H",
     "double":           "Ḥ",
     "head":             "Ḣ",
-    "first_diff":       "I",
+    "deltas":           "I",
     "reciprocal":       "İ",
     "abs_le_one":       "Ị",
     "iota_len":         "J",
@@ -79,8 +79,9 @@ monadic = {
 }
 
 dyadic = {
-    "+": "+",
-    "_": "_",
-    "*": "×",
-    "div": "÷"
+    "+":   "+",
+    "_":   "_",
+    "*":   "×",
+    "div": "÷",
+    "=":   "="
 }

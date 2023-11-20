@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
     while True:
         user_input = prompt("> ", completer=completer, history=history)
-        if user_input.lower() == "q": break
+        if user_input.strip().lower() == "q": break
         if ":" not in user_input:
             draw.cprint("  error: missing : before args", Fore.RED, True)
             continue
