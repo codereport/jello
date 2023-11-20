@@ -44,8 +44,8 @@ A: If you only pass it one argument (aka `ω`)
 |       | Chain pattern | New `v` value | Chain Type |     Name     |  IC   |  SC   |
 | :---: | :-----------: | :-----------: | :--------: | :----------: | :---: | :---: |
 |   1   |   `+ F ...`   |   `v+F(ω)`    |   `2-1`    | `dyad-monad` |   S   |   Φ   |
-|   2   |   `+ 1 ...`   |     `v+1`     |   `2-0`    | `dyad–nilad` |   d   |   d   |
-|   3   |   `1 + ...`   |     `1+v`     |   `0-2`    | `nilad-dyad` |   d   |   d   |
+|   2   |   `+ 1 ...`   |     `v+1`     |   `2-0`    | `dyad–nilad` |   d   |   Δ   |
+|   3   |   `1 + ...`   |     `1+v`     |   `0-2`    | `nilad-dyad` |   d   |   D   |
 |   4   |    `+ ...`    |     `v+ω`     |    `2`     |    `dyad`    |   W   |   Σ   |
 |   5   |    `F ...`    |    `F(v)`     |    `1`     |   `monad`    |   m   |   B   |
 
