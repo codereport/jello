@@ -14,7 +14,8 @@ def color(i: int):
 
 def comb_width(c: str, initial_call: bool) -> int:
     if c == "m" and initial_call: return 1
-    if c in ["Φ", "m", "d", "Φ₁", "ε", "E"]: return 5
+    if c == "d" and initial_call: return 3
+    if c in ["Φ", "m", "d", "Φ₁", "ε", "E", "D", "Δ"]: return 5
     if c == "W": return 1
     return 3
 
@@ -55,34 +56,38 @@ def combinator_tree(
         output:       bool,
         ccs:          str,
         i:            int):
+    is_monadic = chain_type == Chain.MONADIC
     if len(chain) == 0 or (len(chain) == 1 and not initial_call):
         return []
     # TODO: vvv i think we can get rid of this
     if len(chain) == 1 and initial_call:
-        if chain_type == Chain.MONADIC:
-            c = "m" if chain[0] == 1 else "W"
-        else:
-            c = "mK" if chain[0] == 1 else "d"
+        if is_monadic: c = "m"  if chain[0] == 1 else "W"
+        else:          c = "mK" if chain[0] == 1 else "d"
         if output: single_tree(c, 1, indent, ccs, i, initial_call)
         return [c]
 
-    if   chain[0]  == 2 and chain_type == Chain.MONADIC: c = "W"
-    elif chain[:3] == [1, 2, 1]: c = "Φ"
-    elif chain[:3] == [2, 2, 2]: c = "Φ₁"
-    elif chain[:3] == [2, 2, 0]: c = "ε"
-    elif chain[:3] == [2, 0, 2]: c = "E"
-    elif chain[:2] == [2, 2]:    c = "ε'"
-    elif chain[:2] == [2, 1]:    c = "S" if chain_type == Chain.MONADIC else "B₁"
-    # elif chain[:2]  == [2, 0]:    c = "d"
-    # elif chain[:2]  == [0, 2]:    c = "d"
-    elif chain[:3] == [1, 2, 0]: c = "d"
-    elif chain[:3] == [1, 0, 2]: c = "d"
-    elif chain[:2] == [1, 2]:    c = "Σ"
-    elif chain[:2] == [1, 1]:    c = "B"
-    elif chain[:2] == [2, 0]:    c = "c" # concatenation
-    elif chain[:2] == [1, 0] and not initial_call:    c = "c" # concatenation
-    elif chain[0]  == 1: c = "m"
+    c = None
 
+    if is_monadic:
+        if   chain[:2] == [2, 1]:    c = "S"
+        elif chain[:3] == [1, 2, 1]: c = "Φ"
+        elif chain[:3] == [1, 2, 0]: c = "Δ"
+        elif chain[:3] == [1, 0, 2]: c = "D"
+    else:
+        if   chain[:2] == [2, 1]:    c = "B₁"
+        elif chain[:3] == [2, 2, 2]: c = "Φ₁"
+        elif chain[:3] == [2, 2, 0]: c = "ε"
+        elif chain[:3] == [2, 0, 2]: c = "E"
+        elif chain[:2] == [2, 2]:    c = "ε'"
+
+    if c is None:
+        concatenate = chain[:2] in [[2,0], [0,2], [1,0]] and not initial_call
+        if concatenate:                     c = "c"
+        elif chain[:2] == [1, 2]:           c = "Σ"
+        elif chain[:2] == [1, 1]:           c = "B"
+        elif chain[:2] in [[2,0], [0,2]]:   c = "d"
+        elif chain[0]  == 2 and is_monadic: c = "W"
+        elif chain[0]  == 1:                c = "m"
 
     w = comb_width(c, initial_call)
     wa = w + width_adj
