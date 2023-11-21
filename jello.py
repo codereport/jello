@@ -81,7 +81,7 @@ if __name__ == "__main__":
 
             [args, expr] = [s.strip().split() for s in user_input.strip().split("::")] # should consist of keywords
 
-            algorithm.advisor(expr)
+            algorithm.advisor(' '.join(expr))
 
             converted_expr = convert(expr)
             chain_type = Chain.MONADIC if len(args) == 1 else Chain.DYADIC
