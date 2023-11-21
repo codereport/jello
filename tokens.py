@@ -44,7 +44,7 @@ monadic = {
     "iota":             "R",
     "rev":              "Ṛ",
     "print_str":        "Ṙ",
-    "sum_list":         "S",
+    "sum":              "S",
     "sign":             "Ṡ",
     "sort":             "Ṣ",
     "idx":              "T",
@@ -65,8 +65,8 @@ monadic = {
     "columns":          "Z",
     "prep_zero":        "Ż",
     "is_prime":         "Ẓ",
-    "sum_vect":         "§",
-    "cumsum":           "Ä",
+    "sum_vec":          "§",
+    "sums":             "Ä",
     "factorial":        "!",
     "bit_not":          "~",
     "sq":               "²",
@@ -104,4 +104,9 @@ quick = {
     "chunk_fold":   "/",
     "scan":         "\\",
     "slide_fold":   "\\",
+}
+
+separators = {
+    ".": "µ",
+    ":": "ð"
 }
