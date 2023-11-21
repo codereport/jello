@@ -49,6 +49,7 @@ def keyword_arity(k: str) -> int:
     if k in tokens.dyadic:     return 2
     if k in tokens.quick:      return 3 # not really but we need a way to differentiate
     if k in tokens.separators: return 4 # not really but we need a way to differentiate
+    if k.isnumeric():          return 0
     raise Exception(f"{k} not handled in keyword_arity function.")
 
 def chain_arity_to_string(chain_arity: list[int]) -> str:
