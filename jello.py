@@ -7,6 +7,7 @@ from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
 
+import algorithm
 import draw
 import tokens
 from utils import Chain, replace
@@ -79,6 +80,9 @@ if __name__ == "__main__":
                 continue
 
             [args, expr] = [s.strip().split() for s in user_input.strip().split("::")] # should consist of keywords
+
+            algorithm.advisor(expr)
+
             converted_expr = convert(expr)
             chain_type = Chain.MONADIC if len(args) == 1 else Chain.DYADIC
             for i in range(1, len(converted_expr) + 1):
@@ -97,4 +101,5 @@ if __name__ == "__main__":
 
             draw.combinator_tree(chain_arity_post_hof, quick_info, chain_type, draw.INITIAL_INDENT, 0, True, True, ccs[1:], 0)
         except Exception as e:
-            draw.cprint(f"    {e}", Fore.RED, True)
+            color = Fore.GREEN if "algorithm" in str(e) else Fore.RED
+            draw.cprint(f"    {e}", color, True)
