@@ -62,4 +62,4 @@ def explain():
             print(f"{c:<3} {x:<13}={y:<5}->{z}")
         print()
     else:
-        "   did not enter a valid combinator"
+        draw.cprint("   did not enter a valid combinator", Fore.RED, True)
