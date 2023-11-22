@@ -1,4 +1,5 @@
 
+import re
 from enum import Enum
 
 
@@ -22,3 +23,13 @@ def replace(seq: list, target: list, to: list) -> list:
         seq = seq[0:i] + to + seq[i + len(target):]
         i = index_of_subseq(seq, target)
     return seq
+
+def split_keep(text: str, delimiter: str) -> str:
+    return [match.group() for match in re.finditer(f"[^{delimiter}]+|{delimiter}", text)]
+
+def split_keep_multiple_delimiters(text, delimiters):
+    pattern = "|".join(map(re.escape, delimiters))
+    return re.split(f"({pattern})", text)
+
+def remove_all(seq, remove):
+    return [e for e in seq if e not in remove]

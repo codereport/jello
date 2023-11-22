@@ -4,7 +4,7 @@ import re
 from colorama import Fore
 
 import draw
-from utils import is_subseq_of
+import utils
 
 advisements = {
     "+ scan":         "sums",
@@ -38,7 +38,7 @@ def advisor(keywords: list[str]):
 
     # non-regex advisements
     for old, new in advisements.items():
-        if is_subseq_of(keywords, old):
+        if utils.is_subseq_of(keywords, old):
             raise_advisement(old, new)
 
     # regex advisements

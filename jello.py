@@ -9,9 +9,11 @@ from prompt_toolkit.history import FileHistory
 from prompt_toolkit.shortcuts import CompleteStyle
 
 import algorithm
+import arity_notation
 import draw
 import tokens
-from utils import Chain, replace
+import utils
+from utils import Chain
 
 
 def clear_screen():
@@ -40,11 +42,11 @@ completer = WordCompleter(
 history = FileHistory("jello_history.txt")
 
 def to_jelly(token: str) -> str:
-    if token in tokens.monadic:    return tokens.monadic[token]
-    if token in tokens.dyadic:     return tokens.dyadic[token]
-    if token in tokens.quick:      return tokens.quick[token]
-    if token in tokens.separators: return tokens.separators[token]
-    if token.isnumeric():          return token
+    if token in tokens.monadic:            return tokens.monadic[token]
+    if token in tokens.dyadic:             return tokens.dyadic[token]
+    if token in tokens.quick:              return tokens.quick[token]
+    if token in tokens.separators:         return tokens.separators[token]
+    if token.isnumeric() or token in "()": return token
     raise Exception(f"{token} is not a valid Jello keyword.")
 
 def convert(expr: list[str]) -> str:
@@ -61,12 +63,12 @@ def keyword_arity(k: str) -> int:
 def chain_arity_to_string(chain_arity: list[int]) -> str:
     return "-".join(["q" if e == 3 else str(e) for e in chain_arity])
 
-# hof (higher order functions) are called quicks in jelly
-def process_hofs(chain_arity: list[int]) -> list[int]:
+# quicks in jelly are hofs (higher order functions)
+def process_quicks(chain_arity: list[int]) -> list[int]:
     if 3 not in chain_arity:
         return chain_arity, [None] * len(chain_arity)
-    chain_arity = replace(chain_arity[:], [2,0,3], [(1, 3)])
-    chain_arity = replace(chain_arity[:], [2, 3], [(1, 2)])
+    chain_arity = utils.replace(chain_arity[:], [2,0,3], [(1, 3)])
+    chain_arity = utils.replace(chain_arity[:], [2, 3], [(1, 2)])
     chain_arity_with_quick_info = [(i, None) if isinstance(i, int) else i for i in chain_arity]
     return ([i for i, _ in chain_arity_with_quick_info],
             [i for _, i in chain_arity_with_quick_info])
@@ -85,6 +87,9 @@ if __name__ == "__main__":
                                 complete_style=CompleteStyle.MULTI_COLUMN)
 
             if user_input.strip().lower() == "q": break
+            if user_input.strip() == "?":
+                arity_notation.explain()
+                continue
             clear_screen()
             print("🟢🟡🔴 Jello 🔴🟡🟢\n")
             print(f"> {user_input}")
@@ -92,19 +97,26 @@ if __name__ == "__main__":
                 draw.cprint("  error: missing :: after args", Fore.RED, True)
                 continue
 
-            [args, expr] = [s.strip().split() for s in user_input.strip().split("::")] # should consist of keywords
+            [args, expr] = [s.strip() for s in user_input.strip().split("::")] # should consist of keywords
 
-            algorithm.advisor(" ".join(expr))
+            algorithm.advisor(expr)
+
+            expr = utils.remove_all(utils.split_keep_multiple_delimiters(expr, r" \(\)"), ["", " "])
+            args = args.split()
 
             converted_expr = convert(expr)
             chain_type = Chain.MONADIC if len(args) == 1 else Chain.DYADIC
+            paren_count = 0
             for i in range(1, len(converted_expr) + 1):
+                c = converted_expr[i-1]
+                if c in "()": paren_count += ") (".index(c) - 1
+                if paren_count > 0: continue
                 draw.cprint(f"   {converted_expr[:i]:<{len(converted_expr)}}", Fore.YELLOW, False)
                 draw.cprint(f" {' '.join(args)} ➡️ ", Fore.BLUE, False)
                 run_jelly(converted_expr[:i], args)
 
-            chain_arity                      = [keyword_arity(e) for e in expr]
-            chain_arity_post_hof, quick_info = process_hofs(chain_arity)
+            chain_arity                      = [keyword_arity(e) for e in expr if e not in "()"]
+            chain_arity_post_hof, quick_info = process_quicks(chain_arity)
 
             print("    This is a ", end="")
             draw.cprint(chain_arity_to_string(chain_arity), Fore.RED, False)
