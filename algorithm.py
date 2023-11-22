@@ -1,5 +1,6 @@
 
 import re
+
 from colorama import Fore
 
 import draw
@@ -11,7 +12,7 @@ advisements = {
     "+ 1":            "add1",
     "_ 1":            "sub1",
     "group len each": "group_len",
-    "+ fold":         "sum", 
+    "+ fold":         "sum",
     "* fold":         "prod",
     "len iota":       "iota_len",
     "len each":       "len_each",
@@ -20,11 +21,11 @@ advisements = {
 }
 
 regex_advisements = {
-    r'chunk (.+) (.+) fold each': r'\2 \1 chunk_fold',
-    r'chunk (.+) sum each': r'+ \1 chunk_fold',
-    r'chunk (.+) prod each': r'* \1 chunk_fold',
-    r'chunk (.+) maxr each': r'max \1 chunk_fold',
-    r'chunk (.+) minr each': r'min \1 chunk_fold',
+    r"chunk (.+) (.+) fold each": r"\2 \1 chunk_fold",
+    r"chunk (.+) sum each": r"+ \1 chunk_fold",
+    r"chunk (.+) prod each": r"* \1 chunk_fold",
+    r"chunk (.+) maxr each": r"max \1 chunk_fold",
+    r"chunk (.+) minr each": r"min \1 chunk_fold",
 }
 
 def raise_advisement(old: str, new: str):

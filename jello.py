@@ -6,12 +6,16 @@ from colorama import Fore, init
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
+from prompt_toolkit.shortcuts import CompleteStyle
 
 import algorithm
 import draw
 import tokens
 from utils import Chain, replace
 
+
+def clear_screen():
+    subprocess.call("clear", shell=True)
 
 def run_jelly(expr: str, args: list[str]):
     try:
@@ -27,10 +31,11 @@ def run_jelly(expr: str, args: list[str]):
         print(Fore.RED + "stderr:", e.stderr)
 
 completer = WordCompleter(
-    list(tokens.monadic.keys()) +
-    list(tokens.dyadic.keys())  +
-    list(tokens.quick.keys())   +
-    list(tokens.separators.keys()))
+    [k for k in sorted(
+        list(tokens.monadic.keys()) +
+        list(tokens.dyadic.keys())  +
+        list(tokens.quick.keys())   +
+        list(tokens.separators.keys())) if len(k) > 1])
 
 history = FileHistory("jello_history.txt")
 
@@ -73,15 +78,23 @@ if __name__ == "__main__":
 
     while True:
         try:
-            user_input = prompt("> ", completer=completer, history=history)
+            user_input = prompt("> ",
+                                completer=completer,
+                                history=history,
+                                reserve_space_for_menu=0,
+                                complete_style=CompleteStyle.MULTI_COLUMN)
+
             if user_input.strip().lower() == "q": break
+            clear_screen()
+            print("🟢🟡🔴 Jello 🔴🟡🟢\n")
+            print(f"> {user_input}")
             if "::" not in user_input:
                 draw.cprint("  error: missing :: after args", Fore.RED, True)
                 continue
 
             [args, expr] = [s.strip().split() for s in user_input.strip().split("::")] # should consist of keywords
 
-            algorithm.advisor(' '.join(expr))
+            algorithm.advisor(" ".join(expr))
 
             converted_expr = convert(expr)
             chain_type = Chain.MONADIC if len(args) == 1 else Chain.DYADIC
