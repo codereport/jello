@@ -52,23 +52,32 @@ def to_jelly(token: str) -> str:
 def convert(expr: list[str]) -> str:
     return "".join([to_jelly(t) for t in expr])
 
+EACH = 10
+
 def keyword_arity(k: str) -> int:
     if k in tokens.monadic:    return 1
     if k in tokens.dyadic:     return 2
+    if k == "each":            return EACH
     if k in tokens.quick:      return 3 # not really but we need a way to differentiate
     if k in tokens.separators: return 4 # not really but we need a way to differentiate
     if k.isnumeric():          return 0
     raise Exception(f"{k} not handled in keyword_arity function.")
 
+def arity_chain_repr(i: int) -> str:
+    if i in [3, 10]: return "q"
+    if i == 4:       return "s"
+    return str(i)
+
 def chain_arity_to_string(chain_arity: list[int]) -> str:
-    return "-".join(["q" if e == 3 else str(e) for e in chain_arity])
+    return "-".join([arity_chain_repr(e) for e in chain_arity])
 
 # quicks in jelly are hofs (higher order functions)
 def process_quicks(chain_arity: list[int]) -> list[int]:
-    if 3 not in chain_arity:
+    if len(set(chain_arity) & set([3, EACH])) == 0:
         return chain_arity, [None] * len(chain_arity)
-    chain_arity = utils.replace(chain_arity[:], [2,0,3], [(1, 3)])
-    chain_arity = utils.replace(chain_arity[:], [2, 3], [(1, 2)])
+    chain_arity = utils.replace(chain_arity[:], [2,0,3],  [(1,3)])
+    chain_arity = utils.replace(chain_arity[:], [2,3],    [(1,2)])
+    chain_arity = utils.replace(chain_arity[:], [1,EACH], [(1,EACH)])
     chain_arity_with_quick_info = [(i, None) if isinstance(i, int) else i for i in chain_arity]
     return ([i for i, _ in chain_arity_with_quick_info],
             [i for _, i in chain_arity_with_quick_info])
@@ -106,25 +115,21 @@ if __name__ == "__main__":
 
             converted_expr = convert(expr)
             chain_type = Chain.MONADIC if len(args) == 1 else Chain.DYADIC
-            paren_count = 0
             for i in range(1, len(converted_expr) + 1):
-                c = converted_expr[i-1]
-                if c in "()": paren_count += ") (".index(c) - 1
-                if paren_count > 0: continue
                 draw.cprint(f"   {converted_expr[:i]:<{len(converted_expr)}}", Fore.YELLOW, False)
-                draw.cprint(f" {' '.join(args)} ➡️ ", Fore.BLUE, False)
+                draw.cprint(f" {' '.join(args)} ➡️  ", Fore.BLUE, False)
                 run_jelly(converted_expr[:i], args)
 
-            chain_arity                      = [keyword_arity(e) for e in expr if e not in "()"]
-            chain_arity_post_hof, quick_info = process_quicks(chain_arity)
+            chain_arity                        = [keyword_arity(e) for e in expr if e not in "()"]
+            chain_arity_post_quick, quick_info = process_quicks(chain_arity)
 
             print("    This is a ", end="")
             draw.cprint(chain_arity_to_string(chain_arity), Fore.RED, False)
             # TODO create a different function for this vvv
-            ccs = draw.combinator_tree(chain_arity_post_hof, quick_info, chain_type, 0, 0, True, False, "", 0) # chain combinator sequence
+            ccs = draw.combinator_tree(chain_arity_post_quick, quick_info, chain_type, 0, 0, True, False, "", 0) # chain combinator sequence
             print(f" {chain_type.name.lower()} chain ({''.join(ccs)})")
 
-            draw.combinator_tree(chain_arity_post_hof, quick_info, chain_type, draw.INITIAL_INDENT, 0, True, True, ccs[1:], 0)
+            draw.combinator_tree(chain_arity_post_quick, quick_info, chain_type, draw.INITIAL_INDENT, 0, True, True, ccs[1:], 0)
         except Exception as e:
             color = Fore.GREEN if "algorithm" in str(e) else Fore.RED
             draw.cprint(f"    {e}", color, True)

@@ -49,7 +49,9 @@ def width_adjustment(width: int) -> int :
 
 def quick_adjustment(width: int, quick_info: list[int | None]) -> int:
     if quick_info[width // 2] is None and quick_info[0] is None: return 0
-    if quick_info[width // 2]: return (quick_info[width // 2] - 1) * 2
+    if quick_info[width // 2]:
+        if quick_info[width // 2] == 10: return 2
+        return (quick_info[width // 2] - 1) * 2
     return quick_info[0]
 
 def combinator_tree(
