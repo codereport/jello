@@ -3,7 +3,6 @@
 import subprocess
 
 from colorama import Fore, init
-from more_itertools import roundrobin
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
@@ -115,8 +114,7 @@ if __name__ == "__main__":
 
             [args, expr] = [s.strip() for s in user_input.strip().split("::")] # should consist of keywords
 
-            keywords = expr.split()
-            print(f"> {args} :: {''.join(roundrobin(map(keyword_color, keywords), keywords, ' ' * len(keywords)))}\n")
+            print(f"> {args} :: {' '.join(keyword_color(k) + k for k in expr.split())}\n")
 
             algorithm.advisor(expr)
 
