@@ -77,7 +77,8 @@ monadic = {
     "sub1":             "’",
     "id":               "¹",
     "group":            "Œg",
-    "group_len":        "Œɠ"
+    "group_len":        "Œɠ",
+    "rle":              "Œr"
 }
 
 dyadic = {
