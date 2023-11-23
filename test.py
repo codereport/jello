@@ -7,7 +7,7 @@ from utils import Chain
 
 def unit_test(expr: str, exp_monad_res: str, exp_dyad_res):
     chain_arity = [jello.keyword_arity(e) for e in expr.split()]
-    chain_arity_post_hof, quick_info = jello.process_hofs(chain_arity)
+    chain_arity_post_hof, quick_info = jello.process_quicks(chain_arity)
     monad_res = "".join(draw.combinator_tree(chain_arity_post_hof, quick_info, Chain.MONADIC, 0, 0, True, False, "", 0))
     dyad_res  = "".join(draw.combinator_tree(chain_arity_post_hof, quick_info, Chain.DYADIC,  0, 0, True, False, "", 0))
 
