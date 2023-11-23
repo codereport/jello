@@ -116,6 +116,8 @@ if __name__ == "__main__":
             converted_expr = convert(expr)
             chain_type = Chain.MONADIC if len(args) == 1 else Chain.DYADIC
             for i in range(1, len(converted_expr) + 1):
+                if converted_expr[i - 1] in tokens.separators.values():
+                    continue
                 draw.cprint(f"   {converted_expr[:i]:<{len(converted_expr)}}", Fore.YELLOW, False)
                 draw.cprint(f" {' '.join(args)} ➡️  ", Fore.BLUE, False)
                 run_jelly(converted_expr[:i], args)

@@ -101,12 +101,13 @@ dyadic = {
     "r":     "ṛ"
 }
 
+# some of the quicks are AMBIVALENT
 quick = {
     "each":         "€",
-    "fold":         "/",
-    "chunk_fold":   "/",
-    "scan":         "\\",
-    "slide_fold":   "\\",
+    "fold":         "/",  # monadic case
+    "chunk_fold":   "/",  # dyadic case
+    "scan":         "\\", # monadic case
+    "slide_fold":   "\\", # dyadic case
 }
 
 separators = {
