@@ -3,6 +3,7 @@
 import subprocess
 
 from colorama import Fore, init
+from more_itertools import roundrobin
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
@@ -82,6 +83,12 @@ def process_quicks(chain_arity: list[int]) -> list[int]:
     return ([i for i, _ in chain_arity_with_quick_info],
             [i for _, i in chain_arity_with_quick_info])
 
+def keyword_color(k: str):
+    if k in tokens.monadic:    return Fore.GREEN
+    if k in tokens.dyadic:     return Fore.BLUE
+    if k in tokens.quick:      return Fore.RED
+    return Fore.WHITE
+
 if __name__ == "__main__":
     init()  # for colorama
 
@@ -101,12 +108,15 @@ if __name__ == "__main__":
                 continue
             clear_screen()
             print("🟢🟡🔴 Jello 🔴🟡🟢\n")
-            print(f"> {user_input}")
             if "::" not in user_input:
+                print(f"> {user_input}")
                 draw.cprint("  error: missing :: after args", Fore.RED, True)
                 continue
 
             [args, expr] = [s.strip() for s in user_input.strip().split("::")] # should consist of keywords
+
+            keywords = expr.split()
+            print(f"> {args} :: {''.join(roundrobin(map(keyword_color, keywords), keywords, ' ' * len(keywords)))}\n")
 
             algorithm.advisor(expr)
 
