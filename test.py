@@ -30,15 +30,15 @@ if __name__ == "__main__":
     unit_test("+ 0",                 "d",   "d")
     unit_test("+ +",                 "WΣ",  "ε'")
     unit_test("sq +",                "Σ",   "Σ")
-    unit_test("+ half 1 +",          "SD",  "B₁E")
-    unit_test("+ half + 1",          "SΔ",  "B₁ε")
+    unit_test("+ half 1 +",          "SDₚ",  "B₁Eₚ")
+    unit_test("+ half + 1",          "SΔₚ",  "B₁εₚ")
     unit_test("iota odd idx + fold", "BBB", "BBB")
 
     # longer tests
     unit_test("+ sq * half sqrt _ double ceil", "SΦBΦB", "B₁ε'B₁B₁ε'B₁B₁")
 
     # top 10 tests
-    unit_test("group_len min 2 slide_fold maxr * 2", "BBΔ", "BBΔ") # 5
+    unit_test("group_len min 2 slide_fold maxr * 2", "BBΔₚ", "BBΔₚ") # 5
     unit_test("max scan uniq len",                   "BB",  "BB")  # 9
 
     print()

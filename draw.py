@@ -15,12 +15,12 @@ def color(i: int):
 def comb_width(c: str, initial_call: bool) -> int:
     if c == "m" and initial_call: return 1
     if c == "d" and initial_call: return 3
-    if c in ["Φ", "m", "d", "Φ₁", "ε", "E", "D", "Δ"]: return 5
+    if c in ["Φ", "m", "d", "Φ₁", "εₚ", "Eₚ", "Dₚ", "Δₚ"]: return 5
     if c == "W": return 1
     return 3
 
 def comb_arity(c: str) -> int:
-    return 2 if c in ["Φ₁", "B₁", "ε'", "ε", "E"] else 1
+    return 2 if c in ["Φ₁", "B₁", "ε'", "εₚ", "Eₚ"] else 1
 
 def print_bars(ccs: str, i: int, initial_call: bool):
     if ccs:
@@ -36,7 +36,7 @@ def single_tree(name: str, width: int, indent: int, ccs: str, i: int, initial_ca
         n    = width - 3 # number of arms required
         rarm = "─" * (n // 2)
         larm = rarm + ("─" if n % 2 else "")
-        adj = -1 if comb_arity(name) == 2 else 0
+        adj = -1 if len(name) == 2 else 0
         tree = f"{' ' * indent}└{larm}┬{rarm}┘"
         label = f"{' ' * (indent + 1 + (n % 2) + (n // 2))}{name}{' ' * (1 + adj + (n // 2))}"
     cprint(tree, color(i), False)
@@ -79,13 +79,13 @@ def combinator_tree(
     if is_monadic:
         if   chain[:2] == [2, 1]:    c = "S"
         elif chain[:3] == [1, 2, 1]: c = "Φ"
-        elif chain[:3] == [1, 2, 0]: c = "Δ"
-        elif chain[:3] == [1, 0, 2]: c = "D"
+        elif chain[:3] == [1, 2, 0]: c = "Δₚ"
+        elif chain[:3] == [1, 0, 2]: c = "Dₚ"
     else:
         if   chain[:2] == [2, 1]:    c = "B₁"
         elif chain[:3] == [2, 2, 2]: c = "Φ₁"
-        elif chain[:3] == [2, 2, 0]: c = "ε"
-        elif chain[:3] == [2, 0, 2]: c = "E"
+        elif chain[:3] == [2, 2, 0]: c = "εₚ"
+        elif chain[:3] == [2, 0, 2]: c = "Eₚ"
         elif chain[:2] == [2, 2]:    c = "ε'"
 
     if c is None:

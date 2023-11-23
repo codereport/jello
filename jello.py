@@ -41,12 +41,15 @@ completer = WordCompleter(
 
 history = FileHistory("jello_history.txt")
 
+def is_nilad_array(s: str) -> bool:
+    return set(list(s)).issubset(list("0123456789,[]"))
+
 def to_jelly(token: str) -> str:
-    if token in tokens.monadic:            return tokens.monadic[token]
-    if token in tokens.dyadic:             return tokens.dyadic[token]
-    if token in tokens.quick:              return tokens.quick[token]
-    if token in tokens.separators:         return tokens.separators[token]
-    if token.isnumeric() or token in "()": return token
+    if token in tokens.monadic:     return tokens.monadic[token]
+    if token in tokens.dyadic:      return tokens.dyadic[token]
+    if token in tokens.quick:       return tokens.quick[token]
+    if token in tokens.separators:  return tokens.separators[token]
+    if is_nilad_array(token):       return token
     raise Exception(f"{token} is not a valid Jello keyword.")
 
 def convert(expr: list[str]) -> str:
@@ -60,7 +63,7 @@ def keyword_arity(k: str) -> int:
     if k == "each":            return EACH
     if k in tokens.quick:      return 3 # not really but we need a way to differentiate
     if k in tokens.separators: return 4 # not really but we need a way to differentiate
-    if k.isnumeric():          return 0
+    if is_nilad_array(k):      return 0
     raise Exception(f"{k} not handled in keyword_arity function.")
 
 def arity_chain_repr(i: int) -> str:
