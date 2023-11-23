@@ -88,6 +88,20 @@ def keyword_color(k: str):
     if k in tokens.quick:      return Fore.RED
     return Fore.WHITE
 
+def colored_keywords(args, expr):
+    print(f"> {args} :: {' '.join(keyword_color(k) + k for k in expr.split())}")
+
+def center_atom(k: str) -> str:
+    n    = len(k)
+    even = n % 2 == 0
+    half = " " * ((n - 1) // 2)
+    return f"{half}{to_jelly(k)}{half}{' ' if even else ''}"
+
+def spaced_jelly_atoms(args, expr):
+    indent = " " * (2 + len(args) + 4)
+    spaced_jelly_atoms = " ".join(center_atom(k) for k in expr.split())
+    draw.cprint(indent + spaced_jelly_atoms, Fore.YELLOW, True)
+
 if __name__ == "__main__":
     init()  # for colorama
 
@@ -114,7 +128,8 @@ if __name__ == "__main__":
 
             [args, expr] = [s.strip() for s in user_input.strip().split("::")] # should consist of keywords
 
-            print(f"> {args} :: {' '.join(keyword_color(k) + k for k in expr.split())}\n")
+            colored_keywords(args, expr)
+            spaced_jelly_atoms(args, expr)
 
             algorithm.advisor(expr)
 
