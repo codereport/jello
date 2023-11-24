@@ -93,15 +93,9 @@ def keyword_color(k: str):
 def colored_keywords(args, expr):
     print(f"> {args} :: {' '.join(keyword_color(k) + k for k in expr.split())}")
 
-def center_atom(k: str) -> str:
-    n    = len(k)
-    even = n % 2 == 0
-    half = " " * ((n - 1) // 2)
-    return f"{half}{to_jelly(k)}{half}{' ' if even else ''}"
-
 def spaced_jelly_atoms(args, expr):
     indent = " " * (2 + len(args) + 4)
-    spaced_jelly_atoms = " ".join(center_atom(k) for k in expr.split())
+    spaced_jelly_atoms = " ".join(to_jelly(k).center(len(k)) for k in expr.split())
     draw.cprint(indent + spaced_jelly_atoms, Fore.YELLOW, True)
 
 if __name__ == "__main__":
