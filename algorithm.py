@@ -17,7 +17,9 @@ advisements = {
     "len iota":       "iota_len",
     "len each":       "len_each",
     "iota0 add1":     "iota",
-    "iota sub1":      "iota0"
+    "iota sub1":      "iota0",
+    "2 slide_fold":   "prior",
+    "deltas > 0":     "< prior"
 }
 
 regex_advisements = {
