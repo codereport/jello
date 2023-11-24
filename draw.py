@@ -1,7 +1,7 @@
 
 from colorama import Fore, Style
 
-from utils import Chain
+from utils import Chain, Quick
 
 INITIAL_INDENT = 14
 
@@ -22,35 +22,35 @@ def comb_width(c: str, initial_call: bool) -> int:
 def comb_arity(c: str) -> int:
     return 2 if c in ["Φ₁", "B₁", "ε'", "εₚ", "Eₚ"] else 1
 
-def print_bars(ccs: str, i: int, initial_call: bool):
-    if ccs:
-        for n, c in enumerate(ccs):
-            cprint(f"{' ' * (comb_width(c, initial_call) - 2)}⋮", color(i + n + 1), False)
-    print()
+def bars(ccs: str, i: int, initial_call: bool) -> str:
+    if not ccs: return ""
+    return "".join(color(i + n + 1) + f"{' ' * (comb_width(c, initial_call) - 2)}⋮" for n, c in enumerate(ccs))
 
-def single_tree(name: str, width: int, indent: int, ccs: str, i: int, initial_call: bool):
+def single_tree(name: str, width: int, ccs: str, i: int, initial_call: bool) -> (str, str):
     if width == 1:
-        tree = f"{' ' * indent}|"
-        label = f"{' ' * indent}{name}"
+        tree = "|"
+        label = name
     else:
         n    = width - 3 # number of arms required
         rarm = "─" * (n // 2)
         larm = rarm + ("─" if n % 2 else "")
         adj = -1 if len(name) == 2 else 0
-        tree = f"{' ' * indent}└{larm}┬{rarm}┘"
-        label = f"{' ' * (indent + 1 + (n % 2) + (n // 2))}{name}{' ' * (1 + adj + (n // 2))}"
-    cprint(tree, color(i), False)
-    print_bars(ccs, i, initial_call)
-    cprint(label, color(i), False)
-    print_bars(ccs, i, initial_call)
+        tree = f"└{larm}┬{rarm}┘"
+        label = f"{' ' * (1 + (n % 2) + (n // 2))}{name}{' ' * (1 + adj + (n // 2))}"
+    return (color(i) + tree  + bars(ccs, i, initial_call),
+            color(i) + label + bars(ccs, i, initial_call))
+
+def print_single_tree(tree: (str, str), indent: int):
+    print("\n".join(" " * indent + line for line in tree))
 
 def width_adjustment(width: int) -> int :
     return (width - 1) // 2
 
-def quick_adjustment(width: int, quick_info: list[int | None]) -> int:
+def quick_adjustment(width: int, quick_info: list[Quick | None]) -> int:
+    if width // 2 >= len(quick_info): return 0
     if quick_info[width // 2] is None and quick_info[0] is None: return 0
     if quick_info[width // 2]:
-        if quick_info[width // 2] == 10: return 2
+        if quick_info[width // 2] == Quick.EACH: return 2
         return (quick_info[width // 2] - 1) * 2
     return quick_info[0]
 
@@ -71,7 +71,7 @@ def combinator_tree(
     if len(chain) == 1 and initial_call:
         if is_monadic: c = "m"  if chain[0] == 1 else "W"
         else:          c = "mK" if chain[0] == 1 else "d"
-        if output: single_tree(c, 1, indent, ccs, i, initial_call)
+        if output: print_single_tree(single_tree(c, 1, ccs, i, initial_call), indent)
         return [c]
 
     c = None
@@ -101,8 +101,7 @@ def combinator_tree(
     w = comb_width(c, initial_call)
     wa = w + width_adj + quick_adjustment(w, quick_info)
 
-
-    if output: single_tree(c, wa, indent, ccs, i, initial_call)
+    if output: print_single_tree(single_tree(c, wa, ccs, i, initial_call), indent)
 
     return [c] + combinator_tree(
         [comb_arity(c)] + chain[((w + 1) // 2):],

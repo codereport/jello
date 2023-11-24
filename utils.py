@@ -5,15 +5,15 @@ from itertools import groupby
 
 
 class Chain(Enum):
-    MONADIC = 1,
+    MONADIC = 1
     DYADIC  = 2
 
 class Separator(Enum):
-    MONADIC = 20,
+    MONADIC = 20
     DYADIC  = 21
 
 class Quick(Enum):
-    QUICK = 3,
+    QUICK = 3
     EACH  = 10
 
 # contiguous subsequence

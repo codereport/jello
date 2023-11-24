@@ -28,18 +28,18 @@ regex_advisements = {
     r"chunk (.+) minr each": r"min \1 chunk_fold",
 }
 
-def raise_advisement(old: str, new: str):
+def print_advisement(old: str, new: str):
     draw.cprint(f"    {(old)} ", Fore.RED, False)
     print("can be replaced with ", end="")
     draw.cprint(new, Fore.GREEN, True)
-    raise Exception("☝️🥳 algorithm advisor 🥳☝️")
+    print("☝️🥳 algorithm advisor 🥳☝️")
 
 def advisor(keywords: list[str]):
 
     # non-regex advisements
     for old, new in advisements.items():
         if utils.is_subseq_of(keywords, old):
-            raise_advisement(old, new)
+            print_advisement(old, new)
 
     # regex advisements
     for pattern, replacement in regex_advisements.items():
@@ -47,4 +47,4 @@ def advisor(keywords: list[str]):
         if match:
             matched = match.group()
             new = re.sub(pattern, replacement, matched)
-            raise_advisement(matched, new)
+            print_advisement(matched, new)
