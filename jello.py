@@ -147,10 +147,11 @@ if __name__ == "__main__":
             print("    This is a ", end="")
             draw.cprint(chain_arity_to_string(chain_arity), Fore.RED, False)
             # TODO create a different function for this vvv
-            ccs = draw.combinator_tree(chain_arity_post_quick, quick_info, chain_type, 0, 0, True, False, "", 0) # chain combinator sequence
+            ccs = draw.combinator_chain_sequence(chain_arity_post_quick, chain_type, True, 0)
             print(f" {chain_type.name.lower()} chain ({''.join(ccs)})")
 
-            draw.combinator_tree(chain_arity_post_quick, quick_info, chain_type, draw.INITIAL_INDENT, 0, True, True, ccs[1:], 0)
+            tree = draw.combinator_tree(chain_arity_post_quick, quick_info, chain_type, draw.INITIAL_INDENT, 0, True, ccs[1:], 0)
+            draw.print_combinator_tree(tree)
         except Exception as e:
             color = Fore.GREEN if "algorithm" in str(e) else Fore.RED
             draw.cprint(f"    {e}", color, True)
