@@ -13,7 +13,7 @@ import arity_notation
 import draw
 import tokens
 import utils
-from utils import Chain
+from utils import Chain, Quick, Separator
 
 
 def clear_screen():
@@ -55,20 +55,19 @@ def to_jelly(token: str) -> str:
 def convert(expr: list[str]) -> str:
     return "".join([to_jelly(t) for t in expr])
 
-EACH = 10
-
 def keyword_arity(k: str) -> int:
     if k in tokens.monadic:    return 1
     if k in tokens.dyadic:     return 2
-    if k == "each":            return EACH
-    if k in tokens.quick:      return 3 # not really but we need a way to differentiate
-    if k in tokens.separators: return 4 # not really but we need a way to differentiate
+    if k == "each":            return Quick.EACH
+    if k in tokens.quick:      return Quick.QUICK
+    if k == ".":               return Separator.MONADIC
+    if k == ":":               return Separator.DYADIC
     if is_nilad_array(k):      return 0
     raise Exception(f"{k} not handled in keyword_arity function.")
 
 def arity_chain_repr(i: int) -> str:
-    if i in [3, 10]: return "q"
-    if i == 4:       return "s"
+    if i in [Quick.QUICK, Quick.EACH]:             return "q"
+    if i in [Separator.MONADIC, Separator.DYADIC]: return "s"
     return str(i)
 
 def chain_arity_to_string(chain_arity: list[int]) -> str:
@@ -76,14 +75,16 @@ def chain_arity_to_string(chain_arity: list[int]) -> str:
 
 # quicks in jelly are hofs (higher order functions)
 def process_quicks(chain_arity: list[int]) -> list[int]:
-    if len(set(chain_arity) & set([3, EACH])) == 0:
+    if len(set(chain_arity) & set([3, Quick.EACH])) == 0:
         return chain_arity, [None] * len(chain_arity)
     chain_arity = utils.replace(chain_arity[:], [2,0,3],  [(1,3)])
     chain_arity = utils.replace(chain_arity[:], [2,3],    [(1,2)])
-    chain_arity = utils.replace(chain_arity[:], [1,EACH], [(1,EACH)])
+    chain_arity = utils.replace(chain_arity[:], [1,Quick.EACH], [(1,Quick.EACH)])
     chain_arity_with_quick_info = [(i, None) if isinstance(i, int) else i for i in chain_arity]
     return ([i for i, _ in chain_arity_with_quick_info],
             [i for _, i in chain_arity_with_quick_info])
+
+# def process_separators(chain_arity: list[int]) -> ??:
 
 def keyword_color(k: str):
     if k in tokens.monadic:    return Fore.GREEN

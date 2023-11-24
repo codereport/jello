@@ -1,11 +1,20 @@
 
 import re
 from enum import Enum
+from itertools import groupby
 
 
 class Chain(Enum):
     MONADIC = 1,
     DYADIC  = 2
+
+class Separator(Enum):
+    MONADIC = 20,
+    DYADIC  = 21
+
+class Quick(Enum):
+    QUICK = 3,
+    EACH  = 10
 
 # contiguous subsequence
 def index_of_subseq(seq: list, sub: list) -> int:
@@ -33,3 +42,6 @@ def split_keep_multiple_delimiters(text, delimiters):
 
 def remove_all(seq, remove):
     return [e for e in seq if e not in remove]
+
+def list_split(seq: list, delimeter):
+    return [list(group) for key, group in groupby(seq, key=lambda x: x == delimeter) if not key]
