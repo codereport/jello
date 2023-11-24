@@ -77,14 +77,12 @@ def chain_arity_to_string(chain_arity: list[int]) -> str:
 def process_quicks(chain_arity: list[int]) -> list[int]:
     if len(set(chain_arity) & set([Quick.QUICK, Quick.EACH])) == 0:
         return chain_arity, [None] * len(chain_arity)
-    chain_arity = utils.replace(chain_arity[:], [2,0,Quick.QUICK],  [(1,Quick.QUICK)])
-    chain_arity = utils.replace(chain_arity[:], [2,Quick.QUICK],    [(1,2)])
-    chain_arity = utils.replace(chain_arity[:], [1,Quick.EACH], [(1,Quick.EACH)])
-    chain_arity_with_quick_info = [(i, None) if isinstance(i, int) else i for i in chain_arity]
+    chain_arity = utils.replace(chain_arity[:], [2,0,Quick.QUICK], [(1,Quick.QUICK)])
+    chain_arity = utils.replace(chain_arity[:], [2,Quick.QUICK],   [(1,2)])
+    chain_arity = utils.replace(chain_arity[:], [1,Quick.EACH],    [(1,Quick.EACH)])
+    chain_arity_with_quick_info = [(i, None) if not isinstance(i, tuple) else i for i in chain_arity]
     return ([i for i, _ in chain_arity_with_quick_info],
             [i if i is None or isinstance(i, int) else i.value for _, i in chain_arity_with_quick_info])
-
-# def process_separators(chain_arity: list[int]) -> ??:
 
 def keyword_color(k: str):
     if k in tokens.monadic:    return Fore.GREEN
@@ -151,7 +149,6 @@ if __name__ == "__main__":
 
             chain_arity                        = [keyword_arity(e) for e in expr if e not in "()"]
             chain_arity_post_quick, quick_info = process_quicks(chain_arity)
-
 
             print("    This is a ", end="")
             draw.cprint(chain_arity_to_string(chain_arity), Fore.RED, False)
