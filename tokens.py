@@ -17,7 +17,7 @@ monadic = {
     "flat":             "F",
     "floor":            "Ḟ",
     "grid":             "G", # don't know what this does
-    "idx_partition":    "Ġ",
+    "idx_part":         "Ġ", # part = partition
     "half":             "H",
     "double":           "Ḥ",
     "head":             "Ḣ",
@@ -108,6 +108,7 @@ quick = {
     "chunk_fold":   "/",  # dyadic case
     "scan":         "\\", # monadic case
     "slide_fold":   "\\", # dyadic case
+    "prior":        "ṕ"
 }
 
 separators = {
