@@ -74,17 +74,6 @@ def arity_chain_repr(i: int) -> str:
 def chain_arity_to_string(chain_arity: list[int]) -> str:
     return "-".join([arity_chain_repr(e) for e in chain_arity])
 
-# quicks in jelly are hofs (higher order functions)
-def process_quicks(chain_arity: list[int]) -> list[int]:
-    if len(set(chain_arity) & set([Quick.QUICK, Quick.EACH])) == 0:
-        return chain_arity, [None] * len(chain_arity)
-    chain_arity = utils.replace(chain_arity[:], [2,0,Quick.QUICK], [(1,Quick.QUICK)])
-    chain_arity = utils.replace(chain_arity[:], [2,Quick.QUICK],   [(1,2)])
-    chain_arity = utils.replace(chain_arity[:], [1,Quick.EACH],    [(1,Quick.EACH)])
-    chain_arity_with_quick_info = [(i, None) if not isinstance(i, tuple) else i for i in chain_arity]
-    return ([i for i, _ in chain_arity_with_quick_info],
-            [i if i is None or isinstance(i, int) else i.value for _, i in chain_arity_with_quick_info])
-
 def keyword_color(k: str):
     if k in tokens.monadic:    return Fore.GREEN
     if k in tokens.dyadic:     return Fore.BLUE
@@ -136,24 +125,23 @@ if __name__ == "__main__":
             converted_expr = convert(expr)
             chain_type = Chain.MONADIC if len(args) == 1 else Chain.DYADIC
             for i in range(1, len(converted_expr) + 1):
-                if converted_expr[i - 1] in tokens.separators.values():
+                if converted_expr[i - 1] in list(tokens.separators.values()) + ["Œ"]:
                     continue
                 draw.cprint(f"   {converted_expr[:i]:<{len(converted_expr)}}", Fore.YELLOW, False)
                 draw.cprint(f" {' '.join(args)} ➡️  ", Fore.BLUE, False)
                 run_jelly(converted_expr[:i], args)
 
-            chain_arity                        = [keyword_arity(e) for e in expr if e not in "()"]
-            chain_arity_post_quick, quick_info = process_quicks(chain_arity)
+            chain_arity = [keyword_arity(e) for e in expr if e not in "()"]
 
             print("    This is a ", end="")
             draw.cprint(chain_arity_to_string(chain_arity), Fore.RED, False)
-            ccs = draw.combinator_chain_sequence(chain_arity_post_quick, chain_type, True, 0)
+            ccs = draw.combinator_chain_sequence(chain_arity, chain_type)
             print(f" {chain_type.name.lower()} chain ({''.join(ccs)})")
 
             chain_arity_tree = [(e, i * 2, 0) for i, e in enumerate(chain_arity)]
             grid = Grid(len(chain_arity))
 
-            draw.combinator_tree_new(chain_arity_tree, chain_type, True, grid)
+            draw.combinator_tree(chain_arity_tree, chain_type, True, grid)
 
             grid.fill_in_vertical_bars()
             grid.display(draw.INITIAL_INDENT)

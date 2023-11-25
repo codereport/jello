@@ -1,7 +1,8 @@
 START = "└"
 END   = "┘"
 MID   = "┬"
-LINE  = "─"
+HORIZ = "─"
+VERT  = "│"
 
 class Grid:
     def __init__(self, n):
@@ -13,12 +14,16 @@ class Grid:
         self.grid.append([" "] * self.n)
 
     def add_subtree(self, level, start, end, s):
+        if s in ["W", "m", "mK", "d"]:
+            self.grid[level * 2    ][start] = VERT
+            self.grid[level * 2 + 1][start] = s
+            return
         if (level + 1) * 2 > len(self.grid):
             self.add_level()
         mid = (start + end) // 2
         self.grid[level * 2][start             ] = START
         self.grid[level * 2][end               ] = END
-        self.grid[level * 2][start + 1:end     ] = list(LINE * (end - start -1 ))
+        self.grid[level * 2][start + 1:end     ] = list(HORIZ * (end - start -1 ))
         self.grid[level * 2][(start + end) // 2] = MID
         self.grid[level * 2 + 1][mid - len(s) // 2:mid - len(s) // 2 + len(s)] = list(s)
 
@@ -34,6 +39,14 @@ class Grid:
                         self.grid[row][column] = "⋮" # │ alternative
                     else:
                         break
+
+    # combinator chain sequence
+    def ccs(self):
+        first_two = "".join("".join(row).strip()[0:2] for row in self.grid)
+        no_bars = "".join(c for c in first_two if c not in "─└ ⋮┬│")
+        while "h₁" in no_bars:
+            no_bars = no_bars.replace("h₁", "")
+        return no_bars
 
     def display(self, indent = 0):
         for row in self.grid:
