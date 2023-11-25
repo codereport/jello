@@ -1,6 +1,7 @@
 
 from colorama import Fore, Style
 
+from grid import Grid
 from utils import Chain, Quick, Separator
 
 INITIAL_INDENT = 14
@@ -22,44 +23,13 @@ def comb_width(c: str, initial_call: bool) -> int:
 def comb_arity(c: str) -> int:
     return 2 if c in ["Φ₁", "B₁", "ε'", "εₚ", "Eₚ"] else 1
 
-def bars(ccs: str, i: int, initial_call: bool) -> str:
-    if not ccs: return ""
-    return "".join(color(i + n + 1) + f"{' ' * (comb_width(c, initial_call) - 2)}⋮" for n, c in enumerate(ccs))
-
-def single_tree(name: str, width: int, ccs: str, i: int, initial_call: bool) -> (str, str):
-    if width == 1:
-        tree = "|"
-        label = name
-    else:
-        n    = width - 3 # number of arms required
-        rarm = "─" * (n // 2)
-        larm = rarm + ("─" if n % 2 else "")
-        adj = -1 if len(name) == 2 else 0
-        tree = f"└{larm}┬{rarm}┘"
-        label = f"{' ' * (1 + (n % 2) + (n // 2))}{name}{' ' * (1 + adj + (n // 2))}"
-    return (color(i) + tree  + bars(ccs, i, initial_call),
-            color(i) + label + bars(ccs, i, initial_call))
-
-# def print_single_tree(tree: (str, str), indent: int):
-
-def print_combinator_tree(tree: list[(int, (str, str))]):
-    for indent, (a, b) in tree:
-        print(f"{' ' * indent}{a}")
-        print(f"{' ' * indent}{b}")
-
 def width_adjustment(width: int) -> int :
     return (width - 1) // 2
 
-def quick_adjustment(width: int, quick_info: list[Quick | None]) -> int:
-    if width // 2 >= len(quick_info): return 0
-    if quick_info[width // 2] is None and quick_info[0] is None: return 0
-    if quick_info[width // 2]:
-        if quick_info[width // 2] == Quick.EACH.value: return 0
-        return (quick_info[width // 2] - 1) * 2
-    if quick_info[0] == Quick.EACH.value: return 0
-    return quick_info[0]
-
 def combintor_from_pattern_match(chain: list[int], is_monadic: bool, initial_call: bool) -> str:
+    if len(chain) == 1 and initial_call:
+        if is_monadic: return "m"  if chain[0] == 1 else "W"
+        return "mK" if chain[0] == 1 else "d"
     if is_monadic:
         if chain[:2] == [2, 1]:    return "S"
         if chain[:3] == [1, 2, 1]: return "Φ"
@@ -82,51 +52,72 @@ def combintor_from_pattern_match(chain: list[int], is_monadic: bool, initial_cal
 
     return None
 
-def combinator_tree(
-        chain:        list[int], # chain_arity
-        quick_info:   list[int],
-        chain_type:   Chain,
-        indent:       int,
-        width_adj:    int,
-        initial_call: bool,
-        ccs:          str,
-        i:            int):
-    is_monadic = chain_type == Chain.MONADIC
-    if len(chain) == 0 or (len(chain) == 1 and not initial_call):
-        return []
-    # TODO: vvv i think we can get rid of this
-    if len(chain) == 1 and initial_call:
-        if is_monadic: c = "m"  if chain[0] == 1 else "W"
-        else:          c = "mK" if chain[0] == 1 else "d"
-        return [(indent, single_tree(c, 1, ccs, i, initial_call))]
+def has(chain_arity_tree: list[tuple], target: list) -> bool:
+    for arity, _, _ in chain_arity_tree:
+        if arity in target:
+            return True
+    return False
 
-    if Separator.DYADIC in chain or Separator.MONADIC in chain:
+def has_separator(chain_arity_tree: list[tuple]) -> bool:
+    return has(chain_arity_tree, [Separator.DYADIC, Separator.MONADIC])
+
+def has_quick(chain_arity_tree: list[tuple]) -> bool:
+    return has(chain_arity_tree, [Quick.EACH, Quick.QUICK])
+
+def firsts(seq: list):
+    return [e[0] for e in seq]
+
+def combinator_tree_new(
+        chain:        list[int], # chain_arity_tree
+        chain_type:   Chain,
+        initial_call: bool,
+        grid:         Grid):
+
+    # PROCESS SEPARATORS
+    new_chain = []
+    if has_separator(chain):
         subchain = []
         sep = None
-        for arity in chain:
+        for arity, i, level in chain:
             if arity in [Separator.DYADIC, Separator.MONADIC]:
                 subchain_type = chain_type if sep is None else sep
-                subchain_qi = [None] * len(subchain)
-                combinator_tree(subchain, subchain_qi, subchain_type, indent, 0, True, "", 0)
+                subchain = combinator_tree_new(subchain, subchain_type, initial_call, grid)
+                new_chain += subchain[:]
                 subchain.clear()
                 sep = arity
             else:
-                subchain.append(arity)
+                subchain.append((arity, i, level))
+        chain = subchain[:]
+        new_chain += chain
+        chain = new_chain[:]
 
-    c  = combintor_from_pattern_match(chain, is_monadic, initial_call)
-    w  = comb_width(c, initial_call)
-    wa = w + width_adj + quick_adjustment(w, quick_info)
+    # PROCESS QUICKS
+    while has_quick(chain):
+        for i, (arity, _, _) in enumerate(chain):
+            if arity in [Quick.EACH, Quick.QUICK]:
+                if chain[i-1][0] in [2, 1]:
+                    _, a, l1 = chain[i-1]
+                    _, b, l2 = chain[i]
+                    lvl = max(l1,l2)
+                    chain = chain[0:i-1] + [(1, (b + a) // 2, lvl + 1)] + chain[i+1:]
+                    grid.add_subtree(lvl, a, b, "h₁")
+                    break
+                print("TODO: implement me")
 
-    return [(indent, single_tree(c, wa, ccs, i, initial_call))] + \
-        combinator_tree(
-            [comb_arity(c)] + chain[((w + 1) // 2):],
-            [None] + quick_info[((w + 1) // 2):],
-            chain_type,
-            indent + wa // 2,
-            width_adjustment(wa),
-            False,
-            ccs[1:],
-            i + 1)
+    # PROCESS MONADS and DYADS
+    is_monadic = chain_type == Chain.MONADIC
+
+    while len(chain) > 1:
+        c = combintor_from_pattern_match(firsts(chain), is_monadic, initial_call)
+        n = (comb_width(c, initial_call) + 1) // 2
+        a = 2 if c == "Δₚ" else comb_arity(c)
+        _, x, l1 = chain[0]
+        _, y, l2 = chain[0 + a]
+        lvl = max(l1, l2)
+        grid.add_subtree(lvl, x, y, c)
+        chain = [(a, (x + y) // 2, lvl + 1)] + chain[n:]
+
+    return chain
 
 def combinator_chain_sequence(
         chain:        list[int], # chain_arity
@@ -136,11 +127,6 @@ def combinator_chain_sequence(
     is_monadic = chain_type == Chain.MONADIC
     if len(chain) == 0 or (len(chain) == 1 and not initial_call):
         return []
-    # TODO: vvv i think we can get rid of this
-    if len(chain) == 1 and initial_call:
-        if is_monadic: c = "m"  if chain[0] == 1 else "W"
-        else:          c = "mK" if chain[0] == 1 else "d"
-        return [c]
 
     c = combintor_from_pattern_match(chain, is_monadic, initial_call)
     w = comb_width(c, initial_call)

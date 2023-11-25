@@ -13,6 +13,7 @@ import arity_notation
 import draw
 import tokens
 import utils
+from grid import Grid
 from utils import Chain, Quick, Separator
 
 
@@ -146,12 +147,18 @@ if __name__ == "__main__":
 
             print("    This is a ", end="")
             draw.cprint(chain_arity_to_string(chain_arity), Fore.RED, False)
-            # TODO create a different function for this vvv
             ccs = draw.combinator_chain_sequence(chain_arity_post_quick, chain_type, True, 0)
             print(f" {chain_type.name.lower()} chain ({''.join(ccs)})")
 
-            tree = draw.combinator_tree(chain_arity_post_quick, quick_info, chain_type, draw.INITIAL_INDENT, 0, True, ccs[1:], 0)
-            draw.print_combinator_tree(tree)
+            chain_arity_tree = [(e, i * 2, 0) for i, e in enumerate(chain_arity)]
+            grid = Grid(len(chain_arity))
+
+            draw.combinator_tree_new(chain_arity_tree, chain_type, True, grid)
+
+            grid.fill_in_vertical_bars()
+            grid.display(draw.INITIAL_INDENT)
+
         except Exception as e:
             color = Fore.GREEN if "algorithm" in str(e) else Fore.RED
             draw.cprint(f"    {e}", color, True)
+            print(e.with_traceback())
