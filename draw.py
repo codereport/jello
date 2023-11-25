@@ -87,9 +87,7 @@ def combinator_tree_new(
                 sep = arity
             else:
                 subchain.append((arity, i, level))
-        chain = subchain[:]
-        new_chain += chain
-        chain = new_chain[:]
+        chain = new_chain + subchain
 
     # PROCESS QUICKS
     while has_quick(chain):
