@@ -107,6 +107,7 @@ def combinator_tree(
                     lvl = max(l1,l2)
                     chain = chain[0:start] + [(1, (b + a) // 2, lvl + 1)] + chain[i+1:]
                     grid.add_subtree(lvl, a, b, "h₁")
+                    initial_call = False
                     break
                 print("TODO: implement me")
                 breakpoint()

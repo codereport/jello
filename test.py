@@ -21,6 +21,7 @@ if __name__ == "__main__":
 
     # shorter tests
     unit_test("+ half",              "S",   "B₁")
+    unit_test("max scan",            "",    "")
     unit_test("+ sq *",              "SΣ",  "B₁ε'")
     unit_test("+ * div half",        "WΣΦ", "Φ₁B₁")
     unit_test("half 0",              "mc",  "mc") # TODO should probably be mKc
