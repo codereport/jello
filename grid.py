@@ -29,16 +29,16 @@ class Grid:
 
     def fill_in_vertical_bars(self):
         for column in range(0, self.n):
-             found_lr = False
+             found_start_end = False
              for row in reversed(range(len(self.grid))):
                 c = self.grid[row][column]
-                if self.grid[row][column] in [START, END]:
-                    found_lr = True
-                elif found_lr:
+                if c in [START, END]:
+                    found_start_end = True
+                elif found_start_end:
                     if c == " ":
                         self.grid[row][column] = "⋮" # │ alternative
                     else:
-                        break
+                        found_start_end = False
 
     # combinator chain sequence
     def ccs(self):

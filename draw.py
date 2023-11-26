@@ -15,10 +15,10 @@ def color(i: int):
 
 def comb_width(c: str, initial_call: bool) -> int:
     if c == "m" and initial_call: return 1
-    if c == "d" and initial_call: return 3
-    if c in ["Φ", "m", "d", "Φ₁", "εₚ", "Eₚ", "Dₚ", "Δₚ"]: return 5
+    if c == "d" and initial_call: return 2
+    if c in ["Φ", "m", "d", "Φ₁", "εₚ", "Eₚ", "Dₚ", "Δₚ"]: return 3
     if c == "W": return 1
-    return 3
+    return 2
 
 def comb_arity(c: str) -> int:
     return 2 if c in ["Φ₁", "B₁", "ε'", "εₚ", "Eₚ"] else 1
@@ -96,6 +96,7 @@ def combinator_tree(
     # PROCESS QUICKS
     while has_quick(chain):
         for i, (arity, _, _) in enumerate(chain):
+            # TODO: clean this up, add outer, part, etc
             if arity in [Quick.EACH, Quick.QUICK]:
                 start = None
                 if chain[i-1][0] in [2, 1]:        start = i - 1
@@ -115,8 +116,8 @@ def combinator_tree(
 
     while len(chain) > 1 or initial_call:
         c   = combintor_from_pattern_match(firsts(chain), is_monadic, initial_call)
-        n   = (comb_width(c, initial_call) + 1) // 2
-        off = comb_offset(c)
+        n   = comb_width(c, initial_call) # TODO: pretty sure these two functions can be
+        off = comb_offset(c)              # combined into one (as they are doing the same thing)
         a   = comb_arity(c)
         if c in ["W", "m", "mK", "d"]:
             _, x, l1 = chain[0]
