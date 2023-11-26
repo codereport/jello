@@ -41,9 +41,12 @@ if __name__ == "__main__":
 
     # top 10 tests
     unit_test("rev max scan rev min max scan _ . sum", "BBΦΣB", "BBΔBΔB")  # 1
-    unit_test("split_at 0 len_each maxr",              "dBB", "dBB") # 2.1
-    # noqa unit_test("+ * r . scan maxr") # 2.2 TODO
-    unit_test("group sum each maxr",                   "BB", "BB") # 2.3
+    unit_test("split_at 0 len_each maxr",              "dBB",   "dBB")     # 2.1
+    # noqa unit_test("+ * r . scan maxr")                                  # 2.2 TODO
+    unit_test("group sum each maxr",                   "BB",    "BB")      # 2.3
+    unit_test("< prior : + * r . scan maxr add1",      "BBB",   "BBB")     # 3.1
+    unit_test("< prior split_at 0 len_each maxr add1", "ΔₚBBB", "εₚB₁B₁B₁") # 3.3
+    unit_test("< prior group sum each add1",           "BBB",   "BBB")     # 3.3
     unit_test("group_len min prior maxr double",       "BBB",   "BBB")     # 5
     unit_test("sort deltas maxr",                      "BB",    "BB")      # 6
     unit_test("sort deltas idx_max len",               "BBB",   "BBB")     # 7
