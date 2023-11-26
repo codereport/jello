@@ -27,6 +27,7 @@ A Python script for wrapping the Jelly executable so you can more easily play wi
 * [Jelly Online Interpreter](https://jellyballs.github.io/)
 * [Jello LiveStream I](https://youtube.com/live/jM7UCu220CU)
 * [Jello LiveStream II](https://www.youtube.com/watch?v=nnskDAOHRCU)
+* [Jello LiveStream III](https://www.youtube.com/watch?v=zOB5D_NgVJU&t=0s)
 
 ### Chain Patterns
 
