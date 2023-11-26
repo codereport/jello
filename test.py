@@ -47,10 +47,15 @@ if __name__ == "__main__":
     unit_test("< prior : + * r . scan maxr add1",      "BBB",   "BBB")     # 3.1
     unit_test("< prior split_at 0 len_each maxr add1", "ΔₚBBB", "εₚB₁B₁B₁") # 3.3
     unit_test("< prior group sum each add1",           "BBB",   "BBB")     # 3.3
-    # unit_test("+ max r . scan maxr",                   "Φ₁B",   "")      # 4 TODO
+    # noqa unit_test("+ max r . scan maxr",                   "Φ₁B",   "") # 4 TODO
     unit_test("group_len min prior maxr double",       "BBB",   "BBB")     # 5
     unit_test("sort deltas maxr",                      "BB",    "BB")      # 6
     unit_test("sort deltas idx_max len",               "BBB",   "BBB")     # 7
+    unit_test("odd and 3 slide_fold any",              "BB",    "BB")      # 8.1
+    unit_test("odd : + * r . scan maxr > 2",           "mBBΔₚ", "mKBBεₚ")   # 8.2
+    unit_test("odd split_at 0 len_each maxr > 2",      "ΔₚBBΔₚ", "εₚB₁B₁εₚ") # 8.3
+    unit_test("odd group sum each maxr > 2",           "BBBΔₚ", "BBBεₚ")    # 8.4
+
     unit_test("max scan uniq len",                     "BB",    "BB")      # 9
     unit_test("rev max scan rev = . idx sub1",         "BBΣBB", "BBΔBB")   # 10
 

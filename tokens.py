@@ -99,7 +99,8 @@ dyadic = {
     ">":     ">",
     "l":     "ḷ",
     "r":     "ṛ",
-    "index_of": "i"
+    "and":   "a",
+    "index_of": "i",
 }
 
 # some of the quicks are AMBIVALENT

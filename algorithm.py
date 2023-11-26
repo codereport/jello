@@ -29,6 +29,9 @@ regex_advisements = {
     r"chunk (.+) prod each": r"* \1 chunk_fold",
     r"chunk (.+) maxr each": r"max \1 chunk_fold",
     r"chunk (.+) minr each": r"min \1 chunk_fold",
+    # TODO add and/all + or/any advisements
+    # TODO fill these out vvv
+    r"slide (.+) all each":  r"and \1 slide_fold",
 }
 
 def print_advisement(old: str, new: str):
