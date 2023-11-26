@@ -47,6 +47,7 @@ if __name__ == "__main__":
     unit_test("< prior : + * r . scan maxr add1",      "BBB",   "BBB")     # 3.1
     unit_test("< prior split_at 0 len_each maxr add1", "ΔₚBBB", "εₚB₁B₁B₁") # 3.3
     unit_test("< prior group sum each add1",           "BBB",   "BBB")     # 3.3
+    # unit_test("+ max r . scan maxr",                   "Φ₁B",   "")      # 4 TODO
     unit_test("group_len min prior maxr double",       "BBB",   "BBB")     # 5
     unit_test("sort deltas maxr",                      "BB",    "BB")      # 6
     unit_test("sort deltas idx_max len",               "BBB",   "BBB")     # 7
