@@ -45,5 +45,6 @@ if __name__ == "__main__":
     unit_test("sort deltas maxr",                      "BB",    "BB")      # 6
     unit_test("sort deltas idx_max len",               "BBB",   "BBB")     # 7
     unit_test("max scan uniq len",                     "BB",    "BB")      # 9
+    unit_test("rev max scan rev = . idx sub1",         "BBΣBB", "BBΔBB")   # 10
 
     print()

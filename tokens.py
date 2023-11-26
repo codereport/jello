@@ -98,7 +98,8 @@ dyadic = {
     "<":     "<",
     ">":     ">",
     "l":     "ḷ",
-    "r":     "ṛ"
+    "r":     "ṛ",
+    "index_of": "i"
 }
 
 # some of the quicks are AMBIVALENT
@@ -108,7 +109,8 @@ quick = {
     "chunk_fold":   "/",  # dyadic case
     "scan":         "\\", # monadic case
     "slide_fold":   "\\", # dyadic case
-    "prior":        "ṕ"
+    "prior":        "ṕ",
+    "w":            "`"
 }
 
 separators = {
