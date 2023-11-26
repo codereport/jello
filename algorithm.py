@@ -19,7 +19,8 @@ advisements = {
     "iota0 add1":     "iota",
     "iota sub1":      "iota0",
     "2 slide_fold":   "prior",
-    "deltas > 0":     "< prior"
+    "deltas > 0":     "< prior",
+    "* 2":            "double"
 }
 
 regex_advisements = {
