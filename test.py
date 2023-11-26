@@ -42,6 +42,7 @@ if __name__ == "__main__":
     unit_test("rev max scan rev min max scan _ . sum", "BBΦΣB", "BBΔBΔB")  # 1
     unit_test("group_len min prior maxr * 2",          "BBΔₚ", "BBεₚ")     # 5
     unit_test("sort deltas maxr",                      "BB", "BB")         # 6
+    unit_test("sort deltas idx_max len",               "BBB", "BBB")      # 7
     unit_test("max scan uniq len",                     "BB",  "BB")        # 9
 
     print()
