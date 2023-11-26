@@ -24,7 +24,7 @@ def comb_arity(c: str) -> int:
     return 2 if c in ["Φ₁", "B₁", "ε'", "εₚ", "Eₚ"] else 1
 
 def comb_offset(c: str) -> int:
-    return 2 if c in ["Φ₁", "Δₚ", "εₚ", "Eₚ"] else 1
+    return 2 if c in ["Φ", "Φ₁", "Δₚ", "εₚ", "Eₚ"] else 1
 
 def width_adjustment(width: int) -> int :
     return (width - 1) // 2
