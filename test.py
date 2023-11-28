@@ -37,26 +37,26 @@ if __name__ == "__main__":
     # longer tests
     unit_test("+ sq * half sqrt _ double ceil", "SΦBΦB", "B₁ε'B₁B₁ε'B₁B₁")
     unit_test("rev max scan rev min max scan",  "BBΦ",   "BBΔB")
-    unit_test("group_len min prior maxr * 2",   "BBΔₚ", "BBεₚ")
+    unit_test("group_len min prior maxr * 2",   "BBΔₚ",   "BBεₚ")
+    unit_test("rev max scan rev = . idx sub1",  "BBΣB",  "BBΔB")
 
     # top 10 tests
-    unit_test("rev max scan rev min max scan _ . sum", "BBΦΣB", "BBΔBΔB")  # 1
-    unit_test("split_at 0 len_each maxr",              "dBB",   "dBB")     # 2.1
-    # noqa unit_test("+ * r . scan maxr")                                  # 2.2 TODO
-    unit_test("group sum each maxr",                   "BB",    "BB")      # 2.3
-    unit_test("< prior : + * r . scan maxr add1",      "BBB",   "BBB")     # 3.1
-    unit_test("< prior split_at 0 len_each maxr add1", "ΔₚBBB", "εₚB₁B₁B₁") # 3.3
-    unit_test("< prior group sum each add1",           "BBB",   "BBB")     # 3.3
-    # noqa unit_test("+ max r . scan maxr",                   "Φ₁B",   "") # 4 TODO
-    unit_test("group_len min prior maxr double",       "BBB",   "BBB")     # 5
-    unit_test("sort deltas maxr",                      "BB",    "BB")      # 6
-    unit_test("sort deltas idx_max len",               "BBB",   "BBB")     # 7
-    unit_test("odd and 3 slide_fold any",              "BB",    "BB")      # 8.1
-    unit_test("odd : + * r . scan maxr > 2",           "mBBΔₚ", "mKBBεₚ")   # 8.2
-    unit_test("odd split_at 0 len_each maxr > 2",      "ΔₚBBΔₚ", "εₚB₁B₁εₚ") # 8.3
-    unit_test("odd group sum each maxr > 2",           "BBBΔₚ", "BBBεₚ")    # 8.4
-
-    unit_test("max scan uniq len",                     "BB",    "BB")      # 9
-    unit_test("rev max scan rev = . idx sub1",         "BBΣBB", "BBΔBB")   # 10
+    unit_test("rev max scan rev min max scan _ . sum",       "BBΦΣB", "BBΔBΔB")  # 1
+    unit_test("split_at 0 len_each maxr",                    "dBB",   "dBB")     # 2.1
+    # noqa unit_test("+ * r . scan maxr")                                        # 2.2 TODO
+    unit_test("group sum each maxr",                         "BB",    "BB")      # 2.3
+    unit_test("< prior : + * r . scan maxr add1",            "BB",    "BB")     # 3.1
+    unit_test("< prior split_at 0 len_each maxr add1",       "ΔₚBBB", "εₚB₁B₁B₁") # 3.3
+    unit_test("< prior group sum each add1",                 "BBB",   "BBB")     # 3.3
+    # noqa unit_test("+ max r . scan maxr",                         "Φ₁B",   "") # 4 TODO
+    unit_test("group_len min prior maxr double",             "BBB",   "BBB")     # 5
+    unit_test("sort deltas maxr",                            "BB",    "BB")      # 6
+    unit_test("sort deltas idx_max len",                     "BBB",   "BBB")     # 7
+    unit_test("odd and 3 slide_fold any",                    "BB",    "BB")      # 8.1
+    unit_test("odd : + * r . scan maxr > 2",                 "mBΣ",   "mKBΔ")    # 8.2
+    unit_test("odd split_at 0 len_each maxr > 2",            "ΔₚBBΔₚ", "εₚB₁B₁εₚ") # 8.3
+    unit_test("odd group sum each maxr > 2",                 "BBBΔₚ", "BBBεₚ")    # 8.4
+    unit_test("max scan uniq len",                           "BB",    "BB")      # 9
+    unit_test("rev max scan rev : r = prior _ c = idx sub1", "BBΣ", "BBΔ")       # 10
 
     print()

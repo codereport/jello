@@ -60,6 +60,7 @@ def keyword_arity(k: str) -> int:
     if k in tokens.monadic:    return 1
     if k in tokens.dyadic:     return 2
     if k == "each":            return Quick.EACH
+    if k == "c":               return Quick.FLIP
     if k in tokens.quick:      return Quick.QUICK
     if k == ".":               return Separator.MONADIC
     if k == ":":               return Separator.DYADIC
@@ -67,7 +68,7 @@ def keyword_arity(k: str) -> int:
     raise Exception(f"{k} not handled in keyword_arity function.")
 
 def arity_chain_repr(i: int) -> str:
-    if i in [Quick.QUICK, Quick.EACH]:             return "q"
+    if i in [Quick.QUICK, Quick.EACH, Quick.FLIP]: return "q"
     if i in [Separator.MONADIC, Separator.DYADIC]: return "s"
     return str(i)
 
@@ -125,7 +126,7 @@ if __name__ == "__main__":
             converted_expr = convert(expr)
             chain_type = Chain.MONADIC if len(args) == 1 else Chain.DYADIC
             for i in range(1, len(converted_expr) + 1):
-                if converted_expr[i - 1] in list(tokens.separators.values()) + ["Œ"]:
+                if converted_expr[i - 1] in list(tokens.separators.values()) + ["Œ", "œ"]:
                     continue
                 draw.cprint(f"   {converted_expr[:i]:<{len(converted_expr)}}", Fore.YELLOW, False)
                 draw.cprint(f" {' '.join(args)} ➡️  ", Fore.BLUE, False)

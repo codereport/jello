@@ -1,4 +1,6 @@
 
+from itertools import takewhile
+
 from colorama import Fore, Style
 
 from grid import Grid
@@ -66,7 +68,7 @@ def has_separator(chain_arity_tree: list[tuple]) -> bool:
     return has(chain_arity_tree, [Separator.DYADIC, Separator.MONADIC])
 
 def has_quick(chain_arity_tree: list[tuple]) -> bool:
-    return has(chain_arity_tree, [Quick.EACH, Quick.QUICK])
+    return has(chain_arity_tree, [Quick.EACH, Quick.QUICK, Quick.FLIP])
 
 def firsts(seq: list):
     return [e[0] for e in seq]
@@ -91,22 +93,29 @@ def combinator_tree(
                 sep = arity
             else:
                 subchain.append((arity, i, level))
+        subchain_type = chain_type if sep is None else sep
+        subchain = combinator_tree(subchain, subchain_type, initial_call, grid)
         chain = new_chain + subchain
 
     # PROCESS QUICKS
+    prefix_quicks = list(takewhile(lambda x: isinstance(x[0], Quick), chain))
+    chain = chain[len(prefix_quicks):]
+
     while has_quick(chain):
         for i, (arity, _, _) in enumerate(chain):
             # TODO: clean this up, add outer, part, etc
-            if arity in [Quick.EACH, Quick.QUICK]:
+            if arity in [Quick.EACH, Quick.QUICK, Quick.FLIP]:
                 start = None
-                if chain[i-1][0] in [2, 1]:        start = i - 1
-                if firsts(chain[i-2:i]) == [2, 0]: start = i - 2
+                if chain[i-1][0] in [2, 1]:        start = i - 1  # each | fold | scan | c
+                if firsts(chain[i-2:i]) == [2, 0]: start = i - 2  # (chunk|slide)_fold
                 if i is not None:
                     _, a, l1 = chain[start]
                     _, b, l2 = chain[i]
                     lvl = max(l1,l2)
-                    chain = chain[0:start] + [(1, (b + a) // 2, lvl + 1)] + chain[i+1:]
-                    grid.add_subtree(lvl, a, b, "h₁")
+                    arity_new = 2   if arity == Quick.FLIP else 1
+                    sub       = "₂" if arity == Quick.FLIP else "₁"
+                    chain = chain[0:start] + [(arity_new, (b + a) // 2, lvl + 1)] + chain[i+1:]
+                    grid.add_subtree(lvl, a, b, "h" + sub)
                     initial_call = False
                     break
                 print("TODO: implement me")
@@ -131,7 +140,7 @@ def combinator_tree(
         chain = [(a, (x + y) // 2, lvl + 1)] + chain[n:]
         initial_call = False
 
-    return chain
+    return prefix_quicks + chain
 
 def combinator_chain_sequence(chain: list[int], chain_type: Chain) -> str:
     grid = Grid(len(chain))

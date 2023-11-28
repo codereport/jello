@@ -15,6 +15,7 @@ class Separator(Enum):
 class Quick(Enum):
     QUICK = 3
     EACH  = 10
+    FLIP  = 50
 
 # contiguous subsequence
 def index_of_subseq(seq: list, sub: list) -> int:

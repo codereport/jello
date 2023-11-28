@@ -79,7 +79,10 @@ monadic = {
     "group":            "Œg",
     "group_len":        "Œɠ",
     "rle":              "Œr",
-    "part":             "Ṕ"
+    "part":             "Ṕ",
+    "powerset":         "ŒP",
+    "perm_wr": "Œ!",
+
 }
 
 dyadic = {
@@ -89,6 +92,7 @@ dyadic = {
     "div":   "÷",
     "=":     "=",
     "join":  ";",
+    "join_with": "j",
     "cut":   "k",
     "mod":   "%",
     "max":   "»",
@@ -101,18 +105,27 @@ dyadic = {
     "l":     "ḷ",
     "r":     "ṛ",
     "and":   "a",
+    "or":    "o",
+    "pair":      ",",
     "index_of": "i",
+    "comb_wr":  "œċ",
+    "comb":     "œc",
+    "perm":     "œ!",
+    "in":       "e",
+    "part_wtf": "k" # don't understand what this does
 }
 
 # some of the quicks are AMBIVALENT
 quick = {
     "each":         "€",
+    "each_over":    "Ɱ",  # maybe rename
     "fold":         "/",  # monadic case
     "chunk_fold":   "/",  # dyadic case
     "scan":         "\\", # monadic case
     "slide_fold":   "\\", # dyadic case
     "prior":        "ṕ",
-    "w":            "`"
+    "w":            "`",
+    "c":            "@"
 }
 
 separators = {
