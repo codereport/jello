@@ -15,29 +15,36 @@
         <img src="https://img.shields.io/twitter/follow/code_report.svg?style=social&label=@code_report" /></a>
 </p>
 
-### Description
+## Description
 
 A Python script for wrapping the Jelly executable so you can more easily play with the language.
 
 ![image](https://github.com/codereport/jello/assets/36027403/a1b71ec6-d635-4416-b89b-c24bd5fc6de0)
 
-### Links
+## Links
+
+### Jelly(fish) Links
 
 * [Jelly GitHub Repo](https://github.com/DennisMitchell/jellylanguage/)
 * [Jelly Online Interpreter](https://jellyballs.github.io/)
+* [Jellyfish Repo 🪼](https://github.com/codereport/jellyfish)
+
+### Livestreams
+
 * [Jello LiveStream I](https://youtube.com/live/jM7UCu220CU)
 * [Jello LiveStream II](https://www.youtube.com/watch?v=nnskDAOHRCU)
-* [Jello LiveStream III](https://www.youtube.com/watch?v=zOB5D_NgVJU&t=0s)
+* [Jello LiveStream III](https://www.youtube.com/watch?v=zOB5D_NgVJU&t)
+* [Jello LiveStream IV (Top 10)](https://www.youtube.com/watch?v=XkLsy_I_H6w)
 
-### Chain Patterns
+## Chain Patterns
 
-#### Special Chain Names
+### Special Chain Names
 
 * **LCC:** [Leading Constant Chain](https://github.com/DennisMitchell/jellylanguage/wiki/Tutorial#whats-the-starting-value)
 * **LDC:** Leading Dyadic Chain (described in the first bullet [here](https://github.com/DennisMitchell/jellylanguage/wiki/Tutorial#43dyadic-chains))
 * **JL:** Just use Left Arg (as `v`)
 
-#### Monadic Chains
+### Monadic Chains
 
 **Q: What makes my chain monadic?** <br>
 A: If you only pass it one argument (aka `ω`)
@@ -55,7 +62,7 @@ A: If you only pass it one argument (aka `ω`)
 * m  = Monadic function application
 * d  = Dyadic function application
 
-#### Dyadic Chains
+### Dyadic Chains
 
 **Q: What makes my chain dyadic?** <br>
 A: If you pass it two arguments (aka `λ` and `ρ`)
@@ -69,7 +76,7 @@ A: If you pass it two arguments (aka `λ` and `ρ`)
 |   5   |    `+ ...`    |     `v+ρ`     |    `2`     |      `dyad`       |   d   |  ε'   |
 |   6   |    `F ...`    |    `F(v)`     |    `1`     |      `monad`      |  Km   |  B₁   |
 
-### Combinator Table (WIP)
+## Combinator Table (WIP)
 
 | Combinator | Chain Spelling |
 | :--------: | :------------: |
@@ -78,21 +85,21 @@ A: If you pass it two arguments (aka `λ` and `ρ`)
 |     E      |
 |     ε      |
 
-### Examples
+## Examples
 
-#### Example 1 (from [Section 1](https://github.com/DennisMitchell/jellylanguage/wiki/Tutorial#1tacit-programming))
+### Example 1 (from [Section 1](https://github.com/DennisMitchell/jellylanguage/wiki/Tutorial#1tacit-programming))
 
 `+H` can be called monadically or dyadically, and is a `2-1` chain.
 * If called monadically, its a `2-1` monadic train, aka the `S` combinator.
 * If called dyadically, it is a `JL`+`5`+`6`, which ends up being the `B₁` combinator.
 
-#### Example 2 (from [Section 4.2](https://github.com/DennisMitchell/jellylanguage/wiki/Tutorial#42monadic-chains))
+### Example 2 (from [Section 4.2](https://github.com/DennisMitchell/jellylanguage/wiki/Tutorial#42monadic-chains))
 
 `+²×` can be called **monadically** or dyadically, and it is a `2-1-2` chain.
 * If called monadically, `S` forms a monadic function, that is then used in `Σ`
 * If called dyadically, the `2-1` is the `B₁` combinator, and then used in a `Φ₁` where the left dyadic function is `⊢`.
 
-#### Example 3 (from [Section 4.3](https://github.com/DennisMitchell/jellylanguage/wiki/Tutorial#43dyadic-chains))
+### Example 3 (from [Section 4.3](https://github.com/DennisMitchell/jellylanguage/wiki/Tutorial#43dyadic-chains))
 
 `+×÷H` can be called monadically and **dyadically**, and it is a `2-2-2-1` chain.
 * If called monadically, apply `W` is applied, then evalaate the `2-2` part as repeated (or 2) `S` combinators, and then the `2-1` chain at the end matches the `S` combinator.
