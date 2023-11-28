@@ -89,6 +89,13 @@ def spaced_jelly_atoms(args, expr):
     spaced_jelly_atoms = " ".join(to_jelly(k).center(len(k)) for k in expr.split())
     draw.cprint(indent + spaced_jelly_atoms, Fore.YELLOW, True)
 
+def skip_trace(converted_expr: list[str], i: int) -> bool:
+    if converted_expr[i - 1] in list(tokens.separators.values()) + ["Œ", "œ"]:
+        return True
+    if i < len(converted_expr) and converted_expr[i] in tokens.quick.values():
+        return True
+    return False
+
 if __name__ == "__main__":
     init()  # for colorama
 
@@ -126,7 +133,7 @@ if __name__ == "__main__":
             converted_expr = convert(expr)
             chain_type = Chain.MONADIC if len(args) == 1 else Chain.DYADIC
             for i in range(1, len(converted_expr) + 1):
-                if converted_expr[i - 1] in list(tokens.separators.values()) + ["Œ", "œ"]:
+                if skip_trace(converted_expr, i):
                     continue
                 draw.cprint(f"   {converted_expr[:i]:<{len(converted_expr)}}", Fore.YELLOW, False)
                 draw.cprint(f" {' '.join(args)} ➡️  ", Fore.BLUE, False)
@@ -150,4 +157,4 @@ if __name__ == "__main__":
         except Exception as e:
             color = Fore.GREEN if "algorithm" in str(e) else Fore.RED
             draw.cprint(f"    {e}", color, True)
-            print(e.with_traceback())
+            # noqa print(e.with_traceback())
