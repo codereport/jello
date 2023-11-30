@@ -124,6 +124,7 @@ quick = {
     "scan":         "\\", # monadic case
     "slide_fold":   "\\", # dyadic case
     "prior":        "ṕ",
+    "outer":        "þ",
     "w":            "`",
     "c":            "@"
 }

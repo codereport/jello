@@ -3,6 +3,7 @@ from itertools import takewhile
 
 from colorama import Fore, Style
 
+import utils
 from grid import Grid
 from utils import Chain, Quick, Separator
 
@@ -34,7 +35,7 @@ def width_adjustment(width: int) -> int :
 def combintor_from_pattern_match(chain: list[int], is_monadic: bool, initial_call: bool) -> str:
     if len(chain) == 1 and initial_call:
         if is_monadic: return "m"  if chain[0] == 1 else "W"
-        return "mK" if chain[0] == 1 else "d"
+        return "m" if chain[0] == 1 else "d"
     if is_monadic:
         if chain[:2] == [2, 1]:    return "S"
         if chain[:3] == [1, 2, 1]: return "Φ"
@@ -86,14 +87,14 @@ def combinator_tree(
         sep = None
         for arity, i, level in chain:
             if arity in [Separator.DYADIC, Separator.MONADIC]:
-                subchain_type = chain_type if sep is None else sep
+                subchain_type = chain_type if sep is None else utils.separator_to_chain(sep)
                 subchain = combinator_tree(subchain, subchain_type, initial_call, grid)
                 new_chain += subchain[:]
                 subchain.clear()
                 sep = arity
             else:
                 subchain.append((arity, i, level))
-        subchain_type = chain_type if sep is None else sep
+        subchain_type = chain_type if sep is None else utils.separator_to_chain(sep)
         subchain = combinator_tree(subchain, subchain_type, initial_call, grid)
         chain = new_chain + subchain
 
@@ -122,14 +123,15 @@ def combinator_tree(
                 breakpoint()
 
     # PROCESS MONADS and DYADS
-    is_monadic = chain_type == Chain.MONADIC
+    assert isinstance(chain_type, Chain)
+    is_monadic = chain_type in [Chain.MONADIC, Separator.MONADIC]
 
     while len(chain) > 1 or initial_call:
         c   = combintor_from_pattern_match(firsts(chain), is_monadic, initial_call)
         n   = comb_width(c, initial_call) # TODO: pretty sure these two functions can be
         off = comb_offset(c)              # combined into one (as they are doing the same thing)
         a   = comb_arity(c)
-        if c in ["W", "m", "mK", "d"]:
+        if c in ["W", "m", "d"]:
             _, x, l1 = chain[0]
             y, lvl = x, l1
         else:

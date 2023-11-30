@@ -14,7 +14,7 @@ class Grid:
         self.grid.append([" "] * self.n)
 
     def add_subtree(self, level, start, end, s):
-        if s in ["W", "m", "mK", "d"]:
+        if s in ["W", "m", "d"]:
             self.grid[level * 2    ][start] = VERT
             self.grid[level * 2 + 1][start] = s
             return

@@ -24,8 +24,8 @@ if __name__ == "__main__":
     unit_test("max scan",            "",    "")
     unit_test("+ sq *",              "SΣ",  "B₁ε'")
     unit_test("+ * div half",        "WΣΦ", "Φ₁B₁")
-    unit_test("half 0",              "mc",  "mc") # TODO should probably be mKc
-    unit_test("half",                "m",   "mK")
+    unit_test("half 0",              "mc",  "mc")
+    unit_test("half",                "m",   "m")
     unit_test("+",                   "W",   "d")
     unit_test("+ 0",                 "d",   "d")
     unit_test("+ +",                 "WΣ",  "ε'")
@@ -53,7 +53,7 @@ if __name__ == "__main__":
     unit_test("sort deltas maxr",                            "BB",    "BB")      # 6
     unit_test("sort deltas idx_max len",                     "BBB",   "BBB")     # 7
     unit_test("odd and 3 slide_fold any",                    "BB",    "BB")      # 8.1
-    unit_test("odd : + * r . scan maxr > 2",                 "mBΣ",   "mKBΔ")    # 8.2
+    unit_test("odd : + * r . scan maxr > 2",                 "mBB",   "mBB")     # 8.2
     unit_test("odd split_at 0 len_each maxr > 2",            "ΔₚBBΔₚ", "εₚB₁B₁εₚ") # 8.3
     unit_test("odd group sum each maxr > 2",                 "BBBΔₚ", "BBBεₚ")    # 8.4
     unit_test("max scan uniq len",                           "BB",    "BB")      # 9

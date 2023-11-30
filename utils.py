@@ -17,6 +17,10 @@ class Quick(Enum):
     EACH  = 10
     FLIP  = 50
 
+def separator_to_chain(s: Separator) -> Chain:
+    assert s in [Separator.MONADIC, Separator.DYADIC]
+    return Chain.MONADIC if s == Separator.MONADIC else Chain.DYADIC
+
 # contiguous subsequence
 def index_of_subseq(seq: list, sub: list) -> int:
     for i in range(0, len(seq) - len(sub) + 1):
