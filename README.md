@@ -38,7 +38,7 @@ A Python script for wrapping the Jelly executable so you can more easily play wi
 
 ### YouTube Videos
 
-* [BQN and Jelly](https://www.youtube.com/watch?v=k9BNn39gWiM)
+* [BQN vs Jelly](https://www.youtube.com/watch?v=k9BNn39gWiM)
 
 ## Chain Patterns
 
