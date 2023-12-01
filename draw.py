@@ -100,6 +100,8 @@ def combinator_tree(
 
     # PROCESS QUICKS
     prefix_quicks = list(takewhile(lambda x: isinstance(x[0], Quick), chain))
+    if len(prefix_quicks) >= len(chain):
+        return chain
     chain = chain[len(prefix_quicks):]
 
     while has_quick(chain):
