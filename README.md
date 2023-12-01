@@ -36,6 +36,10 @@ A Python script for wrapping the Jelly executable so you can more easily play wi
 * [Jello LiveStream III](https://www.youtube.com/watch?v=zOB5D_NgVJU&t)
 * [Jello LiveStream IV (Top 10)](https://www.youtube.com/watch?v=XkLsy_I_H6w)
 
+### YouTube Videos
+
+* [BQN and Jelly](https://www.youtube.com/watch?v=k9BNn39gWiM)
+
 ## Chain Patterns
 
 ### Special Chain Names
