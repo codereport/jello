@@ -81,8 +81,12 @@ monadic = {
     "rle":              "Œr",
     "part":             "Ṕ",
     "powerset":         "ŒP",
-    "perm_wr": "Œ!",
-
+    "perm_wr":          "Œ!",
+    "divisors":         "ÆD",
+    "divisor_len":      "Æd",
+    "factors":          "Æf",
+    "uniq_mask":        "ŒQ",
+    "factors_exp":      "ÆF"
 }
 
 dyadic = {
@@ -90,6 +94,7 @@ dyadic = {
     "_":     "_",
     "*":     "×",
     "div":   "÷",
+    "pow":   "*",
     "=":     "=",
     "join":  ";",
     "join_with": "j",
@@ -112,7 +117,12 @@ dyadic = {
     "comb":     "œc",
     "perm":     "œ!",
     "in":       "e",
-    "part_wtf": "k" # don't understand what this does
+    "part_wtf": "k", # don't understand what this does
+    "rotate":   "ṙ"
+}
+
+niladic = {
+    "digits": "D"
 }
 
 # some of the quicks are AMBIVALENT

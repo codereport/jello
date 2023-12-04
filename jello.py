@@ -35,6 +35,7 @@ def run_jelly(expr: str, args: list[str]):
 
 completer = WordCompleter(
     [k for k in sorted(
+        list(tokens.niladic.keys()) +
         list(tokens.monadic.keys()) +
         list(tokens.dyadic.keys())  +
         list(tokens.quick.keys())   +
@@ -48,6 +49,7 @@ def is_nilad_array(s: str) -> bool:
 def to_jelly(token: str) -> str:
     if token in tokens.monadic:     return tokens.monadic[token]
     if token in tokens.dyadic:      return tokens.dyadic[token]
+    if token in tokens.niladic:     return tokens.niladic[token]
     if token in tokens.quick:       return tokens.quick[token]
     if token in tokens.separators:  return tokens.separators[token]
     if is_nilad_array(token):       return token
@@ -57,6 +59,7 @@ def convert(expr: list[str]) -> str:
     return "".join([to_jelly(t) for t in expr])
 
 def keyword_arity(k: str) -> int:
+    if k in tokens.niladic:    return 0
     if k in tokens.monadic:    return 1
     if k in tokens.dyadic:     return 2
     if k == "each":            return Quick.EACH
