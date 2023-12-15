@@ -17,7 +17,7 @@
 
 ## Description
 
-A Python script for wrapping the Jelly executable so you can more easily play with the language.
+A Python script for wrapping the Jellyfish (a fork of Jelly) executable so you can more easily play with the language.
 
 ![image](https://github.com/codereport/jello/assets/36027403/26c99f84-36a2-4857-b0f0-1b8f5bd4eef9)
 
