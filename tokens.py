@@ -122,7 +122,8 @@ dyadic = {
     "part_wtf": "k", # don't understand what this does
     "rotate":   "ṙ",
     "keep":     "œp",
-    "at_idx":   "ị"
+    "at_idx":   "ị",
+    "take":     "ḣ"
 }
 
 niladic = {
