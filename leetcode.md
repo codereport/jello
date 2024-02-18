@@ -1,11 +1,11 @@
 ### LeetCode Problems
 
-| Number | Contest |             Jello Solution              | Jelly Solution |
-| :----: | :-----: | :-------------------------------------: | :------------: |
-|  3005  |  380p1  | `sort group_len . idx_max at_idx . sum` |   `ṢŒɠµMịµS`   |
-|  3010  | b122p1  |  `tail sort take 2 pair head flat sum`  |   `ḊṢḣ2,ḢFS`   |
-|  3028  |  383p1  |             `sums = 0 sum`              |     `Ä=0S`     |
-|  3038  | b124p1  |   `len idiv 2 take c + 2 chunk_fold`    |      TODO      |
+| Number | Contest |                 Jello Solution                  | Jellyfish Solution |
+| :----: | :-----: | :---------------------------------------------: | :----------------: |
+|  3005  |  380p1  |     `sort group_len . idx_max at_idx . sum`     |     `ṢŒɠµMịµS`     |
+|  3010  | b122p1  |      `tail sort take 2 pair head flat sum`      |     `ḊṢḣ2,ḢFS`     |
+|  3028  |  383p1  |                 `sums = 0 sum`                  |       `Ä=0S`       |
+|  3038  | b124p1  | `len idiv 2 take c + 2 chunk_fold . = head sum` |   `L:2ḣ@+2/µ=ḢS`   |
 
 ### Links
 
