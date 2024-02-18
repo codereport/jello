@@ -118,7 +118,9 @@ dyadic = {
     "perm":     "œ!",
     "in":       "e",
     "part_wtf": "k", # don't understand what this does
-    "rotate":   "ṙ"
+    "rotate":   "ṙ",
+    "keep":     "œp",
+    "at_idx":   "ị"
 }
 
 niladic = {
