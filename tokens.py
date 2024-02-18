@@ -123,7 +123,8 @@ dyadic = {
     "rotate":   "ṙ",
     "keep":     "œp",
     "at_idx":   "ị",
-    "take":     "ḣ"
+    "take":     "ḣ",
+    "idiv":     ":"
 }
 
 niladic = {
