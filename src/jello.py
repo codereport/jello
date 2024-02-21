@@ -27,7 +27,6 @@ def run_jelly(expr: str, args: list[str]):
         output_text = result.stdout.strip()
 
         draw.cprint(output_text, Fore.GREEN, True)
-
     except subprocess.CalledProcessError as e:
         # Print the stderr output for more information about the error
         print(Fore.RED + f"Error: {e}")
@@ -157,6 +156,9 @@ if __name__ == "__main__":
             grid.fill_in_vertical_bars()
             grid.display(draw.INITIAL_INDENT)
 
+        except KeyboardInterrupt:
+            print("")
+            break
         except Exception as e:
             color = Fore.GREEN if "algorithm" in str(e) else Fore.RED
             draw.cprint(f"    {e}", color, True)
