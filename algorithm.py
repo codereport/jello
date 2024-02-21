@@ -14,13 +14,14 @@ advisements = {
     "group len each": "group_len",
     "+ fold":         "sum",
     "* fold":         "prod",
-    "len iota":       "iota_len",
+    "len iota ":      "iota_len",
     "len each":       "len_each",
     "iota0 add1":     "iota",
     "iota sub1":      "iota0",
     "2 slide_fold":   "prior",
     "deltas > 0":     "< prior",
-    "* 2":            "double"
+    "* 2":            "double",
+    "div 2":          "half"
 }
 
 regex_advisements = {
