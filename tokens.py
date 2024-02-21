@@ -5,7 +5,7 @@ monadic = {
     "all_not_empty":    "Ȧ",
     "i_to_b":           "B",
     "b_to_i":           "Ḅ",
-    "odd":              "Ḃ",
+    "odd?":             "Ḃ",
     "not":              "C",
     "ceil":             "Ċ",
     "i_to_d":           "D",
@@ -127,7 +127,8 @@ dyadic = {
     "idiv":     ":",
     "filter_out": "ḟ",
     "filter_in":  "f",
-    "flip": "z"
+    "flip":       "z",
+    "divs?":      "ḍ" # divides
 }
 
 niladic = {
