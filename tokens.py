@@ -119,12 +119,15 @@ dyadic = {
     "comb":     "œc",
     "perm":     "œ!",
     "in":       "e",
-    "part_wtf": "k", # don't understand what this does
+    "part_wtf": "k",
     "rotate":   "ṙ",
-    "keep":     "œp",
+    "keep":     "œp", # TODO rename (this is really `not keep`)
     "at_idx":   "ị",
     "take":     "ḣ",
-    "idiv":     ":"
+    "idiv":     ":",
+    "filter_out": "ḟ",
+    "filter_in":  "f",
+    "flip": "z"
 }
 
 niladic = {
@@ -142,7 +145,8 @@ quick = {
     "prior":        "ṕ",
     "outer":        "þ",
     "w":            "`",
-    "c":            "@"
+    "c":            "@",
+    "filter":       "Ƈ"
 }
 
 separators = {
