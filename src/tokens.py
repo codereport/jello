@@ -64,7 +64,7 @@ monadic = {
     "join_ln":          "Y",
     "split_ln":         "Ỵ",
     "tighten":          "Ẏ", # don't know what this does
-    "columns":          "Z",
+    "flip":             "Z",
     "prep_zero":        "Ż",
     "is_prime":         "Ẓ",
     "sum_vec":          "§",
@@ -127,7 +127,7 @@ dyadic = {
     "idiv":     ":",
     "filter_out": "ḟ",
     "filter_in":  "f",
-    "flip":       "z",
+    "flip2":      "z", # dyadic transpose
     "divs?":      "ḍ" # divides
 }
 
