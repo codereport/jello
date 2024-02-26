@@ -10,6 +10,7 @@
 |   6   |  1380  |         | 251p2 |        `minr each rev = maxr * maxr sum`        |   ``z`ṂṚ=Ṁ×Ṁḟ0``   |
 |   7   |  2778  |         | 252p1 |              `divs? len * sq sum`               |      `ḍL×²S`       |
 |   8   |  1365  |         | 257p1 |              `< outer w sum each`               |     ``<þ`S€``      |
+|   9   |  1295  |         | 258p1 |         `i_to_d len_each odd? not sum`          |      `DẈḂCS`       |
 
 ### Links
 
@@ -21,3 +22,4 @@
 6. [1380. Lucky Numbers in a Matrix](https://leetcode.com/problems/lucky-numbers-in-a-matrix/description/) | [PWC 251 - Task 2: Lucky Numbers](https://theweeklychallenge.org/blog/perl-weekly-challenge-251/)
 7. [2778. Sum of Squares of Special Elements](https://leetcode.com/problems/sum-of-squares-of-special-elements/description/) | [PWC 251 - Task 1: Special Numbers](https://theweeklychallenge.org/blog/perl-weekly-challenge-251/)
 8. [1365. How Many Numbers Are Smaller Than the Current Number](https://leetcode.com/problems/how-many-numbers-are-smaller-than-the-current-number/description/) | [PWC 257 - Task 1: Smaller than Current](https://theweeklychallenge.org/blog/perl-weekly-challenge-257/)
+9. [PWC 258 - Task 1: Task 1: Count Even Digits Number](https://theweeklychallenge.org/blog/perl-weekly-challenge-258/) | [Find Numbers with Even Number of Digits](https://leetcode.com/problems/find-numbers-with-even-number-of-digits/)
