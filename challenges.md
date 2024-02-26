@@ -11,6 +11,7 @@
 |   7   |  2778  |         | 252p1 |              `divs? len * sq sum`               |      `ḍL×²S`       |
 |   8   |  1365  |         | 257p1 |              `< outer w sum each`               |     ``<þ`S€``      |
 |   9   |  1295  |         | 258p1 |         `i_to_d len_each odd? not sum`          |      `DẈḂCS`       |
+|  10   |  3046  |  386p1  |       |            `sort group_len maxr < 3`            |      `ṢŒɠṀ<3`      |
 
 ### Links
 
@@ -23,3 +24,4 @@
 7. [2778. Sum of Squares of Special Elements](https://leetcode.com/problems/sum-of-squares-of-special-elements/description/) | [PWC 251 - Task 1: Special Numbers](https://theweeklychallenge.org/blog/perl-weekly-challenge-251/)
 8. [1365. How Many Numbers Are Smaller Than the Current Number](https://leetcode.com/problems/how-many-numbers-are-smaller-than-the-current-number/description/) | [PWC 257 - Task 1: Smaller than Current](https://theweeklychallenge.org/blog/perl-weekly-challenge-257/)
 9. [PWC 258 - Task 1: Task 1: Count Even Digits Number](https://theweeklychallenge.org/blog/perl-weekly-challenge-258/) | [Find Numbers with Even Number of Digits](https://leetcode.com/problems/find-numbers-with-even-number-of-digits/)
+10. [3046. Split the Array](https://leetcode.com/contest/weekly-contest-386/problems/split-the-array/)
