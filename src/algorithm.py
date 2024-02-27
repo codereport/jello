@@ -21,7 +21,9 @@ advisements = {
     "2 slide_fold":   "prior",
     "deltas > 0":     "< prior",
     "* 2":            "double",
-    "div 2":          "half"
+    "div 2":          "half",
+    "odd? not":       "even?",
+    "even? not":      "odd?"
 }
 
 regex_advisements = {
@@ -36,10 +38,10 @@ regex_advisements = {
 }
 
 def print_advisement(old: str, new: str):
-    draw.cprint(f"    {(old)} ", Fore.RED, False)
+    draw.cprint(f"\n    {(old)} ", Fore.RED, False)
     print("can be replaced with ", end="")
     draw.cprint(new, Fore.GREEN, True)
-    print("☝️🥳 algorithm advisor 🥳☝️")
+    print("      ☝️🥳 algorithm advisor 🥳☝️\n")
 
 def advisor(keywords: list[str]):
 

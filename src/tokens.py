@@ -14,6 +14,7 @@ monadic = {
     "all_eq":           "E",
     "any":              "Ẹ",
     "zip_idx":          "Ė",
+    "even?":            "ė",
     "flat":             "F",
     "floor":            "Ḟ",
     "grid":             "G", # don't know what this does
