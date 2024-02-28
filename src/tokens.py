@@ -149,7 +149,8 @@ quick = {
     "outer":        "þ",
     "w":            "`",
     "c":            "@",
-    "filter":       "Ƈ"
+    "filter":       "Ƈ",
+    "key":          "ƙ"
 }
 
 separators = {

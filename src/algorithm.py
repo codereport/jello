@@ -24,7 +24,8 @@ advisements = {
     "div 2":          "half",
     "odd? not":       "even?",
     "even? not":      "odd?",
-    "i_to_b sum":     "bits"
+    "i_to_b sum":     "bits",
+    "sort group_len": "len key"
 }
 
 regex_advisements = {
@@ -36,6 +37,7 @@ regex_advisements = {
     # TODO add and/all + or/any advisements
     # TODO fill these out vvv
     r"slide (.+) all each":  r"and \1 slide_fold",
+    r"sort group (.+) each":  r"\1 key",
 }
 
 def print_advisement(old: str, new: str):
