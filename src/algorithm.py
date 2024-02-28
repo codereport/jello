@@ -23,7 +23,8 @@ advisements = {
     "* 2":            "double",
     "div 2":          "half",
     "odd? not":       "even?",
-    "even? not":      "odd?"
+    "even? not":      "odd?",
+    "i_to_b sum":     "bits"
 }
 
 regex_advisements = {

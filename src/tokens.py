@@ -6,6 +6,7 @@ monadic = {
     "i_to_b":           "B",
     "b_to_i":           "Ḅ",
     "odd?":             "Ḃ",
+    "bits":             "①",
     "not":              "C",
     "ceil":             "Ċ",
     "i_to_d":           "D",
