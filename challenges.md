@@ -27,3 +27,16 @@
 9. [PWC 258 - Task 1: Count Even Digits Number](https://theweeklychallenge.org/blog/perl-weekly-challenge-258/) | [Find Numbers with Even Number of Digits](https://leetcode.com/problems/find-numbers-with-even-number-of-digits/)
 10. [PWC 258 - Task Task 2: Sum of Values](https://theweeklychallenge.org/blog/perl-weekly-challenge-258/) | [2859. Sum of Values at Indices With K Set Bits](https://leetcode.com/problems/sum-of-values-at-indices-with-k-set-bits/description/)
 11. [3046. Split the Array](https://leetcode.com/contest/weekly-contest-386/problems/split-the-array/)
+
+### Exploration of #10
+
+This is the solution in various of array languages:
+
+|  Language  |     Explicit Solution      |          Tacit Solution           |
+| :--------: | :------------------------: | :-------------------------------: |
+|   Jello    |             -              | `len iota0 bits each = r * l sum` |
+|    Uiua    |             -              |          `/+×=≡/+⋯⇡⧻⊙:.`          |
+| Dyalog APL | `{+/⍵×⍺=+⌿(2⊥⍣¯1⊢)¯1+⍳≢⍵}` |  `+/⊢×⊣=(((+⌿2⊥⍣¯1⊢)¯1+⍳∘≢)⍤⊢)`   |
+|    BQN     |     `{+´𝕩×𝕨=Bits¨↕≠𝕩}`     |        `+´⊢×⊣=·Bits¨↕∘≠∘⊢`        |
+
+* BQN `Bits` is `+´2{⌽𝕗|⌊∘÷⟜𝕗⍟(↕1+·⌊𝕗⋆⁼1⌈⊢)}`
