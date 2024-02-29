@@ -142,23 +142,27 @@ if __name__ == "__main__":
                 continue
             if user_input in commands:
                 if user_input == "--find-by-example":
-                    args = input("Input arguments and desired result: ")
-                    args = args.split()
+                    args   = input("Input arguments and desired result: ")
+                    cores  = int(input("Number of cores: "))
+                    nested = input("Nested Search (y/n): ").strip().lower() == 'y'
+                    args   = args.split()
                     if len(args) > 3:
                         print("   error: too inputs (max 3)")
                     elif len(args) == 3:
                         print("   dyadic find-by-example not supported yet")
                     else:
                         [arg, out] = args
-                        num_processes = 64
-                        excluded_keys = ["rand_elem", "powerset", "perm", "perm_wr", "factorial"]
-                        new_dict = dict(**{key: value for key, value in tokens.monadic.items() if key not in excluded_keys}, **{"": ""})
-                        atom_combinations = list(permutations(new_dict.items(), 2))
-                        chunk_size = len(atom_combinations) // num_processes
-                        atom_combinations = [atom_combinations[i:i+chunk_size] for i in range(0, len(atom_combinations), chunk_size)]
+                        exclude    = ["rand_elem", "powerset", "perm", "perm_wr", "factorial"]
+                        if nested:
+                            new_dict = dict(**{k: v for k, v in tokens.monadic.items() if k not in exclude}, **{"": ""})
+                            combos   = list(permutations(new_dict.items(), 2))
+                        else:
+                            combos = [((k, v), ("", "")) for k, v in tokens.monadic.items() if k not in exclude]
+                        chunk_size = len(combos) // cores
+                        combos = [combos[i:i+chunk_size] for i in range(0, len(combos), chunk_size)]
 
-                        with multiprocessing.Pool(processes=num_processes) as pool:
-                            pool.map(partial(process_combinations, arg, out), atom_combinations)
+                        with multiprocessing.Pool(processes=cores) as pool:
+                            pool.map(partial(process_combinations, arg, out), combos)
 
                     continue
 
