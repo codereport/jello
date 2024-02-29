@@ -25,7 +25,8 @@ advisements = {
     "odd? not":       "even?",
     "even? not":      "odd?",
     "i_to_b sum":     "bits",
-    "sort group_len": "len key"
+    "sort group_len": "len key",
+    "idx : at_idx":   ": keep"
 }
 
 regex_advisements = {

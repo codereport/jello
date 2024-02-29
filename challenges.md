@@ -6,7 +6,7 @@
 |   2   |  3010  | b122p1  |       |      `tail sort take 2 pair head flat sum`      |     `ḊṢḣ2,ḢFS`     |
 |   3   |  3028  |  383p1  |       |                 `sums = 0 sum`                  |       `Ä=0S`       |
 |   4   |  3038  | b124p1  |       | `len idiv 2 take c + 2 chunk_fold . = head sum` |   `L:2ḣ@+2/µ=ḢS`   |
-|   5   |        |         | 250p1 |    `len iota0 mod 10 = . idx : at_idx head`     |   `LḶ%10=µTðịḢ`    |
+|   5   |        |         | 250p1 |        `len iota0 mod 10 = : keep head`         |    `LḶ%10=ðḳḢ`     |
 |   6   |  1380  |         | 251p2 |        `minr each rev = maxr * maxr sum`        |   ``z`ṂṚ=Ṁ×Ṁḟ0``   |
 |   7   |  2778  |         | 252p1 |              `divs? len * sq sum`               |      `ḍL×²S`       |
 |   8   |  1365  |         | 257p1 |              `< outer w sum each`               |     ``<þ`S€``      |

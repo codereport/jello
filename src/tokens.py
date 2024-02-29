@@ -124,6 +124,7 @@ dyadic = {
     "part_after": "k",
     "rotate":     "ṙ",
     "keep_not":   "œp",
+    "keep":       "ḳ",
     "at_idx":     "ị",
     "take":       "ḣ",
     "idiv":       ":",
