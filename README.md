@@ -36,6 +36,7 @@ A Python script for wrapping the Jellyfish (a fork of Jelly) executable so you c
 * [Jello LiveStream III](https://www.youtube.com/watch?v=zOB5D_NgVJU&t)
 * [Jello LiveStream IV (Top 10)](https://www.youtube.com/watch?v=XkLsy_I_H6w)
 * [Jello LiveStream V (PWC)](https://www.youtube.com/watch?v=tNaZykHHHWs)
+* [Jello LiveStream VI (`bits`, `keep`, `cuts.md`, `--find-by-example`)](https://www.youtube.com/watch?v=RAUbKNeA2LA)
 
 ### YouTube Videos
 
