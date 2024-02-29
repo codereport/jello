@@ -2,7 +2,7 @@
 
 |       | Number | Contest |  PWC  |                 Jello Solution                  | Jellyfish Solution |
 | :---: | :----: | :-----: | :---: | :---------------------------------------------: | :----------------: |
-|   1   |  3005  |  380p1  |       |     `sort group_len . idx_max at_idx . sum`     |     `ṢŒɠµMịµS`     |
+|   1   |  3005  |  380p1  |       |        `len key . idx_max at_idx . sum`         |     `LƙɠµMịµS`     |
 |   2   |  3010  | b122p1  |       |      `tail sort take 2 pair head flat sum`      |     `ḊṢḣ2,ḢFS`     |
 |   3   |  3028  |  383p1  |       |                 `sums = 0 sum`                  |       `Ä=0S`       |
 |   4   |  3038  | b124p1  |       | `len idiv 2 take c + 2 chunk_fold . = head sum` |   `L:2ḣ@+2/µ=ḢS`   |
@@ -12,7 +12,7 @@
 |   8   |  1365  |         | 257p1 |              `< outer w sum each`               |     ``<þ`S€``      |
 |   9   |  1295  |         | 258p1 |         `i_to_d len_each odd? not sum`          |      `DẈḂCS`       |
 |  10   |  2859  |         | 258p2 |        `len iota0 bits each = r * l sum`        |    `LḶ①€=ṛ×ḷS`     |
-|  11   |  3046  |  386p1  |       |            `sort group_len maxr < 3`            |      `ṢŒɠṀ<3`      |
+|  11   |  3046  |  386p1  |       |               `len key maxr < 3`                |      `LƙɠṀ<3`      |
 
 ### Links
 
