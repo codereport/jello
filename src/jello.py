@@ -7,6 +7,9 @@ from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.shortcuts import CompleteStyle
+import multiprocessing
+from functools import partial
+from itertools import permutations
 
 import algorithm
 import arity_notation
@@ -20,17 +23,24 @@ from utils import Chain, Quick, Separator
 def clear_screen():
     subprocess.call("clear", shell=True)
 
-def run_jelly(expr: str, args: list[str]):
+def run_jelly(expr: str, args: list[str], display):
     try:
         command = ["jelly", "eun", expr, *args]
         result = subprocess.run(command, text=True, capture_output=True, check=True)
         output_text = result.stdout.strip()
 
-        draw.cprint(output_text, Fore.GREEN, True)
+        if display:
+            draw.cprint(output_text, Fore.GREEN, True)
+        return output_text
     except subprocess.CalledProcessError as e:
         # Print the stderr output for more information about the error
-        print(Fore.RED + f"Error: {e}")
-        print(Fore.RED + "stderr:", e.stderr)
+        if display:
+            print(Fore.RED + f"Error: {e}")
+            print(Fore.RED + "stderr:", e.stderr)
+        else:
+            raise
+
+commands = ["--find-by-example"]
 
 completer = WordCompleter(
     [k for k in sorted(
@@ -38,7 +48,8 @@ completer = WordCompleter(
         list(tokens.monadic.keys()) +
         list(tokens.dyadic.keys())  +
         list(tokens.quick.keys())   +
-        list(tokens.separators.keys())) if len(k) > 1])
+        list(tokens.separators.keys()) +
+        commands) if len(k) > 1])
 
 history = FileHistory("jello_history.txt")
 
@@ -98,6 +109,25 @@ def skip_trace(converted_expr: list[str], i: int) -> bool:
         return True
     return False
 
+def process_combinations(arg, out, combinations):
+    for (keyword1, atom1), (keyword2, atom2) in combinations:
+        try:
+            if atom1 == "":
+                continue
+            else:
+                x = run_jelly(atom1, [arg], display=False)
+                if x in [arg, out] and atom2 != "":
+                    continue
+                else:
+                    # print(x, arg)
+                    x = run_jelly(atom1 + atom2, [arg], display=False)
+        except:
+            continue
+
+        if x == out:
+            # print(run_jelly(atom1, [arg], display=False))
+            print(f"{arg} :: {keyword1} {keyword2} -> {x}")
+
 if __name__ == "__main__":
     init()  # for colorama
 
@@ -109,12 +139,34 @@ if __name__ == "__main__":
                                 completer=completer,
                                 history=history,
                                 reserve_space_for_menu=0,
-                                complete_style=CompleteStyle.MULTI_COLUMN)
+                                complete_style=CompleteStyle.MULTI_COLUMN).strip()
 
-            if user_input.strip().lower() == "q": break
-            if user_input.strip() == "?":
+            if user_input.lower() == "q": break
+            if user_input == "?":
                 arity_notation.explain()
                 continue
+            if user_input in commands:
+                if user_input == "--find-by-example":
+                    args = input("Input arguments and desired result: ")
+                    args = args.split()
+                    if len(args) > 3:
+                        print("   error: too inputs (max 3)")
+                    elif len(args) == 3:
+                        print("   dyadic find-by-example not supported yet")
+                    else:
+                        [arg, out] = args
+                        num_processes = 64
+                        excluded_keys = ["rand_elem", "powerset", "perm", "perm_wr", "factorial"]
+                        new_dict = dict(**{key: value for key, value in tokens.monadic.items() if key not in excluded_keys}, **{"": ""})
+                        atom_combinations = list(permutations(new_dict.items(), 2))
+                        chunk_size = len(atom_combinations) // num_processes
+                        atom_combinations = [atom_combinations[i:i+chunk_size] for i in range(0, len(atom_combinations), chunk_size)]
+
+                        with multiprocessing.Pool(processes=num_processes) as pool:
+                            pool.map(partial(process_combinations, arg, out), atom_combinations)
+
+                    continue
+
             clear_screen()
             print("🟢🟡🔴 Jello 🔴🟡🟢\n")
             if "::" not in user_input:
@@ -122,7 +174,7 @@ if __name__ == "__main__":
                 draw.cprint("  error: missing :: after args", Fore.RED, True)
                 continue
 
-            [args, expr] = [s.strip() for s in user_input.strip().split("::")] # should consist of keywords
+            [args, expr] = [s.strip() for s in user_input.split("::")] # should consist of keywords
 
             colored_keywords(args, expr)
             spaced_jelly_atoms(args, expr)
@@ -139,7 +191,9 @@ if __name__ == "__main__":
                     continue
                 draw.cprint(f"   {converted_expr[:i]:<{len(converted_expr)}}", Fore.YELLOW, False)
                 draw.cprint(f" {' '.join(args)} ➡️  ", Fore.BLUE, False)
-                run_jelly(converted_expr[:i], args)
+                # print(converted_expr[:i])
+                # print(args)
+                run_jelly(converted_expr[:i], args, display=True)
 
             chain_arity = [keyword_arity(e) for e in expr if e not in "()"]
 
