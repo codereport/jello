@@ -144,7 +144,7 @@ if __name__ == "__main__":
                 if user_input == "--find-by-example":
                     args   = input("Input arguments and desired result: ")
                     cores  = int(input("Number of cores: "))
-                    nested = input("Nested Search (y/n): ").strip().lower() == 'y'
+                    nested = input("Nested Search (y/n): ").strip().lower() == "y"
                     args   = args.split()
                     if len(args) > 3:
                         print("   error: too inputs (max 3)")
