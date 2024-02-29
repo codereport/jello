@@ -1,13 +1,7 @@
 #!/usr/bin/env python3
 
-import subprocess
-
-from colorama import Fore, init
-from prompt_toolkit import prompt
-from prompt_toolkit.completion import WordCompleter
-from prompt_toolkit.history import FileHistory
-from prompt_toolkit.shortcuts import CompleteStyle
 import multiprocessing
+import subprocess
 from functools import partial
 from itertools import permutations
 
@@ -16,7 +10,12 @@ import arity_notation
 import draw
 import tokens
 import utils
+from colorama import Fore, init
 from grid import Grid
+from prompt_toolkit import prompt
+from prompt_toolkit.completion import WordCompleter
+from prompt_toolkit.history import FileHistory
+from prompt_toolkit.shortcuts import CompleteStyle
 from utils import Chain, Quick, Separator
 
 
@@ -114,18 +113,14 @@ def process_combinations(arg, out, combinations):
         try:
             if atom1 == "":
                 continue
-            else:
-                x = run_jelly(atom1, [arg], display=False)
-                if x in [arg, out] and atom2 != "":
-                    continue
-                else:
-                    # print(x, arg)
-                    x = run_jelly(atom1 + atom2, [arg], display=False)
-        except:
+            x = run_jelly(atom1, [arg], display=False)
+            if x in [arg, out] and atom2 != "":
+                continue
+            x = run_jelly(atom1 + atom2, [arg], display=False)
+        except Exception:
             continue
 
         if x == out:
-            # print(run_jelly(atom1, [arg], display=False))
             print(f"{arg} :: {keyword1} {keyword2} -> {x}")
 
 if __name__ == "__main__":
@@ -191,8 +186,6 @@ if __name__ == "__main__":
                     continue
                 draw.cprint(f"   {converted_expr[:i]:<{len(converted_expr)}}", Fore.YELLOW, False)
                 draw.cprint(f" {' '.join(args)} ➡️  ", Fore.BLUE, False)
-                # print(converted_expr[:i])
-                # print(args)
                 run_jelly(converted_expr[:i], args, display=True)
 
             chain_arity = [keyword_arity(e) for e in expr if e not in "()"]

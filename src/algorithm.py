@@ -1,10 +1,9 @@
 
 import re
 
-from colorama import Fore
-
 import draw
 import utils
+from colorama import Fore
 
 advisements = {
     "+ scan":         "sums",

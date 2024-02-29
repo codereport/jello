@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 
+import draw
+import utils
 from colorama import Fore
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.shortcuts import CompleteStyle
-
-import draw
-import utils
 
 combinators = {
     "W":  ["1y2",   "fn w(f) = x -> f(x,x)"],

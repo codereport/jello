@@ -1,9 +1,8 @@
 
 from itertools import takewhile
 
-from colorama import Fore, Style
-
 import utils
+from colorama import Fore, Style
 from grid import Grid
 from utils import Chain, Quick, Separator
 
