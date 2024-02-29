@@ -27,7 +27,8 @@ advisements = {
     "sort group_len": "len key",
     "idx : at_idx":   ": keep",
     "r scan":         "id",
-    "r fold":         "last"
+    "r fold":         "last",
+    "bits each":      "bits" # TODO: generalize this for all scalar fns
 }
 
 regex_advisements = {
