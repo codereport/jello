@@ -32,6 +32,7 @@ advisements = {
     "r scan":         "id",
     "r fold":         "last",
     "bits each":      "bits", # TODO: generalize this for all scalar fns
+    "max scan":       "maxs",
 }
 
 regex_advisements = {

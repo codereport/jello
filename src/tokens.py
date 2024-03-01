@@ -35,6 +35,7 @@ monadic = {
     "idx_max":          "M",
     "minr":             "Ṃ",
     "maxr":             "Ṁ",
+    "maxs":             "Ḿ",
     "neg":              "N",
     "println":          "Ṅ",
     "NOT":              "Ṇ",
