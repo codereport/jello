@@ -10,7 +10,7 @@
 
 ### Cuts
 
-The name [cut](https://code.jsoftware.com/wiki/Vocabulary/semidot) is borrowed from J. Also, what J calls [infixes](https://code.jsoftware.com/wiki/Vocabulary/bslash#dyadic) (aka `slide`s and `chunk`s) are included here.
+The name [cut](https://code.jsoftware.com/wiki/Vocabulary/semidot) is borrowed from J. Also, what J calls [infixes](https://code.jsoftware.com/wiki/Vocabulary/bslash#dyadic) (aka `slide`s and `chunk`s) are included here (integer cuts).
 
 There are:
 
@@ -18,24 +18,33 @@ There are:
 * mask cuts
 * function (key) cuts
 * frequency hash map (fhm) cuts
+* integer cuts
 
 Mask cuts and predicate cuts can drop values.
 
 🚧 WIP 🚧
 
-|             Cut              |    Cut Type    |  Cut Mechanism   | Drop? |   Fold?   |
-| :--------------------------: | :------------: | :--------------: | :---: | :-------: |
-|        🟡 `pred_part`         |   predicate    | unary predicate  |   🟢   |    no     |
-|            `part`            | specialization |  `<1 pred_part`  |   🟢   |    no     |
-|          `part_len`          | specialization | `part len_each`  |   🟢   | 🟢 (`len`) |
-| 🟡 `part_by` / `chunk_by_key` |    function    |  unary function  |  no   |    no     |
-|         `part_after`         |      mask      |   after truthy   |  no   |    no     |
-|  🟡 `group_by` / `chunk_by`   |   predicate    | binary predicate |  no   |    no     |
-|           `group`            | specialization |   `= group_by`   |  no   |    no     |
-|         `group_len`          | specialization | `group len_each` |  no   | 🟢 (`len`) |
-|            `key`             |      fhm       |     identity     |  no   |     🟢     |
+<!-- |       🟡 `pred_part`       |   predicate    | unary predicate  |   🟢   |     no     | -->
 
-> Q: Why do `part`, `pred_part`, `part_by`, `group` and `group_by` all not `fold`? And should there be versions that do like key? Or should they all be converted to version that do.
+|            Cut            |    Cut Type    |  Cut Mechanism   | Drop? | Unary Op?  |
+| :-----------------------: | :------------: | :--------------: | :---: | :--------: |
+|          `part`           | specialization |  `<1 pred_part`  |   🟢   |     no     |
+|        `part_len`         | specialization | `len part_with`  |   🟢   | 🟢 (`len`)  |
+|        🟡 `part_by`        |   predicate    |  unary function  |  no   |     no     |
+|       🟡 `part_with`       |
+|     🟡 `part_by_with`      |
+|       `part_after`        |      mask      |   after truthy   |  no   |     no     |
+| 🟡 `group_by` / `chunk_by` |   predicate    | binary predicate |  no   |     no     |
+|     🟡 `group_by_with`     |
+|          `group`          | specialization |   `= group_by`   |  no   |     no     |
+|        `group_len`        | specialization | `group len_each` |  no   | 🟢 (`len`)  |
+|           `key`           |      fhm       |     identity     |  no   |     🟢      |
+|          `chunk`          |    integer     |     integer      |  no   |     no     |
+|       `chunk_fold`        |    integer     |     integer      |  no   | 🟢 (`fold`) |
+|          `slide`          |    integer     |     integer      |  no   |     no     |
+|       `slide_fold`        |    integer     |     integer      |  no   | 🟢 (`fold`) |
+
+> Q: Why do `part`, `pred_part`, `part_by`, `group` and `group_by` all not apply a unary operation? And should there be versions that do like key? Or should they all be converted to version that do.
 
 |   Keyword    |  Type   |  Arguments  |               Description               |      Future       |
 | :----------: | :-----: | :---------: | :-------------------------------------: | :---------------: |
