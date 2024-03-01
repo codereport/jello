@@ -11,6 +11,8 @@ advisements = {
     "+ 1":            "add1",
     "_ 1":            "sub1",
     "group len each": "group_len",
+    "group len_each": "group_len",
+    "split_at 0":     "part",
     "+ fold":         "sum",
     "* fold":         "prod",
     "len iota ":      "iota_len",
@@ -25,10 +27,11 @@ advisements = {
     "even? not":      "odd?",
     "i_to_b sum":     "bits",
     "sort group_len": "len key",
+    "sort group ":    "id key",
     "idx : at_idx":   ": keep",
     "r scan":         "id",
     "r fold":         "last",
-    "bits each":      "bits" # TODO: generalize this for all scalar fns
+    "bits each":      "bits", # TODO: generalize this for all scalar fns
 }
 
 regex_advisements = {
