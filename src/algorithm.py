@@ -33,9 +33,8 @@ advisements = {
     "r fold":         "last",
     "bits each":      "bits", # TODO: generalize this for all scalar fns
     "max scan":       "maxs",
-    "id part_with":   "part",
-    "len part_with":  "part_len",
-    "part len_each":  "part_len",
+    "i part":         "part",
+    "part len_each":  "len part",
     "> 0 : part_by":  "part",
 }
 
