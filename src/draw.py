@@ -23,7 +23,7 @@ def comb_width(c: str, initial_call: bool) -> int:
     return 2
 
 def comb_arity(c: str) -> int:
-    return 2 if c in ["Φ₁", "B₁", "ε'", "εₚ", "Eₚ"] else 1
+    return 2 if c in ["Φ₁", "Φ.₂", "B₁", "ε'", "εₚ", "Eₚ"] else 1
 
 def comb_offset(c: str) -> int:
     return 2 if c in ["Φ", "Φ₁", "Φ.₂", "Δₚ", "εₚ", "Eₚ"] else 1

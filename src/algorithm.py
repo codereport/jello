@@ -7,9 +7,9 @@ from colorama import Fore
 
 advisements = {
     "+ scan":         "sums",
-    "1 +":            "add1",
-    "+ 1":            "add1",
-    "_ 1":            "sub1",
+    " 1 +":            "add1",
+    "+ 1 ":            "add1",
+    "_ 1 ":            "sub1",
     "group len each": "group_len",
     "group len_each": "group_len",
     "split_at 0":     "part",
