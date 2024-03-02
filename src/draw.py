@@ -18,7 +18,7 @@ def color(i: int):
 def comb_width(c: str, initial_call: bool) -> int:
     if c == "m" and initial_call: return 1
     if c == "d" and initial_call: return 2
-    if c in ["Φ", "m", "d", "Φ₁", "εₚ", "Eₚ", "Dₚ", "Δₚ"]: return 3
+    if c in ["Φ", "m", "d", "Φ₁", "Φ.₂", "εₚ", "Eₚ", "Dₚ", "Δₚ"]: return 3
     if c == "W": return 1
     return 2
 
@@ -26,7 +26,7 @@ def comb_arity(c: str) -> int:
     return 2 if c in ["Φ₁", "B₁", "ε'", "εₚ", "Eₚ"] else 1
 
 def comb_offset(c: str) -> int:
-    return 2 if c in ["Φ", "Φ₁", "Δₚ", "εₚ", "Eₚ"] else 1
+    return 2 if c in ["Φ", "Φ₁", "Φ.₂", "Δₚ", "εₚ", "Eₚ"] else 1
 
 def width_adjustment(width: int) -> int :
     return (width - 1) // 2
@@ -40,13 +40,14 @@ def combintor_from_pattern_match(chain: list[int], is_monadic: bool, initial_cal
         if chain[:3] == [1, 2, 1]: return "Φ"
         if chain[:3] == [1, 2, 0]: return "Δₚ"
         if chain[:3] == [1, 0, 2]: return "Dₚ"
-        if chain[:2] == [1, 2]:     return "Σ"
+        if chain[:2] == [1, 2]:    return "Σ"
     else:
         if chain[:2]  == [2, 1]:    return "B₁"
         if chain[:3]  == [2, 2, 2]: return "Φ₁"
         if chain[1:3] == [2, 0]:    return "εₚ"
         if chain[1:3] == [0, 2]:    return "Eₚ"
-        if chain[:2] == [1, 2]:     return "Δ"
+        if chain[:3]  == [1, 2, 2]: return "Φ.₂"
+        if chain[:2]  == [1, 2]:    return "Δ"
         if chain[1:2] == [2]:       return "ε'"
 
     concatenate = chain[:2] in [[2,0], [0,2], [1,0]] and not initial_call

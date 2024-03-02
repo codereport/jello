@@ -8,17 +8,18 @@ from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.shortcuts import CompleteStyle
 
 combinators = {
-    "W":  ["1y2",   "fn w(f) = x -> f(x,x)"],
-    "C":  ["2y2",   "fn c(f) = x,y -> f(y,x)"],
-    "B":  ["1y11",  "fn b(f,g) = x -> f(g(x))"],
-    "B₁": ["2y12",  "fn b₁(f,g) = x,y -> f(g(x,y))"],
-    "S":  ["1y21",  "fn s(f,g) = x -> f(x,g(x))"],
-    "Σ":  ["1y12",  "fn Σ(f,g) = x -> f(g(x),x)"],
-    "D":  ["2y21",  "fn D(f,g) = x,y -> f(x,g(y))"],
-    "Δ":  ["2y12",  "fn Δ(f,g) = x,y -> f(g(x),y)"],
-    "Ψ":  ["2y21",  "fn Ψ(f,g) = x,y -> f(g(x),g(y))"],
-    "Φ":  ["1y121", "fn Φ(f,g,h) = x -> g(f(x),h(x))"],
-    "Φ₁": ["2y222", "fn Φ₁(f,g,h) = x,y -> g(f(x,y),h(x,y))"]
+    "W":   ["1y2",   "fn w(f) = x -> f(x,x)"],
+    "C":   ["2y2",   "fn c(f) = x,y -> f(y,x)"],
+    "B":   ["1y11",  "fn b(f,g) = x -> f(g(x))"],
+    "B₁":  ["2y12",  "fn b₁(f,g) = x,y -> f(g(x,y))"],
+    "S":   ["1y21",  "fn s(f,g) = x -> f(x,g(x))"],
+    "Σ":   ["1y12",  "fn Σ(f,g) = x -> f(g(x),x)"],
+    "D":   ["2y21",  "fn D(f,g) = x,y -> f(x,g(y))"],
+    "Δ":   ["2y12",  "fn Δ(f,g) = x,y -> f(g(x),y)"],
+    "Ψ":   ["2y21",  "fn Ψ(f,g) = x,y -> f(g(x),g(y))"],
+    "Φ":   ["1y121", "fn Φ(f,g,h) = x -> g(f(x),h(x))"],
+    "Φ.₂": ["2y122", "fn Φ.₂(f,g,h) = x,y -> g(f(x),h(x,y))"],
+    "Φ₁":  ["2y222", "fn Φ₁(f,g,h) = x,y -> g(f(x,y),h(x,y))"],
 }
 
 def num_to_greek_arity(i: int) -> str:
@@ -58,7 +59,7 @@ def explain():
         print()
         for c, [_, fn] in combinators.items():
             [x, _, y, _, z] = utils.split_keep_multiple_delimiters(fn, ["=", "->"])
-            print(f"{c:<3} {x:<13}={y:<5}->{z}")
+            print(f"{c:<4} {x:<14}={y:<5}->{z}")
         print()
     else:
         draw.cprint("   did not enter a valid combinator", Fore.RED, True)

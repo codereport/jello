@@ -42,8 +42,9 @@ class Grid:
 
     # combinator chain sequence
     def ccs(self):
-        first_two = "".join("".join(row).strip()[0:2] for row in self.grid)
-        no_bars = "".join(c for c in first_two if c not in "─└ ⋮┬│")
+        first_three = ["".join(row).strip()[0:3] for row in self.grid]
+        pre_no_bars = "".join(row for row in first_three if row[0] != "⋮")
+        no_bars     = "".join(c for c in pre_no_bars if c not in "─└ ⋮┬│┘")
         while "h₁" in no_bars:
             no_bars = no_bars.replace("h₁", "")
         return no_bars
