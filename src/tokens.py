@@ -85,7 +85,6 @@ monadic = {
     "group_len":        "Œɠ",
     "rle":              "Œr",
     "part":             "Ṕ",
-    "part_len":         "ℙ",
     "powerset":         "ŒP",
     "perm_wr":          "Œ!",
     "divisors":         "ÆD",
@@ -154,8 +153,8 @@ quick = {
     "c":            "@",
     "filter":       "Ƈ",
     "key_with":     "ƙ",
-    "part_with":    "ƥ",
-    "part_by":      "Ꝑ",
+    "part":         "Ṕ",
+    "part_by":      "ℙ",
 }
 
 separators = {

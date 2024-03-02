@@ -23,22 +23,22 @@ There are:
 Mask cuts and predicate cuts can drop values.
 
 🚧 WIP 🚧
+<!-- |      `part`       |  monad  | specialization |   `> 0 : part_by`    |   🟢   |     no     |   no    | -->
+<!-- |    `part_len`     |  monad  | specialization |   `len part`    |   🟢   | 🟢 (`len`)  |   no    | -->
+<!-- |     `part_by`     | 2-quick |   predicate    |   unary predicate    |   🟢   |     no     |    🟢    | -->
 
-|        Cut        |  Type   |    Cut Type    |    Cut Mechanism     | Drop? | Unary Op?  | Cut Op? |
-| :---------------: | :-----: | :------------: | :------------------: | :---: | :--------: | :-----: |
-| 🟡 `part_by_with`  | 2-quick |   predicate    |   unary predicate    |   🟢   |     🟢      |    🟢    |
-|     `part_by`     | 1-quick |   predicate    |   unary predicate    |   🟢   |     no     |    🟢    |
-|    `part_with`    | 1-quick | specialization | `> 0 : part_by_with` |   🟢   |     🟢      |   no    |
-|    `part_len`     |  monad  | specialization |   `len part_with`    |   🟢   | 🟢 (`len`)  |   no    |
-|      `part`       |  monad  | specialization |   `> 0 : part_by`    |   🟢   |     no     |   no    |
-|   `part_after`    |  dyad   |      mask      |     after truthy     |  no   |     no     |   no    |
-| 🟡 `group_by_with` | 2-quick |   predicate    |   binary predicate   |  no   |     🟢      |    🟢    |
-|   🟡 `group_by`    | 1-quick |   predicate    |   binary predicate   |  no   |     no     |    🟢    |
-|  🟡 `group_with`   | 1-quick |   predicate    |   binary predicate   |  no   |     🟢      |   no    |
-|    `group_len`    |  monad  | specialization |   `group len_each`   |  no   | 🟢 (`len`)  |   no    |
-|      `group`      |  monad  | specialization |     `= group_by`     |  no   |     no     |   no    |
-|    `key_with`     | 1-quick |      fhm       |       identity       |  no   |     🟢      |    -    |
-|      `chunk`      |  dyad   |    integer     |       integer        |  no   |     no     |    -    |
-|   `chunk_fold`    | 1-quick |    integer     |       integer        |  no   | 🟢 (`fold`) |    -    |
-|      `slide`      |  dyad   |    integer     |       integer        |  no   |     no     |    -    |
-|   `slide_fold`    | 1-quick |    integer     |       integer        |  no   | 🟢 (`fold`) |    -    |
+|        Cut        |  Type   |    Cut Type    |  Cut Mechanism   | Drop? | Unary Op?  | Cut Op? |
+| :---------------: | :-----: | :------------: | :--------------: | :---: | :--------: | :-----: |
+|    🟡 `part_by`    | 2-quick |   predicate    | unary predicate  |   🟢   |     🟢      |    🟢    |
+|      `part`       | 1-quick |   predicate    | `> 0 : part_by`  |   🟢   |     🟢      |   no    |
+|   `part_after`    |  dyad   |      mask      |   after truthy   |  no   |     no     |   no    |
+| 🟡 `group_by_with` | 2-quick |   predicate    | binary predicate |  no   |     🟢      |    🟢    |
+|   🟡 `group_by`    | 1-quick |   predicate    | binary predicate |  no   |     no     |    🟢    |
+|  🟡 `group_with`   | 1-quick |   predicate    | binary predicate |  no   |     🟢      |   no    |
+|    `group_len`    |  monad  | specialization | `group len_each` |  no   | 🟢 (`len`)  |   no    |
+|      `group`      |  monad  | specialization |   `= group_by`   |  no   |     no     |   no    |
+|       `key`       | 1-quick |      fhm       |     identity     |  no   |     🟢      |    -    |
+|      `chunk`      |  dyad   |    integer     |     integer      |  no   |     no     |    -    |
+|   `chunk_fold`    | 1-quick |    integer     |     integer      |  no   | 🟢 (`fold`) |    -    |
+|      `slide`      |  dyad   |    integer     |     integer      |  no   |     no     |    -    |
+|   `slide_fold`    | 1-quick |    integer     |     integer      |  no   | 🟢 (`fold`) |    -    |
