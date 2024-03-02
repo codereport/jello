@@ -24,40 +24,21 @@ Mask cuts and predicate cuts can drop values.
 
 🚧 WIP 🚧
 
-|        Cut        |    Cut Type    |    Cut Mechanism     | Drop? | Unary Op?  | Cut Op? |
-| :---------------: | :------------: | :------------------: | :---: | :--------: | :-----: |
-| 🟡 `part_by_with`  |   predicate    |   unary predicate    |   🟢   |     🟢      |    🟢    |
-|     `part_by`     |   predicate    |   unary predicate    |   🟢   |     no     |    🟢    |
-|    `part_with`    | specialization | `> 0 : part_by_with` |   🟢   |     🟢      |   no    |
-|    `part_len`     | specialization |   `len part_with`    |   🟢   | 🟢 (`len`)  |   no    |
-|      `part`       | specialization |   `> 0 : part_by`    |   🟢   |     no     |   no    |
-|   `part_after`    |      mask      |     after truthy     |  no   |     no     |   no    |
-| 🟡 `group_by_with` |   predicate    |   binary predicate   |  no   |     🟢      |    🟢    |
-|   🟡 `group_by`    |   predicate    |   binary predicate   |  no   |     no     |    🟢    |
-|  🟡 `group_with`   |   predicate    |   binary predicate   |  no   |     🟢      |   no    |
-|      `group`      | specialization |     `= group_by`     |  no   |     no     |   no    |
-|    `group_len`    | specialization |   `group len_each`   |  no   | 🟢 (`len`)  |   no    |
-|       `key`       |      fhm       |       identity       |  no   |     🟢      |    -    |
-|      `chunk`      |    integer     |       integer        |  no   |     no     |    -    |
-|   `chunk_fold`    |    integer     |       integer        |  no   | 🟢 (`fold`) |    -    |
-|      `slide`      |    integer     |       integer        |  no   |     no     |    -    |
-|   `slide_fold`    |    integer     |       integer        |  no   | 🟢 (`fold`) |    -    |
-
-|   Keyword    |  Type   |  Arguments  |               Description               |
-| :----------: | :-----: | :---------: | :-------------------------------------: |
-|    `part`    |  monad  |   1 list    |        partitions on values < 1         |
-|  `part_by`   | 1-quick |   1 list    |      partitions on unary function       |
-|  `part_len`  |  monad  |   1 list    |   length of partitions on values < 1    |
-| `part_after` |  dyad   |   2 lists   | partitions on masks after truthy values |
-| `group_len`  |  monad  |   1 list    |    length of contiguous equal values    |
-|   `group`    |  monad  |   1 list    |     groups contiguous equal values      |
-| 🟡 `chunk_by` | 2-quick | binary pred |     group based on satisfying pred      |
-|  `key_idx`   |  monad  |   1 list    |          "key" groups indices           |
-|  `key_with`  | 1-quick |  unary fn   |  applies fn to values of key (Counter)  |
-| 🟡 `key_len`  |  monad  |   1 list    |     len of values of key (Counter)      |
-
-### TODO
-
-* Rename `part` -> something
-* Make `part` a quick that takes a unary fn like `key`
-* Rename `group`
+|        Cut        |  Type   |    Cut Type    |    Cut Mechanism     | Drop? | Unary Op?  | Cut Op? |
+| :---------------: | :-----: | :------------: | :------------------: | :---: | :--------: | :-----: |
+| 🟡 `part_by_with`  | 2-quick |   predicate    |   unary predicate    |   🟢   |     🟢      |    🟢    |
+|     `part_by`     | 1-quick |   predicate    |   unary predicate    |   🟢   |     no     |    🟢    |
+|    `part_with`    | 1-quick | specialization | `> 0 : part_by_with` |   🟢   |     🟢      |   no    |
+|    `part_len`     |  monad  | specialization |   `len part_with`    |   🟢   | 🟢 (`len`)  |   no    |
+|      `part`       |  monad  | specialization |   `> 0 : part_by`    |   🟢   |     no     |   no    |
+|   `part_after`    |  dyad   |      mask      |     after truthy     |  no   |     no     |   no    |
+| 🟡 `group_by_with` | 2-quick |   predicate    |   binary predicate   |  no   |     🟢      |    🟢    |
+|   🟡 `group_by`    | 1-quick |   predicate    |   binary predicate   |  no   |     no     |    🟢    |
+|  🟡 `group_with`   | 1-quick |   predicate    |   binary predicate   |  no   |     🟢      |   no    |
+|    `group_len`    |  monad  | specialization |   `group len_each`   |  no   | 🟢 (`len`)  |   no    |
+|      `group`      |  monad  | specialization |     `= group_by`     |  no   |     no     |   no    |
+|    `key_with`     | 1-quick |      fhm       |       identity       |  no   |     🟢      |    -    |
+|      `chunk`      |  dyad   |    integer     |       integer        |  no   |     no     |    -    |
+|   `chunk_fold`    | 1-quick |    integer     |       integer        |  no   | 🟢 (`fold`) |    -    |
+|      `slide`      |  dyad   |    integer     |       integer        |  no   |     no     |    -    |
+|   `slide_fold`    | 1-quick |    integer     |       integer        |  no   | 🟢 (`fold`) |    -    |
