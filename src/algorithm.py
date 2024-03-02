@@ -26,8 +26,8 @@ advisements = {
     "odd? not":       "even?",
     "even? not":      "odd?",
     "i_to_b sum":     "bits",
-    "sort group_len": "len key",
-    "sort group ":    "id key",
+    "sort group_len": "len key_with",
+    "sort group ":    "id key_with",
     "idx : at_idx":   ": keep",
     "r scan":         "id",
     "r fold":         "last",
@@ -48,7 +48,7 @@ regex_advisements = {
     # TODO add and/all + or/any advisements
     # TODO fill these out vvv
     r"slide (.+) all each":  r"and \1 slide_fold",
-    r"sort group (.+) each":  r"\1 key",
+    r"sort group (.+) each":  r"\1 key_with",
     r"part (.+) each":  r"\1 part_with",
 }
 
