@@ -46,7 +46,8 @@ if __name__ == "__main__":
     # noqa unit_test("+ * r . scan maxr")                                        # 2.2 TODO
     unit_test("group sum each maxr",                         "BB",    "BB")      # 2.3
     unit_test("< prior : + * r . scan maxr add1",            "BB",    "BB")     # 3.1
-    unit_test("< prior split_at 0 len_each maxr add1",       "ΔₚBBB", "εₚB₁B₁B₁") # 3.3
+    unit_test("< prior split_at 0 len_each maxr add1",       "ΔₚBBB", "εₚB₁B₁B₁") # 3.3 (previous)
+    unit_test("< prior len part maxr add1",                  "BBBB",  "BBBB")    # 3.3
     unit_test("< prior group sum each add1",                 "BBB",   "BBB")     # 3.3
     # noqa unit_test("+ max r . scan maxr",                         "Φ₁B",   "") # 4 TODO
     unit_test("group_len min prior maxr double",             "BBB",   "BBB")     # 5
