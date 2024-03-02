@@ -33,6 +33,10 @@ advisements = {
     "r fold":         "last",
     "bits each":      "bits", # TODO: generalize this for all scalar fns
     "max scan":       "maxs",
+    "id part_with":   "part",
+    "len part_with":  "part_len",
+    "part len_each":  "part_len",
+    "> 0 : part_by":  "part",
 }
 
 regex_advisements = {
@@ -45,6 +49,7 @@ regex_advisements = {
     # TODO fill these out vvv
     r"slide (.+) all each":  r"and \1 slide_fold",
     r"sort group (.+) each":  r"\1 key",
+    r"part (.+) each":  r"\1 part_with",
 }
 
 def print_advisement(old: str, new: str):
