@@ -80,7 +80,7 @@ monadic = {
     "NOT_vect":         "¬",
     "add1":             "‘",
     "sub1":             "’",
-    "id":               "¹",
+    "i":                "¹",
     "group":            "Œg",
     "group_len":        "Œɠ",
     "rle":              "Œr",
