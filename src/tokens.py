@@ -19,7 +19,7 @@ monadic = {
     "flat":             "F",
     "floor":            "Ḟ",
     "grid":             "G", # don't know what this does
-    "key_idx":          "Ġ", # part = partition
+    "key_idx":          "Ġ",
     "half":             "H",
     "double":           "Ḥ",
     "head":             "Ḣ",
@@ -133,7 +133,7 @@ dyadic = {
     "filter_out": "ḟ",
     "filter_in":  "f",
     "flip2":      "z", # dyadic transpose
-    "divs?":      "ḍ" # divides
+    "divs?":      "ḍ"  # divides
 }
 
 niladic = {
