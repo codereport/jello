@@ -82,7 +82,6 @@ monadic = {
     "sub1":             "’",
     "i":                "¹",
     "group":            "Œg",
-    "group_len":        "Œɠ",
     "rle":              "Œr",
     "part":             "Ṕ",
     "powerset":         "ŒP",
