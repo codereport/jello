@@ -152,7 +152,7 @@ quick = {
     "w":            "`",
     "c":            "@",
     "filter":       "Ƈ",
-    "key_with":     "ƙ",
+    "key":          "ƙ",
     "part":         "Ṕ",
     "part_by":      "ℙ",
 }
