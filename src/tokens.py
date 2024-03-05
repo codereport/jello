@@ -155,6 +155,7 @@ quick = {
     "key":          "ƙ",
     "part":         "Ṕ",
     "part_by":      "ℙ",
+    "max_by":       "ÐṀ",
 }
 
 separators = {
