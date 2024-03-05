@@ -102,7 +102,7 @@ def spaced_jelly_atoms(args, expr):
     draw.cprint(indent + spaced_jelly_atoms, Fore.YELLOW, True)
 
 def skip_trace(converted_expr: list[str], i: int) -> bool:
-    if converted_expr[i - 1] in list(tokens.separators.values()) + ["Œ", "œ"]:
+    if converted_expr[i - 1] in list(tokens.separators.values()) + ["Œ", "œ", "Ð"]:
         return True
     if i < len(converted_expr) and converted_expr[i] in tokens.quick.values():
         return True
