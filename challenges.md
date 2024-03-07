@@ -13,6 +13,7 @@
 |   9   |  1295  |         | 258p1 |         `i_to_d len_each odd? not sum`          |      `DẈḂCS`       |
 |  10   |  2859  |         | 258p2 |          `len iota0 bits = r * l sum`           |     `LḶ①=ṛ×ḷS`     |
 |  11   |  3046  |  386p1  |       |               `len key maxr < 3`                |      `LƙɠṀ<3`      |
+|  12   |  3065  |         |       |                     `< sum`                     |        `<S`        |
 
 ### Links
 
