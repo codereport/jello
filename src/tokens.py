@@ -131,7 +131,9 @@ dyadic = {
     "filter_out": "ḟ",
     "filter_in":  "f",
     "flip2":      "z", # dyadic transpose
-    "divs?":      "ḍ"  # divides
+    "divs?":      "ḍ",  # divides
+    ">=":         "≥",
+    "<=":         "≤",
 }
 
 niladic = {

@@ -13,7 +13,8 @@
 |   9   |  1295  |         | 258p1 |         `i_to_d len_each odd? not sum`          |      `DẈḂCS`       |
 |  10   |  2859  |         | 258p2 |          `len iota0 bits = r * l sum`           |     `LḶ①=ṛ×ḷS`     |
 |  11   |  3046  |  386p1  |       |               `len key maxr < 3`                |      `LƙɠṀ<3`      |
-|  12   |  3065  |         |       |                     `< sum`                     |        `<S`        |
+|  12   |  3065  | b125p1  |       |                     `< sum`                     |        `<S`        |
+|  13   |  1833  |  237p2  |       |               `sort sums <= sum`                |       `ṢÄ≤S`       |
 
 ### Links
 
@@ -28,6 +29,8 @@
 9. [PWC 258 - Task 1: Count Even Digits Number](https://theweeklychallenge.org/blog/perl-weekly-challenge-258/) | [Find Numbers with Even Number of Digits](https://leetcode.com/problems/find-numbers-with-even-number-of-digits/)
 10. [PWC 258 - Task Task 2: Sum of Values](https://theweeklychallenge.org/blog/perl-weekly-challenge-258/) | [2859. Sum of Values at Indices With K Set Bits](https://leetcode.com/problems/sum-of-values-at-indices-with-k-set-bits/description/)
 11. [3046. Split the Array](https://leetcode.com/contest/weekly-contest-386/problems/split-the-array/)
+12. [3065. Minimum Operations to Exceed Threshold Value I](https://leetcode.com/contest/biweekly-contest-125/problems/minimum-operations-to-exceed-threshold-value-i/)
+13. [1833. Maximum Ice Cream Bars](https://leetcode.com/problems/maximum-ice-cream-bars/description/)
 
 ### Exploration of #10
 
