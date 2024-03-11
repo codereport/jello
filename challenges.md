@@ -15,6 +15,7 @@
 |  11   |  3046  |  386p1  |       |               `len key maxr < 3`                |      `LƙɠṀ<3`      |
 |  12   |  3065  | b125p1  |       |                     `< sum`                     |        `<S`        |
 |  13   |  1833  |  237p2  |       |               `sort sums <= sum`                |       `ṢÄ≤S`       |
+|  14   |  1207  |         | 260p1 |           `len key . uniq len = len`            |     `LƙµQL=L`      |
 
 ### Links
 
@@ -31,6 +32,7 @@
 11. [3046. Split the Array](https://leetcode.com/contest/weekly-contest-386/problems/split-the-array/)
 12. [3065. Minimum Operations to Exceed Threshold Value I](https://leetcode.com/contest/biweekly-contest-125/problems/minimum-operations-to-exceed-threshold-value-i/)
 13. [1833. Maximum Ice Cream Bars](https://leetcode.com/problems/maximum-ice-cream-bars/description/)
+14. [1207. Unique Number of Occurrences](https://leetcode.com/problems/unique-number-of-occurrences/description/) | [Task 1: Unique Occurrences](https://theweeklychallenge.org/blog/perl-weekly-challenge-260/)
 
 ### Exploration of #10
 
