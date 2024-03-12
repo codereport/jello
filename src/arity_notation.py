@@ -18,7 +18,7 @@ combinators = {
     "Δ":   ["2y12",  "fn Δ(f,g) = x,y -> f(g(x),y)"          , None],
     "Ψ":   ["2y21",  "fn Ψ(f,g) = x,y -> f(g(x),g(y))"       , None],
     "Φ":   ["1y121", "fn Φ(f,g,h) = x -> g(f(x),h(x))"       , None],
-    "D₂":  ["2y121", "fn d2(f,g,h) = x,y -> g(f(x),h(y))"    , "l f : g : r h"],
+    "D₂":  ["2y121", "fn d₂(f,g,h) = x,y -> g(f(x),h(y))"    , "l f : g : r h"],
     "Φ.₂": ["2y122", "fn Φ.₂(f,g,h) = x,y -> g(f(x),h(x,y))" , None],
     "Φ₁":  ["2y222", "fn Φ₁(f,g,h) = x,y -> g(f(x,y),h(x,y))", None],
 }
