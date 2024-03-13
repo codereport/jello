@@ -16,7 +16,7 @@
 |  12   |  3065  | b125p1  |       |                     `< sum`                     |        `<S`        |
 |  13   |  1833  |  237p2  |       |               `sort sums <= sum`                |       `ṢÄ≤S`       |
 |  14   |  1207  |         | 260p1 |           `len key . uniq len = len`            |     `LƙµQL=L`      |
-|  15   |  3074  |  388p1  |       |    `l sort rev sums : < : r sum . sum add1`     |   `ḷṢṚÄð<ðṛSµS‘`   |
+|  15   |  3074  |  388p1  |       |      `< . sort rev sums . sum . sum add1`       |   `ḷṢṚÄð<ðṛSµS‘`   |
 
 ### Links
 

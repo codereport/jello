@@ -18,7 +18,7 @@ combinators = {
     "Δ":   ["2y12",  "fn Δ(f,g) = x,y -> f(g(x),y)"          , "-",        "f₁ g₂"],
     "Ψ":   ["2y21",  "fn Ψ(f,g) = x,y -> g(f(x),f(y))"       , "-",        "pair f₁ g₂ fold"],
     "Φ":   ["1y121", "fn Φ(f,g,h) = x -> g(f(x),h(x))"       , "f₁ g₂ h₁", "-"],
-    "D₂":  ["2y121", "fn d₂(f,g,h) = x,y -> g(f(x),h(y))"    , "-",        "l f₁ : g₂ : r h₁"],
+    "D₂":  ["2y121", "fn d₂(f,g,h) = x,y -> f(g(x),h(y))"    , "-",        "g₂ f₁ h₁"],
     "Φ.₂": ["2y122", "fn Φ.₂(f,g,h) = x,y -> g(f(x),h(x,y))" , "-",        "f₁ g₂ h₂"],
     "Φ₁":  ["2y222", "fn Φ₁(f,g,h) = x,y -> g(f(x,y),h(x,y))", "-",        "f₂ g₂ h₂"],
 }
@@ -61,10 +61,10 @@ def explain():
         describe(user_input, f)
     elif user_input == "All":
         print()
-        print(f"{' ' * 46}|{'Monadic':^10}|{'Dyadic':^18}|")
+        print(f"{' ' * 46}|{'Monadic':^10}|{'Dyadic':^17}|")
         for c, [_, fn, m_impl, d_impl] in combinators.items():
             [x, _, y, _, z] = utils.split_keep_multiple_delimiters(fn, ["=", "->"])
-            print(f"{c:<4} {x:<14}={y:<5}->{z:18} |{m_impl:^10}|{d_impl:^18}|")
+            print(f"{c:<4} {x:<14}={y:<5}->{z:18} |{m_impl:^10}|{d_impl:^17}|")
         print()
     else:
         draw.cprint("   did not enter a valid combinator", Fore.RED, True)
