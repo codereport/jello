@@ -16,6 +16,7 @@
 |  12   |  3065  | b125p1  |       |                     `< sum`                     |        `<S`        |
 |  13   |  1833  |  237p2  |       |               `sort sums <= sum`                |       `ṢÄ≤S`       |
 |  14   |  1207  |         | 260p1 |           `len key . uniq len = len`            |     `LƙµQL=L`      |
+|  15   |  3074  |  388p1  |       |    `l sort rev sums : < : r sum . sum add1`     |   `ḷṢṚÄð<ðṛSµS‘`   |
 
 ### Links
 
@@ -33,6 +34,7 @@
 12. [3065. Minimum Operations to Exceed Threshold Value I](https://leetcode.com/contest/biweekly-contest-125/problems/minimum-operations-to-exceed-threshold-value-i/)
 13. [1833. Maximum Ice Cream Bars](https://leetcode.com/problems/maximum-ice-cream-bars/description/)
 14. [1207. Unique Number of Occurrences](https://leetcode.com/problems/unique-number-of-occurrences/description/) | [Task 1: Unique Occurrences](https://theweeklychallenge.org/blog/perl-weekly-challenge-260/)
+15. [3074. Apple Redistribution into Boxes](https://leetcode.com/contest/weekly-contest-388/problems/apple-redistribution-into-boxes/)
 
 ### Exploration of #10
 
