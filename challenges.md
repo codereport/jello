@@ -18,7 +18,8 @@
 |  14   |  1207  |         | 260p1 |           `len key . uniq len = len`            |     `LƙµQL=L`      |
 |  15   |  3074  |  388p1  |       |      `< . sort rev sums . sum . sum add1`       |   `ḷṢṚÄð<ðṛSµS‘`   |
 |  16   |  3079  | b126p1  |       |      `i_to_d . maxr max . each d_to_i sum`      |     `DµṀ»µ€ḌS`     |
-|  17   |  2529  |         | 262p1 |      `filter_out 0 sign . len key . maxr`       |     `ḟ0ṠµLƙµṀ`     |
+|  17   |  2535  |         | 261p1 |           `i_to_d flat sum _ sum abs`           |      `DFS_SA`      |
+|  18   |  2529  |         | 262p1 |      `filter_out 0 sign . len key . maxr`       |     `ḟ0ṠµLƙµṀ`     |
 
 ### Links
 
@@ -38,7 +39,8 @@
 14. [1207. Unique Number of Occurrences](https://leetcode.com/problems/unique-number-of-occurrences/description/) | [Task 1: Unique Occurrences](https://theweeklychallenge.org/blog/perl-weekly-challenge-260/)
 15. [3074. Apple Redistribution into Boxes](https://leetcode.com/contest/weekly-contest-388/problems/apple-redistribution-into-boxes/)
 16. [3079. Find the Sum of Encrypted Integers](https://leetcode.com/contest/biweekly-contest-126/problems/find-the-sum-of-encrypted-integers/)
-17. [PWC 262 - Task 1: Max Positive Negative](https://theweeklychallenge.org/blog/perl-weekly-challenge-262/) | [2529. Maximum Count of Positive Integer and Negative Integer](https://leetcode.com/problems/maximum-count-of-positive-integer-and-negative-integer/description/)*
+17. [PWC 261 - Task 1: Element Digit Sum](https://theweeklychallenge.org/blog/perl-weekly-challenge-261/) | [2535. Difference Between Element Sum and Digit Sum of an Array](https://leetcode.com/problems/difference-between-element-sum-and-digit-sum-of-an-array/description/)
+18. [PWC 262 - Task 1: Max Positive Negative](https://theweeklychallenge.org/blog/perl-weekly-challenge-262/) | [2529. Maximum Count of Positive Integer and Negative Integer](https://leetcode.com/problems/maximum-count-of-positive-integer-and-negative-integer/description/)*
 
 ### Exploration of #10
 
