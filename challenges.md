@@ -18,6 +18,7 @@
 |  14   |  1207  |         | 260p1 |           `len key . uniq len = len`            |     `LƙµQL=L`      |
 |  15   |  3074  |  388p1  |       |      `< . sort rev sums . sum . sum add1`       |   `ḷṢṚÄð<ðṛSµS‘`   |
 |  16   |  3079  | b126p1  |       |      `i_to_d . maxr max . each d_to_i sum`      |     `DµṀ»µ€ḌS`     |
+|  17   |  2529  |         | 262p1 |      `filter_out 0 sign . len key . maxr`       |     `ḟ0ṠµLƙµṀ`     |
 
 ### Links
 
@@ -30,13 +31,14 @@
 7. [2778. Sum of Squares of Special Elements](https://leetcode.com/problems/sum-of-squares-of-special-elements/description/) | [PWC 251 - Task 1: Special Numbers](https://theweeklychallenge.org/blog/perl-weekly-challenge-251/)
 8. [1365. How Many Numbers Are Smaller Than the Current Number](https://leetcode.com/problems/how-many-numbers-are-smaller-than-the-current-number/description/) | [PWC 257 - Task 1: Smaller than Current](https://theweeklychallenge.org/blog/perl-weekly-challenge-257/)
 9. [PWC 258 - Task 1: Count Even Digits Number](https://theweeklychallenge.org/blog/perl-weekly-challenge-258/) | [Find Numbers with Even Number of Digits](https://leetcode.com/problems/find-numbers-with-even-number-of-digits/)
-10. [PWC 258 - Task Task 2: Sum of Values](https://theweeklychallenge.org/blog/perl-weekly-challenge-258/) | [2859. Sum of Values at Indices With K Set Bits](https://leetcode.com/problems/sum-of-values-at-indices-with-k-set-bits/description/)
+10. [PWC 258 - Task 2: Sum of Values](https://theweeklychallenge.org/blog/perl-weekly-challenge-258/) | [2859. Sum of Values at Indices With K Set Bits](https://leetcode.com/problems/sum-of-values-at-indices-with-k-set-bits/description/)
 11. [3046. Split the Array](https://leetcode.com/contest/weekly-contest-386/problems/split-the-array/)
 12. [3065. Minimum Operations to Exceed Threshold Value I](https://leetcode.com/contest/biweekly-contest-125/problems/minimum-operations-to-exceed-threshold-value-i/)
 13. [1833. Maximum Ice Cream Bars](https://leetcode.com/problems/maximum-ice-cream-bars/description/)
 14. [1207. Unique Number of Occurrences](https://leetcode.com/problems/unique-number-of-occurrences/description/) | [Task 1: Unique Occurrences](https://theweeklychallenge.org/blog/perl-weekly-challenge-260/)
 15. [3074. Apple Redistribution into Boxes](https://leetcode.com/contest/weekly-contest-388/problems/apple-redistribution-into-boxes/)
 16. [3079. Find the Sum of Encrypted Integers](https://leetcode.com/contest/biweekly-contest-126/problems/find-the-sum-of-encrypted-integers/)
+17. [PWC 262 - Task 1: Max Positive Negative](https://theweeklychallenge.org/blog/perl-weekly-challenge-262/) | [2529. Maximum Count of Positive Integer and Negative Integer](https://leetcode.com/problems/maximum-count-of-positive-integer-and-negative-integer/description/)*
 
 ### Exploration of #10
 
