@@ -29,8 +29,8 @@ advisements = {
     "sort group_len": "len key",
     "sort group ":    "id key",
     "idx : at_idx":   ": keep",
-    "r scan":         "id",
-    "r fold":         "last",
+    " r scan":         "id",
+    " r fold":         "last",
     "bits each":      "bits", # TODO: generalize this for all scalar fns
     "max scan":       "maxs",
     "part len_each":  "len part",
