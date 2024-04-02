@@ -53,7 +53,7 @@ completer = WordCompleter(
 history = FileHistory("jello_history.txt")
 
 def is_nilad_array(s: str) -> bool:
-    return set(list(s)).issubset(list("0123456789,[]"))
+    return set(list(s)).issubset(list("-0123456789,[]"))
 
 def to_jelly(token: str) -> str:
     if token in tokens.monadic:     return tokens.monadic[token]
