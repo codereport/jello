@@ -20,6 +20,7 @@
 |  16   |  3079  | b126p1  |       |      `i_to_d . maxr max . each d_to_i sum`      |     `DµṀ»µ€ḌS`     |
 |  17   |  2535  |         | 261p1 |           `i_to_d flat sum _ sum abs`           |      `DFS_SA`      |
 |  18   |  2529  |         | 262p1 |      `filter_out 0 sign . len key . maxr`       |     `ḟ0ṠµLƙµṀ`     |
+|  19   |        |         | 263p1 |                `sort = idx sub1`                |       `Ṣ=T’`       |
 
 ### Links
 
@@ -41,6 +42,7 @@
 16. [3079. Find the Sum of Encrypted Integers](https://leetcode.com/contest/biweekly-contest-126/problems/find-the-sum-of-encrypted-integers/)
 17. [PWC 261 - Task 1: Element Digit Sum](https://theweeklychallenge.org/blog/perl-weekly-challenge-261/) | [2535. Difference Between Element Sum and Digit Sum of an Array](https://leetcode.com/problems/difference-between-element-sum-and-digit-sum-of-an-array/description/)
 18. [PWC 262 - Task 1: Max Positive Negative](https://theweeklychallenge.org/blog/perl-weekly-challenge-262/) | [2529. Maximum Count of Positive Integer and Negative Integer](https://leetcode.com/problems/maximum-count-of-positive-integer-and-negative-integer/description/)*
+19. [PWC 263 - Task 1: Target Index](https://theweeklychallenge.org/blog/perl-weekly-challenge-263/)
 
 ### Exploration of #10
 
