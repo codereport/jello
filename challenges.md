@@ -20,7 +20,7 @@
 |  16   |  3079  | b126p1  |       |      `i_to_d . maxr max . each d_to_i sum`      |     `DµṀ»µ€ḌS`     |
 |  17   |  2535  |         | 261p1 |           `i_to_d flat sum _ sum abs`           |      `DFS_SA`      |
 |  18   |  2529  |         | 262p1 |      `filter_out 0 sign . len key . maxr`       |     `ḟ0ṠµLƙµṀ`     |
-|  19   |        |         | 263p1 |                `sort = idx sub1`                |       `Ṣ=T’`       |
+|  19   |  2089  |  269p1  | 263p1 |                `sort = idx sub1`                |       `Ṣ=T’`       |
 
 ### Links
 
