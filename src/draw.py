@@ -31,7 +31,7 @@ def comb_offset(c: str) -> int:
 def width_adjustment(width: int) -> int :
     return (width - 1) // 2
 
-def combintor_from_pattern_match(chain: list[int], is_monadic: bool, initial_call: bool) -> str:
+def combinator_from_pattern_match(chain: list[int], is_monadic: bool, initial_call: bool) -> str:
     if len(chain) == 1 and initial_call:
         if is_monadic: return "m"  if chain[0] == 1 else "W"
         return "m" if chain[0] == 1 else "d"
@@ -129,7 +129,7 @@ def combinator_tree(
     is_monadic = chain_type in [Chain.MONADIC, Separator.MONADIC]
 
     while len(chain) > 1 or initial_call:
-        c   = combintor_from_pattern_match(firsts(chain), is_monadic, initial_call)
+        c   = combinator_from_pattern_match(firsts(chain), is_monadic, initial_call)
         n   = comb_width(c, initial_call) # TODO: pretty sure these two functions can be
         off = comb_offset(c)              # combined into one (as they are doing the same thing)
         a   = comb_arity(c)
