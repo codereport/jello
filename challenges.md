@@ -22,7 +22,7 @@
 |  18   |  2529  |         | 262p1 |      `filter_out 0 sign . len key . maxr`       |     `ḟ0ṠµLƙµṀ`     |
 |  19   |  2089  |  269p1  | 263p1 |                `sort = idx sub1`                |       `Ṣ=T’`       |
 |  20   |  3155  |  393p2  |       |          `is_prime idx . last _ head`           |      `ẒTµṪ_Ḣ`      |
-|  21   |  3105  |  392p1  |       |     `_ prior sign sum group abs maxr add1`      |    `_ṕṠSŒgAṀ‘`     |
+|  21   |  3105  |  392p1  |       |      `deltas sign sum group abs maxr add1`      |     `IṠSŒgAṀ‘`     |
 |  22   |  3110  | b128p1  |       |              `ord deltas abs sum`               |       `OIAS`       |
 
 ### Links

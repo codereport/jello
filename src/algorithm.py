@@ -35,6 +35,7 @@ advisements = {
     "max scan":       "maxs",
     "part len_each":  "len part",
     "> 0 : part_by":  "part",
+    "_ prior":        "deltas"
 }
 
 regex_advisements = {
