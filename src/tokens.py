@@ -81,7 +81,6 @@ monadic = {
     "add1":             "‘",
     "sub1":             "’",
     "i":                "¹",
-    "group":            "Œg",
     "rle":              "Œr",
     "part":             "Ṕ",
     "powerset":         "ŒP",
@@ -157,6 +156,7 @@ quick = {
     "part":         "Ṕ",
     "part_by":      "ℙ",
     "max_by":       "ÐṀ",
+    "group":        "Œg",
 }
 
 separators = {
