@@ -22,6 +22,7 @@
 |  18   |  2529  |         | 262p1 |      `filter_out 0 sign . len key . maxr`       |     `ḟ0ṠµLƙµṀ`     |
 |  19   |  2089  |  269p1  | 263p1 |                `sort = idx sub1`                |       `Ṣ=T’`       |
 |  20   |  3155  |  393p2  |       |          `is_prime idx . last _ head`           |      `ẒTµṪ_Ḣ`      |
+|  21   |  3105  |  392p1  |       |     `_ prior sign sum group abs maxr add1`      |    `_ṕṠSŒgAṀ‘`     |
 
 ### Links
 
@@ -45,6 +46,7 @@
 18. [PWC 262 - Task 1: Max Positive Negative](https://theweeklychallenge.org/blog/perl-weekly-challenge-262/) | [2529. Maximum Count of Positive Integer and Negative Integer](https://leetcode.com/problems/maximum-count-of-positive-integer-and-negative-integer/description/)*
 19. [PWC 263 - Task 1: Target Index](https://theweeklychallenge.org/blog/perl-weekly-challenge-263/)
 20. [3115. Maximum Prime Difference](https://leetcode.com/problems/maximum-prime-difference/description/)
+21. [3105. Longest Strictly Increasing or Strictly Decreasing Subarray](https://leetcode.com/problems/longest-strictly-increasing-or-strictly-decreasing-subarray/description/)
 
 ### Exploration of #10
 
