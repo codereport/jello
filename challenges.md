@@ -23,6 +23,7 @@
 |  19   |  2089  |  269p1  | 263p1 |                `sort = idx sub1`                |       `Ṣ=T’`       |
 |  20   |  3155  |  393p2  |       |          `is_prime idx . last _ head`           |      `ẒTµṪ_Ḣ`      |
 |  21   |  3105  |  392p1  |       |     `_ prior sign sum group abs maxr add1`      |    `_ṕṠSŒgAṀ‘`     |
+|  22   |  3110  | b128p1  |       |              `ord deltas abs sum`               |       `OIAS`       |
 
 ### Links
 
@@ -47,6 +48,7 @@
 19. [PWC 263 - Task 1: Target Index](https://theweeklychallenge.org/blog/perl-weekly-challenge-263/)
 20. [3115. Maximum Prime Difference](https://leetcode.com/problems/maximum-prime-difference/description/)
 21. [3105. Longest Strictly Increasing or Strictly Decreasing Subarray](https://leetcode.com/problems/longest-strictly-increasing-or-strictly-decreasing-subarray/description/)
+22. [3110. Score of a String](https://leetcode.com/problems/score-of-a-string/)
 
 ### Exploration of #10
 
