@@ -7,7 +7,7 @@
 |   3   |  3028  |  383p1  |       |                 `sums = 0 sum`                  |       `Ä=0S`       |
 |   4   |  3038  | b124p1  |       | `len idiv 2 take c + 2 chunk_fold . = head sum` |   `L:2ḣ@+2/µ=ḢS`   |
 |   5   |        |         | 250p1 |        `len iota0 mod 10 = : keep head`         |    `LḶ%10=ðḳḢ`     |
-|   6   |  1380  |         | 251p2 |        `minr each rev = maxr * maxr sum`        |   ``z`ṂṚ=Ṁ×Ṁḟ0``   |
+|   6   |  1380  |         | 251p2 |        `minr each rev = maxr * maxr sum`        |     `Ṃ€Ṛ=Ṁ×ṀS`     |
 |   7   |  2778  |         | 252p1 |              `divs? len * sq sum`               |      `ḍL×²S`       |
 |   8   |  1365  |         | 257p1 |              `< outer w sum each`               |     ``<þ`S€``      |
 |   9   |  1295  |         | 258p1 |         `i_to_d len_each odd? not sum`          |      `DẈḂCS`       |
@@ -16,7 +16,7 @@
 |  12   |  3065  | b125p1  |       |                     `< sum`                     |        `<S`        |
 |  13   |  1833  |  237p2  |       |               `sort sums <= sum`                |       `ṢÄ≤S`       |
 |  14   |  1207  |         | 260p1 |           `len key . uniq len = len`            |     `LƙµQL=L`      |
-|  15   |  3074  |  388p1  |       |      `< . sort rev sums . sum . sum add1`       |   `ḷṢṚÄð<ðṛSµS‘`   |
+|  15   |  3074  |  388p1  |       |      `< . sort rev sums . sum . sum add1`       |    `<µṢṚÄµSµS‘`    |
 |  16   |  3079  | b126p1  |       |      `i_to_d . maxr max . each d_to_i sum`      |     `DµṀ»µ€ḌS`     |
 |  17   |  2535  |         | 261p1 |           `i_to_d flat sum _ sum abs`           |      `DFS_SA`      |
 |  18   |  2529  |         | 262p1 |      `filter_out 0 sign . len key . maxr`       |     `ḟ0ṠµLƙµṀ`     |
