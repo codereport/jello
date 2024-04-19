@@ -33,7 +33,7 @@ if __name__ == "__main__":
 
     print("🟢🟡🔴 Jello Tests 🔴🟡🟢\n")
 
-    print("\nUnit Tests:")
+    print("Unit Tests:")
 
     # shorter tests
     unit_test("+ half",               "S",   "B₁")
@@ -76,7 +76,7 @@ if __name__ == "__main__":
     unit_test("max scan uniq len",                           "BB",    "BB")      # 9
     unit_test("rev max scan rev : r = prior _ c = idx sub1", "BBΣ", "BBΔ")       # 10
 
-    print("\n\nChallenges.md Tests:\n")
+    print("\n\nChallenges.md Tests:")
 
     for a, b in challenge_tests():
         try:
