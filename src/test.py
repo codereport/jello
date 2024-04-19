@@ -15,9 +15,25 @@ def unit_test(expr: str, exp_monad_res: str, exp_dyad_res):
     if dyad_res  == exp_dyad_res:  print("✅", end="")
     else:                          print(f"\n❌ for Dyadic Test of: {expr}")
 
+def challenge_tests():
+    res = []
+    with open("../challenges.md") as file:
+        for line in file:
+            if line and line[0] == "|":
+                t = line.split("|")
+                if len(t) == 8:
+                    a = t[5].strip()
+                    b = t[6].strip()
+                    if a[0] == '`':
+                        t = 2 if b[:2] == "``" else 1
+                        res.append((a[1:-1], b[t:-t]))
+    return res
+
 if __name__ == "__main__":
 
     print("🟢🟡🔴 Jello Tests 🔴🟡🟢\n")
+
+    print("\nUnit Tests:")
 
     # shorter tests
     unit_test("+ half",               "S",   "B₁")
@@ -59,5 +75,15 @@ if __name__ == "__main__":
     unit_test("odd? sum group each maxr > 2",                "BBΔₚ",   "BBεₚ")    # 8.4
     unit_test("max scan uniq len",                           "BB",    "BB")      # 9
     unit_test("rev max scan rev : r = prior _ c = idx sub1", "BBΣ", "BBΔ")       # 10
+
+    print("\n\nChallenges.md Tests:\n")
+
+    for a, b in challenge_tests():
+        try:
+            c = jello.convert(a.split())
+            if b == c: print("✅", end="")
+            else:      print(f"\n❌ {b} should be {c}")
+        except Exception as e:
+            print(e)
 
     print()
