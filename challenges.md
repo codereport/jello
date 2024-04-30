@@ -31,6 +31,7 @@
 
 |   #   |    Date    |     Languages      |                              Video Link                               |
 | :---: | :--------: | :----------------: | :-------------------------------------------------------------------: |
+|  20   |     -      | APL, BQN, J, Jello |                                coming                                 |
 |  22   |     -      | APL, Jello, Python |                                coming                                 |
 |  24   | 2021-04-12 |    APL, Haskell    | [I ❤ APL and Haskell #2](https://www.youtube.com/watch?v=a7CSK7HNEWQ) |
 
