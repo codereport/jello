@@ -1,6 +1,6 @@
 ### LeetCode / PWC Problems
 
-|       | Number | Contest |  PWC  |                 Jello Solution                  | Jellyfish Solution |
+|   #   | Number | Contest |  PWC  |                 Jello Solution                  | Jellyfish Solution |
 | :---: | :----: | :-----: | :---: | :---------------------------------------------: | :----------------: |
 |   1   |  3005  |  380p1  |       |        `len key . idx_max at_idx . sum`         |     `LƙµMịµS`      |
 |   2   |  3010  | b122p1  |       |      `tail sort take 2 pair head flat sum`      |     `ḊṢḣ2,ḢFS`     |
@@ -25,6 +25,14 @@
 |  21   |  3105  |  392p1  |       |      `deltas sign sum group abs maxr add1`      |     `IṠSŒgAṀ‘`     |
 |  22   |  3110  | b128p1  |       |              `ord deltas abs sum`               |       `OIAS`       |
 |  23   |  3131  |  395p1  |       |                `_ minr minr abs`                |       `_ṂṂA`       |
+|  24   |  1822  |  236p1  | 267p1 |                   `sign prod`                   |        `ṠP`        |
+
+### Video Solutions
+
+|   #   |    Date    |     Languages      |                              Video Link                               |
+| :---: | :--------: | :----------------: | :-------------------------------------------------------------------: |
+|  22   |     -      | APL, Jello, Python |                                coming                                 |
+|  24   | 2021-04-12 |    APL, Haskell    | [I ❤ APL and Haskell #2](https://www.youtube.com/watch?v=a7CSK7HNEWQ) |
 
 ### Links
 
@@ -51,6 +59,7 @@
 21. [3105. Longest Strictly Increasing or Strictly Decreasing Subarray](https://leetcode.com/problems/longest-strictly-increasing-or-strictly-decreasing-subarray/description/)
 22. [3110. Score of a String](https://leetcode.com/problems/score-of-a-string/)
 23. [3131. Find the Integer Added to Array I](https://leetcode.com/problems/find-the-integer-added-to-array-i/description/)
+24. [PWC 267 - Task 1: Product Sign](https://theweeklychallenge.org/blog/perl-weekly-challenge-267/) | [1822. Sign of the Product of an Array](https://leetcode.com/contest/weekly-contest-236/problems/sign-of-the-product-of-an-array/)
 
 ### Exploration of #10
 
