@@ -29,11 +29,11 @@
 
 ### Video Solutions
 
-|   #   |    Date    |     Languages      |                              Video Link                               |
-| :---: | :--------: | :----------------: | :-------------------------------------------------------------------: |
-|  20   |     -      | APL, BQN, J, Jello |                                coming                                 |
-|  22   |     -      | APL, Jello, Python |                                coming                                 |
-|  24   | 2021-04-12 |    APL, Haskell    | [I ❤ APL and Haskell #2](https://www.youtube.com/watch?v=a7CSK7HNEWQ) |
+|   #   |    Date    |     Languages      |                               Video Link                                |
+| :---: | :--------: | :----------------: | :---------------------------------------------------------------------: |
+|  20   | 2024-05-01 | APL, BQN, J, Jello | [J vs BQN vs APL vs Jello](https://www.youtube.com/watch?v=ra_VpqPkENU) |
+|  22   |     -      | APL, Jello, Python |                                 coming                                  |
+|  24   | 2021-04-12 |    APL, Haskell    |  [I ❤ APL and Haskell #2](https://www.youtube.com/watch?v=a7CSK7HNEWQ)  |
 
 ### Links
 
