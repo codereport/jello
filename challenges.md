@@ -59,7 +59,7 @@
 20. [3115. Maximum Prime Difference](https://leetcode.com/problems/maximum-prime-difference/description/)
 21. [3105. Longest Strictly Increasing or Strictly Decreasing Subarray](https://leetcode.com/problems/longest-strictly-increasing-or-strictly-decreasing-subarray/description/)
 22. [3110. Score of a String](https://leetcode.com/problems/score-of-a-string/)
-23. [3131. Find the Integer Added to Array I](https://leetcode.com/problems/find-the-integer-added-to-array-i/description/)
+23. [PWC 268 Task 1: Magic Number](https://theweeklychallenge.org/blog/perl-weekly-challenge-268/) | [3131. Find the Integer Added to Array I](https://leetcode.com/problems/find-the-integer-added-to-array-i/description/)
 24. [PWC 267 - Task 1: Product Sign](https://theweeklychallenge.org/blog/perl-weekly-challenge-267/) | [1822. Sign of the Product of an Array](https://leetcode.com/contest/weekly-contest-236/problems/sign-of-the-product-of-an-array/)
 
 ### Exploration of #10
