@@ -26,6 +26,7 @@
 |  22   |  3110  | b128p1  |       |              `ord deltas abs sum`               |       `OIAS`       |
 |  23   |  3131  |  395p1  |       |                `_ minr minr abs`                |       `_ṂṂA`       |
 |  24   |  1822  |  236p1  | 267p1 |                   `sign prod`                   |        `ṠP`        |
+|  25   |        |         | 269p1 |                 `even? sum > 1`                 |       `ÉS>1`       |
 
 ### Video Solutions
 
@@ -61,6 +62,7 @@
 22. [3110. Score of a String](https://leetcode.com/problems/score-of-a-string/)
 23. [PWC 268 Task 1: Magic Number](https://theweeklychallenge.org/blog/perl-weekly-challenge-268/) | [3131. Find the Integer Added to Array I](https://leetcode.com/problems/find-the-integer-added-to-array-i/description/)
 24. [PWC 267 - Task 1: Product Sign](https://theweeklychallenge.org/blog/perl-weekly-challenge-267/) | [1822. Sign of the Product of an Array](https://leetcode.com/contest/weekly-contest-236/problems/sign-of-the-product-of-an-array/)
+25. [PWC 269 - Task 1: Bitwise OR](https://theweeklychallenge.org/blog/perl-weekly-challenge-269/)
 
 ### Exploration of #10
 
