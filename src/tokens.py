@@ -133,6 +133,7 @@ dyadic = {
     "divs?":      "ḍ",  # divides
     ">=":         "≥",
     "<=":         "≤",
+    "!=":         "n",
 }
 
 niladic = {
