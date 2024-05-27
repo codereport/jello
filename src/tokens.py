@@ -89,7 +89,8 @@ monadic = {
     "divisor_len":      "Æd",
     "factors":          "Æf",
     "uniq_mask":        "ŒQ",
-    "factors_exp":      "ÆF"
+    "factors_exp":      "ÆF",
+    "differ":           "Ď",
 }
 
 dyadic = {
