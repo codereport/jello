@@ -27,7 +27,7 @@
 |  23   |  3131  |  395p1  |       |                `_ minr minr abs`                |       `_ṂṂA`       |
 |  24   |  1822  |  236p1  | 267p1 |                   `sign prod`                   |        `ṠP`        |
 |  25   |        |         | 269p1 |                 `even? sum > 1`                 |       `ÉS>1`       |
-|  26   |  3151  |  398p1  |       |               `odd? != prior all`               |       `ḂnṕẠ`       |
+|  26   |  3151  |  398p1  |       |                `odd? differ all`                |       `ḂĎẠ`        |
 
 ### Video Solutions
 
