@@ -37,6 +37,7 @@ advisements = {
     "> 0 : part_by":  "part",
     "_ prior":        "deltas",
     "and fold":       "all",
+    "!= prior":       "differ",
 }
 
 regex_advisements = {
@@ -52,8 +53,10 @@ regex_advisements = {
     r"part (.+) each":  r"\1 part_with",
 }
 
-def print_advisement(old: str, new: str):
-    draw.cprint(f"\n    {(old)} ", Fore.RED, False)
+def print_advisement(old: str, new: str, prev: bool):
+    if not prev:
+        print()
+    draw.cprint(f"    {(old)} ", Fore.RED, False)
     print("can be replaced with ", end="")
     draw.cprint(new, Fore.GREEN, True)
     print("      ☝️🥳 algorithm advisor 🥳☝️\n")
@@ -61,9 +64,11 @@ def print_advisement(old: str, new: str):
 def advisor(keywords: list[str]):
 
     # non-regex advisements
+    previous = False
     for old, new in advisements.items():
         if utils.is_subseq_of(keywords, old):
-            print_advisement(old, new)
+            print_advisement(old, new, previous)
+            previous = True
 
     # regex advisements
     for pattern, replacement in regex_advisements.items():
