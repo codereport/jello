@@ -159,6 +159,7 @@ quick = {
     "part_by":      "ℙ",
     "max_by":       "ÐṀ",
     "group":        "Œg",
+    "sort_by":      "Þ",
 }
 
 separators = {
