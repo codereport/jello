@@ -28,6 +28,8 @@
 |  24   |  1822  |  236p1  | 267p1 |                   `sign prod`                   |        `ṠP`        |
 |  25   |        |         | 269p1 |                 `even? sum > 1`                 |       `ÉS>1`       |
 |  26   |  3151  |  398p1  |       |                `odd? differ all`                |       `ḂĎẠ`        |
+|  27   |        |         | 271p1 |               `sum each idx_max`                |       `S€M`        |
+|  28   |        |         | 271p2 |                 `bits sort_by`                  |        `①Þ`        |
 
 ### Video Solutions
 
@@ -65,6 +67,8 @@
 24. [PWC 267 - Task 1: Product Sign](https://theweeklychallenge.org/blog/perl-weekly-challenge-267/) | [1822. Sign of the Product of an Array](https://leetcode.com/contest/weekly-contest-236/problems/sign-of-the-product-of-an-array/)
 25. [PWC 269 - Task 1: Bitwise OR](https://theweeklychallenge.org/blog/perl-weekly-challenge-269/)
 26. [3151. Special Array I](https://leetcode.com/problems/special-array-i/description/)
+27. [PWC 270 - Task 1: Maximum Ones](https://theweeklychallenge.org/blog/perl-weekly-challenge-271/)
+28. [PWC 270 - Task 2: Sort by 1 bits](https://theweeklychallenge.org/blog/perl-weekly-challenge-271/)
 
 ### Exploration of #10
 
