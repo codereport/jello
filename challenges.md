@@ -30,6 +30,7 @@
 |  26   |  3151  |  398p1  |       |                `odd? differ all`                |       `ḂĎẠ`        |
 |  27   |        |         | 271p1 |               `sum each idx_max`                |       `S€M`        |
 |  28   |        |         | 271p2 |                 `bits sort_by`                  |        `①Þ`        |
+|  29   |  3190  | b133p1  |       |                `3 divs? not sum`                |       `3ḍCS`       |
 
 ### Video Solutions
 
@@ -69,6 +70,7 @@
 26. [3151. Special Array I](https://leetcode.com/problems/special-array-i/description/)
 27. [PWC 270 - Task 1: Maximum Ones](https://theweeklychallenge.org/blog/perl-weekly-challenge-271/)
 28. [PWC 270 - Task 2: Sort by 1 bits](https://theweeklychallenge.org/blog/perl-weekly-challenge-271/)
+29. [3190. Find Minimum Operations to Make All Elements Divisible by Three](https://leetcode.com/problems/find-minimum-operations-to-make-all-elements-divisible-by-three/description/)
 
 ### Exploration of #10
 
