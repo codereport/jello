@@ -1,8 +1,8 @@
 
 import re
 
-import draw
-import utils
+from . import draw
+from . import utils
 from colorama import Fore
 
 advisements = {
