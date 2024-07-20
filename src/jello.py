@@ -5,18 +5,18 @@ import subprocess
 from functools import partial
 from itertools import permutations
 
-import algorithm
-import arity_notation
-import draw
-import tokens
-import utils
+from . import algorithm
+from . import arity_notation
+from . import draw
+from . import tokens
+from . import utils
 from colorama import Fore, init
-from grid import Grid
+from .grid import Grid
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.shortcuts import CompleteStyle
-from utils import Chain, Quick, Separator
+from .utils import Chain, Quick, Separator
 
 
 def clear_screen():
@@ -123,7 +123,7 @@ def process_combinations(arg, out, combinations):
         if x == out:
             print(f"{arg} :: {keyword1} {keyword2} -> {x}")
 
-if __name__ == "__main__":
+def main():
     init()  # for colorama
 
     print("🟢🟡🔴 Jello 🔴🟡🟢\n")
@@ -214,3 +214,6 @@ if __name__ == "__main__":
             color = Fore.GREEN if "algorithm" in str(e) else Fore.RED
             draw.cprint(f"    {e}", color, True)
             # noqa print(e.with_traceback())
+
+if __name__ == "__main__":
+    main()

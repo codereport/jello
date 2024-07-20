@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools >= 61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+dynamic = ["version"]
+name = "jello"
+readme = "README.md"
+description = "A Python script for wrapping Jellyfish (a fork of Jelly) so you can more easily play with the language."
+
+[project.scripts]
+jello = "jello.jello:main"
+
+[tool.setuptools]
+packages = ["jello"]
+
+[tool.setuptools.package-dir]
+jello = "src"
+
