@@ -91,6 +91,8 @@ monadic = {
     "uniq_mask":        "ŒQ",
     "factors_exp":      "ÆF",
     "differ":           "Ď",
+    "lcm":              "æl",
+    "gcd":              "g",
 }
 
 dyadic = {
