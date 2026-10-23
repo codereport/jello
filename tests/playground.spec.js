@@ -158,6 +158,94 @@ test("suggestions complete the current keyword and syntax colors follow keyword 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
+test("settings persist, synchronize live mode, and keep the REPL usable in presentation mode", async ({ page }, testInfo) => {
+  const errors = [];
+  page.on("pageerror", (error) => errors.push(error.message));
+  await page.goto("./");
+  await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
+  const gear = page.getByRole("button", { name: "Settings", exact: true });
+  const dialog = page.getByRole("dialog", { name: /settings/ });
+  const live = dialog.getByRole("switch", { name: "Live mode", exact: true });
+  const examples = dialog.getByRole("switch", { name: "Show examples", exact: true });
+  const keywords = dialog.getByRole("switch", { name: "Show keywords", exact: true });
+  const presentation = dialog.getByRole("switch", { name: "Presentation mode", exact: true });
+  const theme = dialog.getByRole("combobox", { name: "Theme", exact: true });
+  const liveShortcut = page.getByRole("switch", { name: "Live view", exact: true });
+  const close = () => dialog.getByRole("button", { name: "Close settings" }).click();
+  await gear.click();
+  await expect(dialog).toBeVisible();
+  await expect(live).not.toBeChecked();
+  await expect(examples).toBeChecked();
+  await expect(keywords).toBeChecked();
+  await expect(presentation).not.toBeChecked();
+  await expect(theme).toHaveValue("terminal");
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(gear).toBeFocused();
+  await liveShortcut.click();
+  await gear.click();
+  await expect(live).toBeChecked();
+  await live.uncheck();
+  await expect(liveShortcut).not.toBeChecked();
+  await live.check();
+  await theme.selectOption("dracula");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(40, 42, 54)");
+  await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute("content", "#282a36");
+  await page.screenshot({ path: testInfo.outputPath("settings-dracula.png"), fullPage: true });
+  await examples.uncheck();
+  await keywords.uncheck();
+  await close();
+  await expect(page.locator(".examples-panel")).toBeHidden();
+  await expect(page.locator(".wordbook")).toBeHidden();
+  const input = page.getByRole("combobox", { name: "YOUR EXPRESSION" });
+  await input.fill("5 :: ran");
+  await expect(page.getByRole("listbox", { name: "Keyword suggestions" })).toBeVisible();
+  await input.press("Tab");
+  await expect(input).toHaveValue("5 :: range");
+  await expect(page.locator(".live-entry .result")).toHaveText("[1, 2, 3, 4, 5]");
+  await gear.click();
+  await presentation.check();
+  await close();
+  for (const selector of [".site-header", ".site-footer", ".syntax-note", ".syntax-legend", ".toolbar-actions", ".input-help", ".timing"]) {
+    await expect(page.locator(selector).first()).toBeHidden();
+  }
+  await expect(gear).toBeVisible();
+  const box = await page.locator(".repl").boundingBox();
+  const viewport = page.viewportSize();
+  expect(Math.abs(box.x + box.width / 2 - viewport.width / 2)).toBeLessThan(2);
+  expect(Math.abs(box.y + box.height / 2 - viewport.height / 2)).toBeLessThan(2);
+  await page.screenshot({ path: testInfo.outputPath("presentation-dracula.png"), fullPage: true });
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("jello-settings")))).toEqual({
+    liveMode: true, showExamples: false, theme: "dracula", showKeywords: false, presentationMode: true,
+  });
+  await page.reload();
+  await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dracula");
+  await expect(page.locator(".site-header")).toBeHidden();
+  await expect(liveShortcut).toBeChecked();
+  await gear.click();
+  await expect(live).toBeChecked();
+  await expect(examples).not.toBeChecked();
+  await expect(keywords).not.toBeChecked();
+  await expect(presentation).toBeChecked();
+  await expect(theme).toHaveValue("dracula");
+  await presentation.uncheck();
+  await expect(page.locator(".site-header")).toBeVisible();
+  await expect(page.locator(".examples-panel")).toBeHidden();
+  await expect(page.locator(".wordbook")).toBeHidden();
+  await examples.check();
+  await keywords.check();
+  await live.uncheck();
+  await theme.selectOption("terminal");
+  await close();
+  await expect(page.locator(".examples-panel")).toBeVisible();
+  await expect(page.locator(".wordbook")).toBeVisible();
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(11, 14, 17)");
+  await expect(liveShortcut).not.toBeChecked();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  expect(errors).toEqual([]);
+});
+
 test("a newer live expression supersedes a busy preview", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === "mobile", "Worker cancellation is independent of layout.");
   await page.goto("./");

@@ -30,6 +30,7 @@
                 <span class="session-label"><span class="mini-prompt" aria-hidden="true">›_</span> playground <span id="session-mode" class="muted">/ session</span></span>
                 <div id="runtime-status" class="runtime-status" role="status"><span class="status-dot"></span><span id="status-text">initializing…</span><button id="retry" class="text-button" hidden>Retry</button></div>
                 <div class="toolbar-actions"><button id="share" class="toolbar-button" title="Copy a link to your expression"><span aria-hidden="true">↗</span> Share</button><span class="toolbar-divider"></span><button id="clear" class="toolbar-button">Clear</button></div>
+                <button id="settings-toggle" class="icon-button" type="button" aria-label="Settings" aria-haspopup="dialog" aria-controls="settings-dialog" title="Settings"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 3 9 5.2 7 6.4 4.8 5.8 2.3 10l1.6 1.6v.8L2.3 14l2.5 4.2 2.2-.6L9 18.8l.5 2.2h5l.5-2.2 2-1.2 2.2.6 2.5-4.2-1.6-1.6v-.8l1.6-1.6-2.5-4.2-2.2.6L15 5.2 14.5 3Z"/><circle cx="12" cy="12" r="3"/></svg></button>
               </div>
               <form id="repl-form" class="composer" autocomplete="off">
                 <div class="composer-heading">
@@ -90,6 +91,16 @@
 
       <footer class="site-footer"><span class="footer-brand">jello / jellyfish<span class="brand-dots" aria-hidden="true"><i></i><i></i><i></i></span></span><div><a href="https://github.com/codereport/jello#readme">docs <span aria-hidden="true">↗</span></a><a href="https://github.com/codereport/jellyfish">jellyfish <span aria-hidden="true">↗</span></a><a href="https://github.com/codereport">codereport <span aria-hidden="true">↗</span></a></div></footer>
     </div>
+    <dialog id="settings-dialog" class="settings-dialog" aria-labelledby="settings-title">
+      <div class="settings-heading"><h2 id="settings-title">settings</h2><button id="settings-close" class="icon-button" type="button" aria-label="Close settings" title="Close settings"><span aria-hidden="true">×</span></button></div>
+      <label class="setting-row" for="setting-live"><span><span id="label-live" class="setting-label">Live mode</span><small id="help-live">Evaluate after a 600 ms typing pause.</small></span><input id="setting-live" aria-labelledby="label-live" aria-describedby="help-live" type="checkbox" role="switch" data-setting="liveMode"></label>
+      <label class="setting-row" for="setting-examples"><span><span id="label-examples" class="setting-label">Show examples</span><small id="help-examples">Display the example expressions.</small></span><input id="setting-examples" aria-labelledby="label-examples" aria-describedby="help-examples" type="checkbox" role="switch" data-setting="showExamples" checked></label>
+      <div class="setting-row"><label for="setting-theme"><span id="label-theme" class="setting-label">Theme</span><small id="help-theme">Choose your terminal palette.</small></label><select id="setting-theme" aria-labelledby="label-theme" aria-describedby="help-theme" data-setting="theme"><option value="terminal">Terminal</option><option value="dracula">Dracula</option></select></div>
+      <label class="setting-row" for="setting-keywords"><span><span id="label-keywords" class="setting-label">Show keywords</span><small id="help-keywords">Display the keyword reference.</small></span><input id="setting-keywords" aria-labelledby="label-keywords" aria-describedby="help-keywords" type="checkbox" role="switch" data-setting="showKeywords" checked></label>
+      <label class="setting-row" for="setting-presentation"><span><span id="label-presentation" class="setting-label">Presentation mode</span><small id="help-presentation">Center the REPL and hide surrounding UI.</small></span><input id="setting-presentation" aria-labelledby="label-presentation" aria-describedby="help-presentation" type="checkbox" role="switch" data-setting="presentationMode"></label>
+      <p class="presentation-note">Examples and keywords are temporarily hidden in presentation mode. Your choices are kept for when you exit.</p>
+      <p class="settings-note">Changes are saved in this browser.</p>
+    </dialog>
     <div id="toast" class="toast" role="status" hidden></div>
     <noscript><p class="noscript">Enable JavaScript to use the Jello playground.</p></noscript>
   </body>

@@ -1,4 +1,5 @@
 import { KeywordEditor } from "./editor.js";
+import { PlaygroundSettings } from "./settings.js";
 
 const $ = (selector) => document.querySelector(selector);
 const input = $("#expression");
@@ -33,7 +34,6 @@ let history = [], words = [], activeFilter = "all", expandedWords = false;
 try {
   const saved = JSON.parse(localStorage.getItem("jello-history") || "[]");
   if (Array.isArray(saved)) history = saved.filter((item) => typeof item === "string").slice(-100);
-  liveEnabled = localStorage.getItem("jello-live-view") === "true";
 } catch { /* The playground also works when storage is unavailable. */ }
 historyIndex = history.length;
 const sharedExpression = new URLSearchParams(location.hash.slice(1)).get("code");
@@ -43,6 +43,17 @@ if (sharedExpression) {
   $("#welcome h3").textContent = "Shared expression loaded.";
   $("#welcome p").textContent = "Review the expression above, then press Run.";
 }
+
+const settings = new PlaygroundSettings((key, value) => {
+  if (key === "liveMode") {
+    liveEnabled = value;
+    initialRun = false;
+    updateLiveMode();
+    if (liveEnabled) scheduleLive();
+    else cancelPendingLive();
+  }
+});
+liveEnabled = settings.values.liveMode;
 
 const editor = new KeywordEditor(input, {
   onChange: expressionChanged,
@@ -98,14 +109,7 @@ function updateLiveMode() {
   if (liveEntry?.isConnected) liveEntry.querySelector(".entry-badge").textContent = liveEnabled ? "live" : "preview";
 }
 
-liveToggle.addEventListener("click", () => {
-  liveEnabled = !liveEnabled;
-  initialRun = false;
-  updateLiveMode();
-  try { localStorage.setItem("jello-live-view", String(liveEnabled)); } catch { /* Optional preference. */ }
-  if (liveEnabled) scheduleLive();
-  else cancelPendingLive();
-});
+liveToggle.addEventListener("click", () => settings.set("liveMode", !liveEnabled));
 
 function recallHistory(direction) {
   if (!history.length) return;
@@ -274,7 +278,7 @@ function renderResponse(entry, data) {
     const meta = element("div", "entry-meta");
     const jellyCode = element("code", "jelly-code");
     editor.renderAtoms(jellyCode, data.code, entry.dataset.command);
-    meta.append(element("span", "", "JELLY"), jellyCode, element("span", "meta-divider", "·"), element("span", "", `${Math.max(1, Math.round(data.duration))} ms`));
+    meta.append(element("span", "", "JELLY"), jellyCode, element("span", "meta-divider", "·"), element("span", "timing", `${Math.max(1, Math.round(data.duration))} ms`));
     entry.append(output, meta);
     if (data.steps.length || data.tree) {
       const details = element("details", "trace");
