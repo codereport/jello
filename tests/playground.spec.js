@@ -1,5 +1,11 @@
 import { test, expect } from "@playwright/test";
 
+async function setLiveMode(page, enabled) {
+  await page.getByRole("button", { name: "Settings", exact: true }).click();
+  await page.getByRole("switch", { name: "Live mode", exact: true }).setChecked(enabled);
+  await page.getByRole("button", { name: "Close settings" }).click();
+}
+
 test("runs the real interpreter, examples, errors, wordbook, history, and sharing", async ({ page, context }, testInfo) => {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
@@ -89,12 +95,10 @@ test("live view debounces edits, replaces one preview, and switches back to manu
   await page.goto("./");
   await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
   const input = page.getByRole("combobox", { name: "YOUR EXPRESSION" });
-  const toggle = page.getByRole("switch", { name: "Live view" });
   const preview = page.locator(".live-entry");
   const inputBox = await input.boundingBox(), sessionBox = await page.locator("#transcript").boundingBox();
   expect(inputBox.y + inputBox.height).toBeLessThan(sessionBox.y);
-  await expect(toggle).not.toBeChecked();
-  await toggle.click();
+  await setLiveMode(page, true);
   await input.fill("6 :: sq");
   await expect(preview.locator(".result")).toHaveText("36");
   await input.fill("7 :: sq");
@@ -112,9 +116,8 @@ test("live view debounces edits, replaces one preview, and switches back to manu
   await input.fill("8 :: sq");
   await expect(preview.locator(".result")).toHaveText("64");
   await expect(preview.locator(".error-message")).toHaveCount(0);
+  await setLiveMode(page, false);
   await input.fill("9 :: sq");
-  await toggle.click();
-  await expect(toggle).not.toBeChecked();
   await page.waitForTimeout(800);
   await expect(preview.locator(".result")).toHaveText("64");
   await input.press("Enter");
@@ -158,7 +161,7 @@ test("suggestions complete the current keyword and syntax colors follow keyword 
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
-test("settings persist, synchronize live mode, and keep the REPL usable in presentation mode", async ({ page }, testInfo) => {
+test("settings persist and keep the REPL usable in presentation mode", async ({ page }, testInfo) => {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("./");
@@ -170,7 +173,6 @@ test("settings persist, synchronize live mode, and keep the REPL usable in prese
   const keywords = dialog.getByRole("switch", { name: "Show keywords", exact: true });
   const presentation = dialog.getByRole("switch", { name: "Presentation mode", exact: true });
   const theme = dialog.getByRole("combobox", { name: "Theme", exact: true });
-  const liveShortcut = page.getByRole("switch", { name: "Live view", exact: true });
   const close = () => dialog.getByRole("button", { name: "Close settings" }).click();
   await gear.click();
   await expect(dialog).toBeVisible();
@@ -182,11 +184,8 @@ test("settings persist, synchronize live mode, and keep the REPL usable in prese
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
   await expect(gear).toBeFocused();
-  await liveShortcut.click();
+  await expect(page.getByRole("main").getByRole("switch")).toHaveCount(0);
   await gear.click();
-  await expect(live).toBeChecked();
-  await live.uncheck();
-  await expect(liveShortcut).not.toBeChecked();
   await live.check();
   await theme.selectOption("dracula");
   await expect(page.locator("body")).toHaveCSS("background-color", "rgb(40, 42, 54)");
@@ -222,7 +221,6 @@ test("settings persist, synchronize live mode, and keep the REPL usable in prese
   await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dracula");
   await expect(page.locator(".site-header")).toBeHidden();
-  await expect(liveShortcut).toBeChecked();
   await gear.click();
   await expect(live).toBeChecked();
   await expect(examples).not.toBeChecked();
@@ -241,7 +239,6 @@ test("settings persist, synchronize live mode, and keep the REPL usable in prese
   await expect(page.locator(".examples-panel")).toBeVisible();
   await expect(page.locator(".wordbook")).toBeVisible();
   await expect(page.locator("body")).toHaveCSS("background-color", "rgb(11, 14, 17)");
-  await expect(liveShortcut).not.toBeChecked();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   expect(errors).toEqual([]);
 });
@@ -251,7 +248,7 @@ test("a newer live expression supersedes a busy preview", async ({ page }, testI
   await page.goto("./");
   await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
   const input = page.getByRole("combobox", { name: "YOUR EXPRESSION" });
-  await page.getByRole("switch", { name: "Live view" }).click();
+  await setLiveMode(page, true);
   await input.fill("99999999 :: factorial");
   await expect(page.getByRole("button", { name: "Stop execution" })).toBeVisible();
   await input.fill("5 :: range");

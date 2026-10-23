@@ -5,7 +5,6 @@ const $ = (selector) => document.querySelector(selector);
 const input = $("#expression");
 const transcript = $("#transcript");
 const runButton = $("#run");
-const liveToggle = $("#live-toggle");
 const LIVE_DELAY = 600;
 const welcomeTemplate = $("#welcome").cloneNode(true);
 const descriptions = {
@@ -103,13 +102,10 @@ function flushLive() {
 }
 
 function updateLiveMode() {
-  liveToggle.setAttribute("aria-checked", String(liveEnabled));
   $(".repl").classList.toggle("live-mode", liveEnabled);
   $("#session-mode").textContent = liveEnabled ? "/ live" : "/ session";
   if (liveEntry?.isConnected) liveEntry.querySelector(".entry-badge").textContent = liveEnabled ? "live" : "preview";
 }
-
-liveToggle.addEventListener("click", () => settings.set("liveMode", !liveEnabled));
 
 function recallHistory(direction) {
   if (!history.length) return;
