@@ -3,7 +3,7 @@ import { test, expect } from "@playwright/test";
 test("runs the real interpreter, examples, errors, wordbook, history, and sharing", async ({ page, context }, testInfo) => {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
-  await page.goto("/");
+  await page.goto("./");
   const input = page.getByRole("textbox", { name: "YOUR EXPRESSION" });
   const run = page.getByRole("button", { name: "Run expression", exact: true });
   const lastResult = () => page.locator(".result").last();
@@ -65,7 +65,7 @@ test("runs the real interpreter, examples, errors, wordbook, history, and sharin
 
 test("loads a shared expression and can stop a long calculation", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === "mobile", "Cancellation exercises the same worker on both layouts.");
-  await page.goto("/#code=6+7+%3A%3A+*");
+  await page.goto("./#code=6+7+%3A%3A+*");
   await expect(page.getByRole("button", { name: "Run expression", exact: true })).toBeEnabled({ timeout: 90000 });
   await expect(page.locator(".result")).toHaveCount(0);
   await page.getByRole("button", { name: "Run expression", exact: true }).click();
@@ -84,7 +84,7 @@ test("loads a shared expression and can stop a long calculation", async ({ page 
 test("offers a retry when the interpreter cannot load", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === "mobile", "Loading failures use the same UI on both layouts.");
   await page.route("**/worker.js", (route) => route.fulfill({ contentType: "text/javascript", body: 'self.postMessage({type: "load-error", message: "offline"});' }));
-  await page.goto("/");
+  await page.goto("./");
   await expect(page.getByRole("button", { name: "Retry", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Run expression", exact: true })).toBeDisabled();
   await page.unroute("**/worker.js");
