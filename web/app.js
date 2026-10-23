@@ -316,7 +316,7 @@ function renderTrace(entry, data) {
     details.append(element("summary", "", "Follow the chain"));
     const content = element("div", "trace-content");
     const steps = element("div");
-    steps.append(element("div", "trace-label", "ONE STEP AT A TIME"));
+    steps.append(element("div", "trace-label", "TRACE"));
     for (const step of data.steps || []) {
       const row = element("div", "trace-step");
       const code = element("span");
