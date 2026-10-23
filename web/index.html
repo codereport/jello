@@ -3,13 +3,13 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#f7f7f0">
-    <meta name="description" content="A little language. A lot of possibility. Play with Jello, a friendlier way to write Jelly, right in your browser.">
-    <title>Jello — a little language playground</title>
+    <meta name="theme-color" content="#0b0e11">
+    <meta name="description" content="The Jello terminal. Run Jello expressions, inspect Jellyfish output, and follow the combinator chain in your browser.">
+    <title>Jello — online REPL</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;450;500;550;600;650;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./style.css">
     <script type="module" src="./app.js"></script>
   </head>
@@ -17,40 +17,25 @@
     <a class="skip-link" href="#expression">Skip to the playground</a>
     <div class="page-shell">
       <header class="site-header">
-        <a class="wordmark" href="./" aria-label="Jello home">jello<span class="brand-dots" aria-hidden="true"><i></i><i></i><i></i></span></a>
-        <span class="header-note">A little language. A lot of possibility.</span>
+        <h1 class="wordmark"><a href="./" aria-label="Jello home">jello<span class="brand-dots" aria-hidden="true"><i></i><i></i><i></i></span></a></h1>
+        <span class="header-note">// online REPL</span>
         <a class="source-link" href="https://github.com/codereport/jello" target="_blank" rel="noopener noreferrer">View on GitHub <span aria-hidden="true">↗</span></a>
       </header>
 
       <main>
-        <section class="hero" aria-labelledby="hero-title">
-          <div>
-            <p class="eyebrow"><span class="tiny-spark" aria-hidden="true"><svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M9 1v16M1 9h16M3.3 3.3l11.4 11.4M3.3 14.7 14.7 3.3"/></svg></span> THE JELLO PLAYGROUND</p>
-            <h1 id="hero-title">Small words.<br><em>Big ideas.</em><span class="hero-period" aria-hidden="true">●</span></h1>
-          </div>
-          <div class="hero-intro">
-            <p>A friendlier way to write Jelly.<br>Compose a few words, follow the chain,<br class="desktop-break"> and see what happens.</p>
-            <span class="browser-note"><span aria-hidden="true">◈</span> Right here in your browser</span>
-          </div>
-        </section>
-
-        <section class="playground-section" aria-labelledby="playground-heading">
-          <div class="section-heading">
-            <h2 id="playground-heading" class="eyebrow">A LITTLE ROOM TO EXPERIMENT</h2>
-            <div id="runtime-status" class="runtime-status" role="status"><span class="status-dot"></span><span id="status-text">Waking up the interpreter…</span><button id="retry" class="text-button" hidden>Retry</button></div>
-          </div>
-
+        <section class="playground-section" aria-label="Jello terminal">
           <div class="playground-grid">
             <div class="repl">
               <div class="repl-toolbar">
                 <span class="session-label"><span class="mini-prompt" aria-hidden="true">›_</span> playground <span class="muted">/ session</span></span>
+                <div id="runtime-status" class="runtime-status" role="status"><span class="status-dot"></span><span id="status-text">initializing…</span><button id="retry" class="text-button" hidden>Retry</button></div>
                 <div class="toolbar-actions"><button id="share" class="toolbar-button" title="Copy a link to your expression"><span aria-hidden="true">↗</span> Share</button><span class="toolbar-divider"></span><button id="clear" class="toolbar-button">Clear</button></div>
               </div>
               <div id="transcript" class="transcript" role="log" aria-label="Expression results" aria-live="polite" aria-relevant="additions">
                 <div id="welcome" class="welcome">
-                  <div class="welcome-mark" aria-hidden="true"><span></span><span></span><span></span></div>
-                  <h3>A few words. A small discovery.</h3>
-                  <p>Your first experiment is ready below.<br>The interpreter just needs a moment to wake up.</p>
+                  <span class="welcome-prompt" aria-hidden="true">&gt;_</span>
+                  <h3>Initializing Jellyfish…</h3>
+                  <p>The interpreter is loading.<br>Your expression is ready below.</p>
                 </div>
               </div>
               <form id="repl-form" class="composer" autocomplete="off">
@@ -60,13 +45,13 @@
                   <input id="expression" name="expression" type="text" value="5 :: range sq sum" spellcheck="false" autocapitalize="off" autocorrect="off" maxlength="2000" aria-describedby="input-help">
                   <button id="run" class="run-button" type="submit" disabled><span id="run-label">Run</span><span id="run-icon" aria-hidden="true">↵</span></button>
                 </div>
-                <div id="input-help" class="input-help"><span><kbd>enter</kbd> to run <span class="help-dot">·</span> <kbd>↑</kbd> <kbd>↓</kbd> for history <span class="help-dot">·</span> <kbd>tab</kbd> to complete</span><span id="input-state">Make yourself at home.</span></div>
+                <div id="input-help" class="input-help"><span><kbd>enter</kbd> run <span class="help-dot">/</span> <kbd>↑</kbd> <kbd>↓</kbd> history <span class="help-dot">/</span> <kbd>tab</kbd> complete</span><span id="input-state"></span></div>
               </form>
             </div>
 
             <aside class="examples-panel" aria-labelledby="examples-heading">
-              <div class="aside-heading"><h2 id="examples-heading">A starting point</h2><span class="hand-arrow" aria-hidden="true">↙</span></div>
-              <p class="aside-description">Borrow an idea. Make it your own.</p>
+              <div class="aside-heading"><h2 id="examples-heading">examples</h2></div>
+              <p class="aside-description">Select an expression to run.</p>
               <div class="example-list">
                 <button class="example" data-command="5 :: range"><span class="example-top"><span class="example-name">Start small</span><span class="example-arrow" aria-hidden="true">↗</span></span><code><span>5</span> :: range</code></button>
                 <button class="example" data-command="5 :: range sq sum"><span class="example-top"><span class="example-name">Square, then sum</span><span class="example-arrow" aria-hidden="true">↗</span></span><code><span>5</span> :: range sq sum</code></button>
@@ -74,26 +59,25 @@
                 <button class="example" data-command="[3,1,4,1,5] :: sums"><span class="example-top"><span class="example-name">A running total</span><span class="example-arrow" aria-hidden="true">↗</span></span><code><span>[3,1,4,1,5]</span> :: sums</code></button>
                 <button class="example" data-command="6 7 :: *"><span class="example-top"><span class="example-name">Two to tango</span><span class="example-arrow" aria-hidden="true">↗</span></span><code><span>6 7</span> :: *</code></button>
               </div>
-              <div class="aside-footnote"><span aria-hidden="true"><svg width="17" height="17" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M9 1v16M1 9h16M3.3 3.3l11.4 11.4M3.3 14.7 14.7 3.3"/></svg></span><p>No setup. No ceremony.<br>Just a little curiosity.</p></div>
             </aside>
           </div>
         </section>
 
         <section class="syntax-note" aria-label="How to write an expression">
-          <span class="syntax-title">Think in chains.</span>
+          <span class="syntax-title">syntax</span>
           <p>Your input goes before <code>::</code>. The words after it compose a program.</p>
-          <div class="syntax-example" aria-label="5 is the input, double and add1 are the program"><span>5<small>INPUT</small></span><b>::</b><span>double add1<small>PROGRAM</small></span><b>→</b><span class="syntax-result">11<small>AHA!</small></span></div>
+          <div class="syntax-example" aria-label="5 is the input, double and add1 are the program"><span>5</span><b>::</b><span>double add1</span><b>→</b><span class="syntax-result">11</span></div>
         </section>
 
         <section class="wordbook" aria-labelledby="wordbook-heading">
-          <div class="wordbook-heading"><div><p class="eyebrow">THE WORDBOOK</p><h2 id="wordbook-heading">A few words go a long way.</h2></div><label class="search-box"><span aria-hidden="true">⌕</span><input id="word-search" type="search" placeholder="Find a word or Jelly atom…" aria-label="Search keywords" autocomplete="off"></label></div>
+          <div class="wordbook-heading"><h2 id="wordbook-heading">keywords</h2><label class="search-box"><span aria-hidden="true">⌕</span><input id="word-search" type="search" placeholder="Search keywords / atoms" aria-label="Search keywords" autocomplete="off"></label></div>
           <div class="wordbook-controls"><div class="word-filters" role="group" aria-label="Keyword types"><button class="filter active" data-filter="all" aria-pressed="true">All words</button><button class="filter" data-filter="monadic" aria-pressed="false">Monads <span>1</span></button><button class="filter" data-filter="dyadic" aria-pressed="false">Dyads <span>2</span></button><button class="filter" data-filter="quick" aria-pressed="false">Quicks</button></div><span id="word-count" class="word-count"></span></div>
           <div id="word-grid" class="word-grid" aria-live="polite"></div>
           <div class="wordbook-footer"><span>Click a word to add it to your expression.</span><button id="show-words" class="text-button" hidden>Explore all words <span aria-hidden="true">↓</span></button></div>
         </section>
       </main>
 
-      <footer class="site-footer"><span class="footer-brand">Made for the joy of figuring things out.<span class="brand-dots" aria-hidden="true"><i></i><i></i><i></i></span></span><div><a href="https://github.com/codereport/jello#readme">About Jello <span aria-hidden="true">↗</span></a><a href="https://github.com/codereport/jellyfish">Powered by Jellyfish <span aria-hidden="true">↗</span></a><span>by <a href="https://github.com/codereport">codereport</a></span></div></footer>
+      <footer class="site-footer"><span class="footer-brand">jello / jellyfish<span class="brand-dots" aria-hidden="true"><i></i><i></i><i></i></span></span><div><a href="https://github.com/codereport/jello#readme">docs <span aria-hidden="true">↗</span></a><a href="https://github.com/codereport/jellyfish">jellyfish <span aria-hidden="true">↗</span></a><a href="https://github.com/codereport">codereport <span aria-hidden="true">↗</span></a></div></footer>
     </div>
     <div id="toast" class="toast" role="status" hidden></div>
     <noscript><p class="noscript">Enable JavaScript to use the Jello playground.</p></noscript>

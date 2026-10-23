@@ -34,8 +34,8 @@ const sharedExpression = new URLSearchParams(location.hash.slice(1)).get("code")
 if (sharedExpression) {
   input.value = sharedExpression.slice(0, 2000);
   initialRun = false;
-  $("#welcome h3").textContent = "Someone left you a little idea.";
-  $("#welcome p").textContent = "Their expression is ready below. Press Run to see what it does.";
+  $("#welcome h3").textContent = "Shared expression loaded.";
+  $("#welcome p").textContent = "Review the expression below, then press Run.";
 }
 
 function element(tag, className, text) {
@@ -77,7 +77,7 @@ function showLoadError() {
 function startWorker() {
   worker?.terminate();
   clearTimeout(loadTimer);
-  setState("loading", "Waking up the interpreter…");
+  setState("loading", "initializing…");
   try {
     const currentWorker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
     worker = currentWorker;
@@ -90,7 +90,7 @@ function startWorker() {
         setState("loading", data.message);
       } else if (data.type === "ready") {
         clearTimeout(loadTimer);
-        setState("ready", "Ready when you are");
+        setState("ready", "ready");
         if (initialRun) {
           initialRun = false;
           execute(input.value);
@@ -102,8 +102,8 @@ function startWorker() {
         clearTimeout(executionTimer);
         renderResponse(activeEntry, data);
         activeEntry = null;
-        setState("ready", "Ready when you are");
-        $("#input-state").textContent = data.type === "error" ? "A little change, another try." : "What happens next?";
+        setState("ready", "ready");
+        $("#input-state").textContent = data.type === "error" ? "exit: error" : "exit: 0";
       }
     };
     currentWorker.onerror = (event) => {
@@ -150,7 +150,7 @@ function execute(command) {
   historyIndex = history.length;
   draft = "";
   try { localStorage.setItem("jello-history", JSON.stringify(history)); } catch { /* Optional persistence. */ }
-  setState("running", "Following the chain…");
+  setState("running", "running…");
   activeEntry = createEntry(command);
   worker.postMessage({ type: "run", id: ++requestId, command });
   executionTimer = setTimeout(() => stopExecution("That took more than 10 seconds. Try a smaller input or a shorter program."), 10000);
@@ -220,15 +220,16 @@ $("#retry").addEventListener("click", startWorker);
 $("#clear").addEventListener("click", () => {
   if (state === "running") stopExecution();
   transcript.replaceChildren(welcomeTemplate.cloneNode(true));
-  $("#welcome h3").textContent = "A fresh little start.";
-  $("#welcome p").textContent = "Try an expression below, or borrow an idea from the examples.";
+  $("#welcome h3").textContent = "Session cleared.";
+  $("#welcome p").textContent = "Enter an expression below or select an example.";
+  $("#input-state").textContent = "";
   input.focus();
 });
 $("#share").addEventListener("click", async () => {
   const url = new URL(location.href);
   url.hash = new URLSearchParams({ code: input.value.trim() }).toString();
   window.history.replaceState(null, "", url);
-  try { await navigator.clipboard.writeText(url.href); notify("Link copied. Share a little discovery."); }
+  try { await navigator.clipboard.writeText(url.href); notify("Expression link copied."); }
   catch { notify("Your link is ready in the address bar."); }
 });
 document.querySelectorAll(".example").forEach((example) => {
@@ -304,7 +305,7 @@ function renderWords() {
   if (!visible.length) grid.append(element("p", "empty-words", "No words found. Try another search."));
   $("#word-count").textContent = `${filtered.length} words`;
   $("#show-words").hidden = Boolean(search) || activeFilter !== "all" || filtered.length <= 12;
-  $("#show-words").textContent = expandedWords ? "A little less ↑" : `Explore all ${words.length} words ↓`;
+  $("#show-words").textContent = expandedWords ? "Show fewer ↑" : `Show all ${words.length} keywords ↓`;
 }
 $("#word-search").addEventListener("input", renderWords);
 $("#show-words").addEventListener("click", () => { expandedWords = !expandedWords; renderWords(); });

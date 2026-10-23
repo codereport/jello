@@ -42,7 +42,7 @@ At the prompt, try `5 :: range`. Enter `q` to quit.
 
 ## Browser playground
 
-The [playground](https://codereport.github.io/jello/) runs the same Jello keyword converter and pinned Jellyfish interpreter in your browser using Pyodide. It includes examples, evaluation traces, combinator diagrams, a searchable keyword reference, local command history, and shareable expression links. Press Enter to run, use the arrow keys for history, and Tab to complete a keyword. Stop cancels a calculation; runs also stop automatically after 10 seconds.
+The [playground](https://codereport.github.io/jello/) is a dark, monospace terminal that runs the same Jello keyword converter and pinned Jellyfish interpreter in your browser using Pyodide. It includes examples, evaluation traces, combinator diagrams, a searchable keyword reference, local command history, and shareable expression links. Press Enter to run, use the arrow keys for history, and Tab to complete a keyword. Stop cancels a calculation; runs also stop automatically after 10 seconds.
 
 The first visit downloads the Python runtime and dependencies from jsDelivr and PyPI. Pyodide is pinned to 0.27.7 (Python 3.12) for compatibility with Jellyfish. There is no application server; expressions execute in a dedicated browser worker. Shared links load the expression for you to review and run. Terminal commands such as `--find-by-example` are not included.
 

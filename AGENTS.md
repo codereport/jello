@@ -10,4 +10,5 @@
 - For interpreter changes, also check that `5 :: range` returns `[1, 2, 3, 4, 5]` in the REPL.
 - Update `README.md` when setup or user-facing behavior changes. Keep changes small and follow the surrounding code style.
 - The browser UI lives in `web/`; build it with `python3 scripts/build_site.py`. Do not commit `_site/`. Both REPLs share `src/language.py`, `src/tokens.py`, and the pinned Jellyfish interpreter.
+- Keep the browser UI dark, terminal-focused, and monospace throughout. Put the REPL first; do not add a hero section or promotional introduction.
 - For browser changes, run `npm test` (Playwright, desktop and mobile). For runtime changes, also run `.venv/bin/python -m unittest discover -s tests -p 'test_*.py'`. GitHub Actions deploys Pages after tests pass.

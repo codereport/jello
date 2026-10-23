@@ -58,7 +58,7 @@ test("runs the real interpreter, examples, errors, wordbook, history, and sharin
   expect(new URLSearchParams(new URL(link).hash.slice(1)).get("code")).toBe("42 :: bits");
   await page.getByRole("button", { name: "Clear", exact: true }).click();
   await expect(page.locator(".entry")).toHaveCount(0);
-  await expect(page.getByText("A fresh little start.")).toBeVisible();
+  await expect(page.getByText("Session cleared.")).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   expect(errors).toEqual([]);
 });

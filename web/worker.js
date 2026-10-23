@@ -2,10 +2,10 @@ const PYODIDE_URL = "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/";
 let runtime;
 
 async function initialize() {
-  self.postMessage({ type: "status", message: "Waking up the interpreter…" });
+  self.postMessage({ type: "status", message: "loading runtime…" });
   const { loadPyodide } = await import(`${PYODIDE_URL}pyodide.mjs`);
   const pyodide = await loadPyodide({ indexURL: PYODIDE_URL });
-  self.postMessage({ type: "status", message: "Loading the language…" });
+  self.postMessage({ type: "status", message: "loading jellyfish…" });
   const response = await fetch(new URL("runtime.zip", self.location.href));
   if (!response.ok) throw new Error("Couldn't download Jello. Please reload and try again.");
   pyodide.FS.mkdirTree("/jello");
