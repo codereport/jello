@@ -554,6 +554,70 @@ test("a missing Wasm module falls back to Python", async ({ page }) => {
   await expect(page.locator("#verification-status")).toHaveText("Rust unavailable");
 });
 
+test("Python total time includes loading wait, retries, and fallback without charging later runs for startup", async ({ page }) => {
+  await page.clock.install();
+  await page.route("**/worker.js", (route) => route.fulfill({ contentType: "text/javascript", body: `
+self.onmessage = ({data}) => { self.pendingRun = data; };
+self.ready = () => self.postMessage({type:"ready"});
+self.finish = (result, value) => self.postMessage({type:"result",id:self.pendingRun.id,code:self.pendingRun.command === "6 :: sq" ? "²" : "RµS÷L",result,value,steps:[],tree:"",duration:1});
+` }));
+  const pythonWorker = async (previous) => {
+    await expect.poll(() => page.workers().filter((worker) => worker !== previous && worker.url().endsWith("/worker.js")).length).toBe(1);
+    return page.workers().find((worker) => worker !== previous && worker.url().endsWith("/worker.js"));
+  };
+  const finish = (worker, result = "2.5", value = ["float", "4004000000000000"]) => worker.evaluate(({result, value}) => self.finish(result, value), {result, value});
+  const pendingId = (worker) => worker.evaluate(() => self.pendingRun?.id);
+  await page.goto("./");
+  await expect(page.locator(".result")).toHaveText("2.5");
+  await expect(page.locator("#python-execution-time")).toHaveText("checking…");
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 100));
+  let python = await pythonWorker();
+  await page.clock.runFor(2000);
+  await python.evaluate(() => self.ready());
+  await expect.poll(() => pendingId(python)).toBeDefined();
+  await page.clock.runFor(300);
+  await finish(python);
+  await expect(page.locator("#verification-status")).toHaveText("✓ match");
+  const cold = await page.locator("#python-execution-time").textContent();
+  expect(cold).toMatch(/^\d+\.\d{2} s$/);
+  expect(parseFloat(cold)).toBeGreaterThanOrEqual(2.3);
+  await expect(page.locator("#python-comparison")).toHaveAttribute("title", /evaluation alone: 1.0 ms$/);
+
+  const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
+  let previousId = await pendingId(python);
+  await input.press("Enter");
+  await expect.poll(() => pendingId(python)).toBeGreaterThan(previousId);
+  await page.clock.runFor(50);
+  await finish(python);
+  await expect(page.locator("#verification-status")).toHaveText("✓ match");
+  await expect(page.locator("#python-execution-time")).toHaveText("50.0 ms");
+
+  await python.evaluate(() => self.postMessage({type:"load-error",message:"offline"}));
+  await page.getByRole("button", { name: "Retry", exact: true }).click();
+  await expect(page.locator("#python-execution-time")).toHaveText("checking…");
+  python = await pythonWorker(python);
+  await page.clock.runFor(1000);
+  await python.evaluate(() => self.ready());
+  await expect.poll(() => pendingId(python)).toBeDefined();
+  await page.clock.runFor(50);
+  await finish(python);
+  await expect(page.locator("#verification-status")).toHaveText("✓ match");
+  await expect(page.locator("#python-execution-time")).toHaveText("1.05 s");
+
+  const rust = page.workers().find((worker) => worker.url().endsWith("/rust-worker.js"));
+  await rust.evaluate(() => { self.onmessage = ({data}) => self.postMessage({type:"unsupported",id:data.id}); });
+  previousId = await pendingId(python);
+  await input.fill("6 :: sq");
+  await input.press("Enter");
+  await expect.poll(() => pendingId(python)).toBeGreaterThan(previousId);
+  await page.clock.runFor(75);
+  await finish(python, "36", ["integer", "36"]);
+  await expect(page.locator(".entry").last()).toHaveAttribute("data-engine", "python");
+  await expect(page.locator("#execution-time")).toHaveText("75.0 ms");
+  await expect(page.locator(".timing").last()).toHaveText("75.0 ms");
+  await expect(page.locator("#execution-status")).toHaveAttribute("title", /Python includes loading wait and response/);
+});
+
 test("Rust output survives Python timeout and verification cancellation", async ({ page }) => {
   await page.clock.install();
   await page.route("**/worker.js", (route) => route.fulfill({ contentType: "text/javascript", body: `

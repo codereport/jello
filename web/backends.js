@@ -109,7 +109,7 @@ export class Backends {
 
   queuePython(job, verify) {
     if (this.current !== job) return;
-    this.pendingPython = { job, verify };
+    this.pendingPython = { job, verify, startedAt: performance.now() };
     if (this.states.python === "error") {
       const task = this.pendingPython;
       this.pendingPython = null;
@@ -134,6 +134,7 @@ export class Backends {
   pythonResponse(data) {
     const task = this.pythonTask;
     if (!task || data.id !== task.job.id) return;
+    data = { ...data, totalDuration: performance.now() - task.startedAt };
     clearTimeout(this.runTimers.python);
     this.pythonTask = null;
     if (task.verify) {
@@ -158,7 +159,7 @@ export class Backends {
   retryPython() {
     if (this.current?.rustResult) {
       this.emit({ type: "verification", id: this.current.id, status: "pending" });
-      this.pendingPython = { job: this.current, verify: true };
+      this.pendingPython = { job: this.current, verify: true, startedAt: performance.now() };
     }
     this.pythonTask = null;
     this.start("python");

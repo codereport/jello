@@ -287,7 +287,8 @@ function stopExecution(message = "Stopped. Try a smaller input or a different ex
 function renderResponse(entry, data) {
   if (!entry) return;
   entry.dataset.engine = data.engine || "";
-  updateExecutionTime(data.duration, data.engine, data.verification);
+  const duration = data.engine === "python" ? data.totalDuration : data.duration;
+  updateExecutionTime(duration, data.engine, data.verification);
   entry.querySelector(".pending")?.remove();
   if (data.type === "error") {
     entry.classList.add("error-entry");
@@ -305,7 +306,7 @@ function renderResponse(entry, data) {
     const meta = element("div", "entry-meta");
     const jellyCode = element("code", "jelly-code");
     editor.renderAtoms(jellyCode, data.code, entry.dataset.command);
-    meta.append(element("span", "", "JELLY"), jellyCode, element("span", "meta-divider", "·"), element("span", "timing", formatDuration(data.duration)));
+    meta.append(element("span", "", "JELLY"), jellyCode, element("span", "meta-divider", "·"), element("span", "timing", formatDuration(duration)));
     entry.append(output, meta);
     renderTrace(entry, data);
     if (data.engine === "rust") renderVerification(entry, { status: "pending" });
@@ -356,11 +357,13 @@ function updateExecutionTime(duration, engine = "python", verification = "") {
   $("#execution-time").textContent = valid ? formatDuration(duration) : "";
   $("#execution-logo").src = engine === "rust" ? "rust-logo.png" : "python-logo.svg";
   $("#execution-logo").alt = engine === "rust" ? "Rust" : "Python";
+  $("#execution-logo").parentElement.title = engine === "rust" ? "Rust execution time, including traces; excludes loading" : "Python total time, including loading wait, evaluation, and response";
   $("#python-comparison").hidden = engine !== "rust";
+  $("#python-comparison").title = "Python total time, including loading wait, evaluation, and response";
   $("#python-execution-time").textContent = "checking…";
   $("#verification-status").className = "verification-status";
   $("#verification-status").textContent = engine === "python" && verification ? `Rust ${verification}` : "";
-  $("#execution-status").title = "Backend execution times, including traces; excludes loading and typing delay";
+  $("#execution-status").title = "Rust execution time and Python total time. Python includes loading wait and response. Both exclude typing delay.";
 }
 
 function renderVerification(entry, data) {
@@ -379,7 +382,8 @@ function renderVerification(entry, data) {
     entry.append(note);
   }
   if (Number(entry.dataset.requestId) !== requestId) return;
-  $("#python-execution-time").textContent = Number.isFinite(data.python?.duration) ? formatDuration(data.python.duration) : data.status === "pending" ? "checking…" : (reasons[data.status] || data.status).replace("Python ", "");
+  $("#python-execution-time").textContent = Number.isFinite(data.python?.totalDuration) ? formatDuration(data.python.totalDuration) : data.status === "pending" ? "checking…" : (reasons[data.status] || data.status).replace("Python ", "");
+  $("#python-comparison").title = "Python total time, including loading wait, evaluation, and response" + (Number.isFinite(data.python?.duration) ? `; evaluation alone: ${formatDuration(data.python.duration)}` : "");
   $("#verification-status").textContent = data.status === "pending" ? "" : labels[data.status];
   $("#verification-status").className = `verification-status verification-${data.status}`;
   $("#verification-status").title = data.status === "match" ? "Rust and Python outputs match for this input" : reasons[data.status] || "Rust and Python outputs differ";
