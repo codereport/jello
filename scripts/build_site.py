@@ -14,6 +14,7 @@ DESTINATION = ROOT / "_site"
 
 def read_challenges():
     text = (ROOT / "challenges.md").read_text(encoding="utf-8")
+    examples = json.loads((ROOT / "data" / "challenge_inputs.json").read_text(encoding="utf-8"))
     titles = {}
     for match in re.finditer(r"^(\d+)\.\s+\[([^\]]+)\]", text, re.MULTILINE):
         titles[int(match[1])] = re.sub(r"^(?:PWC\s+\d+\s*-?\s*Task\s+\d+\s*:\s*|\d+\s*[.\-]\s*)", "", match[2])
@@ -23,14 +24,21 @@ def read_challenges():
         if len(cells) != 6 or not cells[0].isdigit():
             continue
         number = int(cells[0])
+        example = examples.get(str(number))
+        if not example or not 1 <= len(example["inputs"]) <= 2:
+            raise ValueError(f"Add sample inputs for challenge #{number} in data/challenge_inputs.json")
+        arguments = " ".join(json.dumps(value, ensure_ascii=False, separators=(",", ":")) for value in example["inputs"])
+        expression = cells[4].strip("`")
         challenges.append({
             "number": number,
             "title": titles.get(number, f"LeetCode {cells[1]}" if cells[1] else f"PWC {cells[3]}"),
             "leetcode": cells[1],
             "contest": cells[2],
             "pwc": cells[3],
-            "expression": cells[4].strip("`"),
+            "expression": expression,
             "jelly": cells[5].strip("`"),
+            "command": f"{arguments} :: {expression}",
+            "example": example,
         })
     if not challenges:
         raise ValueError("No solution programs found in challenges.md")

@@ -61,10 +61,8 @@ const editor = new KeywordEditor(input, {
   onStop: () => { if (state === "running") stopExecution(); else cancelPendingLive(); },
 });
 
-new ChallengePicker(input, editor, (expression) => {
-  const separator = input.value.indexOf("::");
-  const argumentsText = (separator < 0 ? input.value : input.value.slice(0, separator)).trimEnd();
-  editor.setValue(`${argumentsText}${argumentsText ? " " : ""}:: ${expression}`, { notify: true });
+new ChallengePicker(input, editor, (command) => {
+  editor.setValue(command, { notify: true });
   input.focus({ preventScroll: true });
   editor.closeSuggestions();
 });

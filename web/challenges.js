@@ -14,9 +14,9 @@ export class ChallengePicker {
     document.querySelector("#challenges-close").addEventListener("click", () => this.dialog.close());
     this.dialog.addEventListener("close", () => {
       if (this.selected) {
-        const expression = this.selected.expression;
+        const command = this.selected.command;
         this.selected = null;
-        this.onSelect(expression);
+        this.onSelect(command);
       } else this.opener?.focus({ preventScroll: true });
     });
     this.dialog.addEventListener("click", (event) => {
@@ -82,7 +82,7 @@ export class ChallengePicker {
     this.retry.hidden = true;
     this.count.textContent = "Loading challenges…";
     try {
-      const response = await fetch(new URL("./challenges.json", import.meta.url));
+      const response = await fetch(new URL("./challenges.json", import.meta.url), { cache: "no-cache" });
       if (!response.ok) throw new Error("Challenges unavailable");
       const items = await response.json();
       if (!Array.isArray(items)) throw new Error("Invalid challenge catalog");
@@ -98,12 +98,14 @@ export class ChallengePicker {
     if (!this.items) return;
     const terms = this.search.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
     const filtered = this.items.filter((item) => {
-      const text = `#${item.number} ${item.title} ${this.sources(item)} ${item.expression} ${item.jelly}`.toLowerCase();
+      const text = `#${item.number} ${item.title} ${this.sources(item)} ${item.command} ${item.jelly}`.toLowerCase();
       return terms.every((term) => text.includes(term));
     });
     this.count.textContent = `${filtered.length} ${filtered.length === 1 ? "challenge" : "challenges"}`;
     this.list.replaceChildren();
     for (const item of filtered) {
+      const row = document.createElement("div");
+      row.className = "challenge-item";
       const button = document.createElement("button");
       button.type = "button";
       button.className = "challenge-option";
@@ -118,13 +120,21 @@ export class ChallengePicker {
       heading.append(title, tags);
       const code = document.createElement("code");
       code.className = "challenge-expression";
-      this.editor.renderCommand(code, `:: ${item.expression}`);
+      this.editor.renderCommand(code, item.command);
       button.append(heading, code);
       button.addEventListener("click", () => {
         this.selected = item;
         this.dialog.close();
       });
-      this.list.append(button);
+      const source = document.createElement("a");
+      source.className = "challenge-sample-source";
+      source.href = item.example.source;
+      source.target = "_blank";
+      source.rel = "noopener noreferrer";
+      source.textContent = "Sample source ↗";
+      source.setAttribute("aria-label", `Sample source for ${item.title}`);
+      row.append(button, source);
+      this.list.append(row);
     }
     if (!filtered.length) {
       const empty = document.createElement("p");

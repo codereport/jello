@@ -1,0 +1,153 @@
+{
+  "1": {
+    "inputs": [[1, 2, 2, 3, 1, 4]],
+    "expected": 4,
+    "source": "https://leetcode.com/problems/count-elements-with-maximum-frequency/"
+  },
+  "2": {
+    "inputs": [[1, 2, 3, 12]],
+    "expected": 6,
+    "source": "https://leetcode.com/problems/divide-an-array-into-subarrays-with-minimum-cost-i/"
+  },
+  "3": {
+    "inputs": [[2, 3, -5]],
+    "expected": 1,
+    "source": "https://leetcode.com/problems/ant-on-the-boundary/"
+  },
+  "4": {
+    "inputs": [[3, 2, 1, 4, 5]],
+    "expected": 2,
+    "source": "https://leetcode.com/problems/maximum-number-of-operations-with-the-same-score-i/"
+  },
+  "5": {
+    "inputs": [[0, 1, 2]],
+    "expected": 0,
+    "source": "https://theweeklychallenge.org/blog/perl-weekly-challenge-250/#task-1-smallest-index"
+  },
+  "6": {
+    "inputs": [[[3, 7, 8], [9, 11, 13], [15, 16, 17]]],
+    "expected": 15,
+    "source": "https://theweeklychallenge.org/blog/perl-weekly-challenge-251/#task-2-lucky-numbers"
+  },
+  "7": {
+    "inputs": [[1, 2, 3, 4]],
+    "expected": 21,
+    "source": "https://leetcode.com/problems/sum-of-squares-of-special-elements/"
+  },
+  "8": {
+    "inputs": [[8, 1, 2, 2, 3]],
+    "expected": [4, 0, 1, 1, 3],
+    "source": "https://leetcode.com/problems/how-many-numbers-are-smaller-than-the-current-number/"
+  },
+  "9": {
+    "inputs": [[12, 345, 2, 6, 7896]],
+    "expected": 2,
+    "source": "https://leetcode.com/problems/find-numbers-with-even-number-of-digits/"
+  },
+  "10": {
+    "inputs": [[5, 10, 1, 5, 2], 1],
+    "expected": 13,
+    "source": "https://leetcode.com/problems/sum-of-values-at-indices-with-k-set-bits/"
+  },
+  "11": {
+    "inputs": [[1, 1, 2, 2, 3, 4]],
+    "expected": true,
+    "source": "https://leetcode.com/problems/split-the-array/"
+  },
+  "12": {
+    "inputs": [[2, 11, 10, 1, 3], 10],
+    "expected": 3,
+    "source": "https://leetcode.com/problems/minimum-operations-to-exceed-threshold-value-i/"
+  },
+  "13": {
+    "inputs": [[1, 3, 2, 4, 1], 7],
+    "expected": 4,
+    "source": "https://leetcode.com/problems/maximum-ice-cream-bars/"
+  },
+  "14": {
+    "inputs": [[1, 2, 2, 1, 1, 3]],
+    "expected": true,
+    "source": "https://leetcode.com/problems/unique-number-of-occurrences/"
+  },
+  "15": {
+    "inputs": [[4, 3, 1, 5, 2], [1, 3, 2]],
+    "expected": 2,
+    "source": "https://leetcode.com/problems/apple-redistribution-into-boxes/"
+  },
+  "16": {
+    "inputs": [[1, 2, 3]],
+    "expected": 6,
+    "source": "https://leetcode.com/problems/find-the-sum-of-encrypted-integers/"
+  },
+  "17": {
+    "inputs": [[1, 15, 6, 3]],
+    "expected": 9,
+    "source": "https://leetcode.com/problems/difference-between-element-sum-and-digit-sum-of-an-array/"
+  },
+  "18": {
+    "inputs": [[-2, -1, -1, 1, 2, 3]],
+    "expected": 3,
+    "source": "https://leetcode.com/problems/maximum-count-of-positive-integer-and-negative-integer/"
+  },
+  "19": {
+    "inputs": [[1, 2, 5, 2, 3], 2],
+    "expected": [1, 2],
+    "source": "https://leetcode.com/problems/find-target-indices-after-sorting-array/"
+  },
+  "20": {
+    "inputs": [[4, 2, 9, 5, 3]],
+    "expected": 3,
+    "source": "https://leetcode.com/problems/maximum-prime-difference/"
+  },
+  "21": {
+    "inputs": [[1, 4, 3, 3, 2]],
+    "expected": 2,
+    "source": "https://leetcode.com/problems/longest-strictly-increasing-or-strictly-decreasing-subarray/"
+  },
+  "22": {
+    "inputs": ["hello"],
+    "expected": 13,
+    "source": "https://leetcode.com/problems/score-of-a-string/"
+  },
+  "23": {
+    "inputs": [[2, 6, 4], [9, 7, 5]],
+    "expected": 3,
+    "source": "https://leetcode.com/problems/find-the-integer-added-to-array-i/"
+  },
+  "24": {
+    "inputs": [[-1, -2, -3, -4, 3, 2, 1]],
+    "expected": 1,
+    "source": "https://leetcode.com/problems/sign-of-the-product-of-an-array/"
+  },
+  "25": {
+    "inputs": [[1, 2, 3, 4, 5]],
+    "expected": true,
+    "source": "https://theweeklychallenge.org/blog/perl-weekly-challenge-269/#task-1-bitwise-or"
+  },
+  "26": {
+    "inputs": [[1]],
+    "expected": true,
+    "source": "https://leetcode.com/problems/special-array-i/"
+  },
+  "27": {
+    "inputs": [[[0, 0, 0], [1, 0, 1]]],
+    "expected": 2,
+    "source": "https://theweeklychallenge.org/blog/perl-weekly-challenge-271/#task-1-maximum-ones",
+    "sourceExample": 2
+  },
+  "28": {
+    "inputs": [[0, 1, 2, 3, 4, 5, 6, 7, 8]],
+    "expected": [0, 1, 2, 4, 8, 3, 5, 6, 7],
+    "source": "https://theweeklychallenge.org/blog/perl-weekly-challenge-271/#task-2-sort-by-1-bits"
+  },
+  "29": {
+    "inputs": [[1, 2, 3, 4]],
+    "expected": 3,
+    "source": "https://leetcode.com/problems/find-minimum-operations-to-make-all-elements-divisible-by-three/"
+  },
+  "30": {
+    "inputs": [[1, 2, 1, 2, 1, 1, 1]],
+    "expected": 5,
+    "source": "https://leetcode.com/problems/maximum-subarray-with-equal-products/"
+  }
+}

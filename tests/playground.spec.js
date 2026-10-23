@@ -10,7 +10,7 @@ test("runs the real interpreter, examples, errors, wordbook, history, and sharin
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("./");
-  const input = page.getByRole("combobox", { name: "YOUR EXPRESSION" });
+  const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
   const run = page.getByRole("button", { name: "Run expression", exact: true });
   const lastResult = () => page.locator(".result").last();
   const execute = async (command, expected) => {
@@ -79,7 +79,7 @@ test("loads a shared expression and can stop a long calculation", async ({ page 
   await expect(page.locator(".result")).toHaveCount(0);
   await page.waitForTimeout(800);
   await expect(page.locator(".result")).toHaveCount(0);
-  const input = page.getByRole("combobox", { name: "YOUR EXPRESSION" });
+  const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
   await input.press("Enter");
   await expect(page.locator(".result").first()).toHaveText("42", { timeout: 90000 });
   await input.fill("99999999 :: factorial");
@@ -95,7 +95,7 @@ test("loads a shared expression and can stop a long calculation", async ({ page 
 test("live view debounces edits, replaces one preview, and switches back to manual evaluation", async ({ page }, testInfo) => {
   await page.goto("./");
   await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
-  const input = page.getByRole("combobox", { name: "YOUR EXPRESSION" });
+  const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
   const preview = page.locator(".live-entry");
   const inputBox = await input.boundingBox(), sessionBox = await page.locator("#transcript").boundingBox();
   expect(inputBox.y + inputBox.height).toBeLessThan(sessionBox.y);
@@ -133,7 +133,7 @@ test("live view debounces edits, replaces one preview, and switches back to manu
 test("suggestions complete the current keyword and syntax colors follow keyword types", async ({ page }, testInfo) => {
   await page.goto("./");
   await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
-  const input = page.getByRole("combobox", { name: "YOUR EXPRESSION" });
+  const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
   const suggestions = page.getByRole("listbox", { name: "Keyword suggestions" });
   const conversion = page.locator("#converted-expression");
   await expect(conversion).toHaveText("R²S");
@@ -216,7 +216,7 @@ test("settings persist and keep the REPL usable in presentation mode", async ({ 
   await close();
   await expect(page.locator(".examples-panel")).toBeHidden();
   await expect(page.locator(".wordbook")).toBeHidden();
-  const input = page.getByRole("combobox", { name: "YOUR EXPRESSION" });
+  const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
   await input.fill("5 :: ran");
   await expect(page.getByRole("listbox", { name: "Keyword suggestions" })).toBeVisible();
   await input.press("Tab");
@@ -264,12 +264,12 @@ test("settings persist and keep the REPL usable in presentation mode", async ({ 
   expect(errors).toEqual([]);
 });
 
-test("Shift+C opens searchable challenges and selection preserves inputs in manual and live modes", async ({ page }, testInfo) => {
+test("Shift+C opens searchable challenges and loads sample inputs in manual and live modes", async ({ page }, testInfo) => {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("./");
   await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
-  const input = page.getByRole("combobox", { name: "YOUR EXPRESSION" });
+  const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
   const dialog = page.getByRole("dialog", { name: /challenges/ });
   const search = dialog.getByRole("searchbox", { name: "Search challenges" });
   const choices = dialog.locator(".challenge-option");
@@ -277,12 +277,12 @@ test("Shift+C opens searchable challenges and selection preserves inputs in manu
   await keywordSearch.press("Shift+C");
   await expect(keywordSearch).toHaveValue("C");
   await expect(dialog).toBeHidden();
-  await input.fill('"hello" :: sum');
+  await input.fill("5 :: sum");
   await input.press("Shift+C");
   await expect(dialog).toBeVisible();
   await expect(search).toBeFocused();
   await expect(choices).toHaveCount(30);
-  await expect(input).toHaveValue('"hello" :: sum');
+  await expect(input).toHaveValue("5 :: sum");
   await page.screenshot({ path: testInfo.outputPath("challenge-picker.png"), fullPage: true });
   await search.press("Shift+C");
   await expect(search).toHaveValue("C");
@@ -300,11 +300,13 @@ test("Shift+C opens searchable challenges and selection preserves inputs in manu
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
   await expect(input).toBeFocused();
-  await expect(input).toHaveValue('"hello" :: sum');
+  await expect(input).toHaveValue("5 :: sum");
   await input.press("Shift+C");
   await expect(choices.first()).toBeInViewport();
   await search.fill("Score of a String");
   await expect(choices).toHaveCount(1);
+  await expect(choices.first()).toContainText('"hello" :: ord deltas abs sum');
+  await expect(dialog.getByRole("link", { name: "Sample source for Score of a String" })).toHaveAttribute("href", "https://leetcode.com/problems/score-of-a-string/");
   await search.press("Enter");
   await expect(dialog).toBeHidden();
   await expect(input).toHaveValue('"hello" :: ord deltas abs sum');
@@ -314,7 +316,7 @@ test("Shift+C opens searchable challenges and selection preserves inputs in manu
   await input.press("Enter");
   await expect(page.locator(".result").last()).toHaveText("13");
   await setLiveMode(page, true);
-  await input.fill("[2,3,-5] :: sum");
+  await input.fill("99 :: sum");
   await page.getByRole("button", { name: "Settings", exact: true }).click();
   await page.getByRole("switch", { name: "Presentation mode", exact: true }).check();
   await page.getByRole("combobox", { name: "Theme", exact: true }).selectOption("dracula");
@@ -328,6 +330,16 @@ test("Shift+C opens searchable challenges and selection preserves inputs in manu
   await expect(input).toHaveValue("[2,3,-5] :: sums = 0 sum");
   await expect(page.locator(".live-entry .result")).toHaveText("1");
   await expect(input).toBeFocused();
+  await input.press("Shift+C");
+  await search.fill("1380");
+  await choices.first().click();
+  await expect(input).toHaveValue("[[3,7,8],[9,11,13],[15,16,17]] :: minr each rev = maxr * maxr sum");
+  await expect(page.locator(".live-entry .result")).toHaveText("15");
+  await input.press("Shift+C");
+  await search.fill("1833");
+  await choices.first().click();
+  await expect(input).toHaveValue("[1,3,2,4,1] 7 :: sort sums <= sum");
+  await expect(page.locator(".live-entry .result")).toHaveText("4");
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   expect(errors).toEqual([]);
 });
@@ -337,7 +349,7 @@ test("the challenge picker can retry a failed catalog download", async ({ page }
   await page.route("**/challenges.json", (route) => route.fulfill({ status: 503, body: "Unavailable" }));
   await page.goto("./");
   await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
-  const input = page.getByRole("combobox", { name: "YOUR EXPRESSION" });
+  const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
   await input.press("Shift+C");
   const retry = page.getByRole("button", { name: "Retry loading challenges" });
   await expect(retry).toBeVisible();
@@ -347,14 +359,14 @@ test("the challenge picker can retry a failed catalog download", async ({ page }
   await expect(page.getByRole("searchbox", { name: "Search challenges" })).toBeFocused();
   await page.getByRole("searchbox", { name: "Search challenges" }).fill("3411");
   await page.locator(".challenge-option").click();
-  await expect(input).toHaveValue("5 :: sublists . gcd fold each * lcm fold each = prod each keep len_each maxr");
+  await expect(input).toHaveValue("[1,2,1,2,1,1,1] :: sublists . gcd fold each * lcm fold each = prod each keep len_each maxr");
 });
 
 test("a newer live expression supersedes a busy preview", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === "mobile", "Worker cancellation is independent of layout.");
   await page.goto("./");
   await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
-  const input = page.getByRole("combobox", { name: "YOUR EXPRESSION" });
+  const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
   await setLiveMode(page, true);
   await input.fill("99999999 :: factorial");
   await expect(page.getByRole("button", { name: "Stop execution" })).toBeVisible();
