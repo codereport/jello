@@ -20,6 +20,8 @@ test("runs the real interpreter, examples, errors, wordbook, history, and sharin
     await expect(run).toBeEnabled();
   };
   await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
+  await expect(page.locator(".entry").first()).toHaveAttribute("data-engine", "rust");
+  await expect(page.locator(".entry").first()).toHaveAttribute("data-verification", "match", { timeout: 90000 });
   await expect(page.locator("#execution-time")).toHaveText(/^\d+\.\d+ (ms|s)$/);
   await expect(page.getByRole("img", { name: "Python", exact: true })).toBeVisible();
   expect(await page.getByRole("img", { name: "Python", exact: true }).evaluate((image) => image.complete && image.naturalWidth > 0)).toBe(true);
@@ -448,13 +450,151 @@ test("a newer live expression supersedes a busy preview", async ({ page }, testI
   await expect(page.locator(".command-code", { hasText: "99999999" })).toHaveCount(0);
 });
 
-test("offers a retry when the interpreter cannot load", async ({ page }, testInfo) => {
+test("Python verification can retry without blocking Rust results", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === "mobile", "Loading failures use the same UI on both layouts.");
   await page.route("**/worker.js", (route) => route.fulfill({ contentType: "text/javascript", body: 'self.postMessage({type: "load-error", message: "offline"});' }));
   await page.goto("./");
   await expect(page.getByRole("button", { name: "Retry", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Run expression", exact: true })).toBeDisabled();
+  await expect(page.locator(".result").first()).toHaveText("55");
+  await expect(page.locator(".entry").first()).toHaveAttribute("data-engine", "rust");
+  await expect(page.locator("#verification-status")).toHaveText("unverified");
+  await expect(page.getByRole("button", { name: "Run expression", exact: true })).toBeEnabled();
   await page.unroute("**/worker.js");
   await page.getByRole("button", { name: "Retry", exact: true }).click();
+  await expect(page.locator("#verification-status")).toHaveText("✓ match", { timeout: 90000 });
+  await expect(page.getByRole("button", { name: "Retry", exact: true })).toBeHidden();
+});
+
+test("Rust and Python agree on every challenge program in real workers", async ({ page }) => {
+  await page.goto("./");
+  await expect(page.locator(".entry").first()).toHaveAttribute("data-verification", "match", { timeout: 90000 });
+  const challenges = await (await page.request.get("challenges.json")).json();
+  const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
+  for (const challenge of challenges) {
+    await input.fill(challenge.command);
+    await input.press("Enter");
+    const entry = page.locator(".entry").last();
+    await expect(entry).toHaveAttribute("data-command", challenge.command);
+    await expect(entry).toHaveAttribute("data-engine", "rust");
+    await expect(entry).toHaveAttribute("data-verification", "match");
+    const expected = typeof challenge.example.expected === "boolean" ? Number(challenge.example.expected) : challenge.example.expected;
+    await expect(entry.locator(".result")).toHaveText(JSON.stringify(expected).replaceAll(",", ", "));
+  }
+  for (const command of ["9007199254740993 :: sq", '"😀é" :: ord', "[[1,2],[3]] :: sum"]) {
+    await input.fill(command); await input.press("Enter");
+    await expect(page.locator(".entry").last()).toHaveAttribute("data-verification", "match");
+    await expect(page.locator(".entry").last()).toHaveAttribute("data-engine", "rust");
+  }
+  await expect(page.getByRole("img", { name: "Rust", exact: true })).toBeVisible();
+  await expect(page.getByRole("img", { name: "Python", exact: true })).toBeVisible();
+  await expect(page.locator("#verification-status")).toHaveText("✓ match");
+});
+
+test("unsupported Rust operations and inputs fall back to real Python", async ({ page }) => {
+  await page.goto("./");
+  await expect(page.locator(".result").first()).toHaveText("55");
+  const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
+  for (const [command, expected] of [["81 :: sqrt", "9.0"], ["0.5 :: double", "1.0"], ["'hello world' :: rev", "dlrow olleh"]]) {
+    await input.fill(command);
+    await input.press("Enter");
+    const entry = page.locator(".entry").last();
+    await expect(entry.locator(".result")).toHaveText(expected, { timeout: 90000 });
+    await expect(entry).toHaveAttribute("data-engine", "python");
+    await expect(page.locator("#verification-status")).toHaveText("Rust unsupported");
+    await expect(page.getByRole("img", { name: "Rust", exact: true })).toBeHidden();
+    await expect(page.getByRole("img", { name: "Python", exact: true })).toBeVisible();
+  }
+});
+
+test("a missing Wasm module falls back to Python", async ({ page }) => {
+  await page.route("**/jello-engine.wasm", (route) => route.fulfill({ status: 503, body: "offline" }));
+  await page.goto("./");
   await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
+  await expect(page.locator(".entry").first()).toHaveAttribute("data-engine", "python");
+  await expect(page.locator("#verification-status")).toHaveText("Rust unavailable");
+});
+
+test("Rust output survives Python timeout and verification cancellation", async ({ page }) => {
+  await page.clock.install();
+  await page.route("**/worker.js", (route) => route.fulfill({ contentType: "text/javascript", body: `
+self.postMessage({type:"ready"});
+self.onmessage = ({data}) => {
+  self.lastCommand = data.command;
+  if (data.command === "7 :: sq") self.postMessage({type:"result",id:data.id,result:"49",value:["integer","49"],steps:[],tree:"",duration:1});
+  else if (data.command === "6 :: sq") setTimeout(() => self.postMessage({type:"result",id:data.id,result:"36",value:["integer","36"],steps:[],tree:"",duration:1}), 2000);
+};` }));
+  await page.goto("./");
+  await expect(page.locator(".result").first()).toHaveText("55");
+  await expect.poll(async () => {
+    const python = page.workers().find((worker) => worker.url().endsWith("/worker.js"));
+    return python ? python.evaluate(() => self.lastCommand).catch(() => null) : null;
+  }).toBe("5 :: range sq sum");
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  await page.clock.runFor(10_000);
+  await expect(page.locator(".entry").first()).toHaveAttribute("data-verification", "timeout");
+  await expect(page.locator(".result").first()).toHaveText("55");
+  await expect(page.locator("#python-execution-time")).toHaveText("timed out");
+  await expect(page.locator("#verification-status")).toHaveText("unverified");
+  const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
+  await input.fill("6 :: sq"); await input.press("Enter");
+  await expect(page.locator(".result").last()).toHaveText("36");
+  await input.fill("7 :: sq"); await input.press("Enter");
+  await expect(page.locator('.entry[data-command="6 :: sq"]')).toHaveAttribute("data-verification", "cancelled");
+  await expect(page.locator(".entry").last()).toHaveAttribute("data-verification", "match");
+  await expect(page.locator(".result").last()).toHaveText("49");
+  await expect(page.locator("#verification-status")).toHaveText("✓ match");
+});
+
+test("a Python mismatch or error is visible and keeps the Rust output", async ({ page }) => {
+  await page.route("**/worker.js", (route) => route.fulfill({ contentType: "text/javascript", body: `
+self.postMessage({type:"ready"});
+self.onmessage = ({data}) => self.postMessage(data.command === "6 :: sq"
+  ? {type:"error",id:data.id,message:"Verification failed",duration:2}
+  : data.command === "7 :: sq" ? {type:"result",id:data.id,result:"49",value:["list",[["integer","49"]]],steps:[],tree:"",duration:2}
+  : {type:"result",id:data.id,result:"56",value:["integer","56"],steps:[],tree:"",duration:2});` }));
+  await page.goto("./");
+  await expect(page.locator(".entry").first()).toHaveAttribute("data-verification", "mismatch");
+  await expect(page.locator(".result").first()).toHaveText("55");
+  await expect(page.locator(".python-result")).toHaveText("56");
+  await expect(page.locator("#verification-status")).toHaveText("≠ mismatch");
+  await page.locator("#expression").fill("6 :: sq");
+  await page.locator("#expression").press("Enter");
+  await expect(page.locator(".entry").last()).toHaveAttribute("data-verification", "error");
+  await expect(page.locator(".result").last()).toHaveText("36");
+  await expect(page.locator(".python-result").last()).toHaveText("Verification failed");
+  await expect(page.locator("#verification-status")).toHaveText("unverified");
+  await page.locator("#expression").fill("7 :: sq");
+  await page.locator("#expression").press("Enter");
+  await expect(page.locator(".entry").last()).toHaveAttribute("data-verification", "mismatch");
+  await expect(page.locator(".result").last()).toHaveText("49");
+  await expect(page.locator(".verification-note").last()).toContainText("value types or structure differ");
+});
+
+test("a Rust timeout falls back to Python without rerunning the stuck program", async ({ page }) => {
+  await page.clock.install();
+  await page.route("**/rust-worker.js", (route) => route.fulfill({ contentType: "text/javascript", body: 'self.postMessage({type:"ready"}); self.onmessage=({data})=>{self.lastCommand=data.command;};' }));
+  await page.route("**/worker.js", (route) => route.fulfill({ contentType: "text/javascript", body: 'self.postMessage({type:"ready"}); self.onmessage=({data})=>self.postMessage({type:"result",id:data.id,code:"R²S",result:"55",value:["integer","55"],steps:[],tree:"",duration:1});' }));
+  await page.goto("./");
+  await expect(page.getByRole("button", { name: "Stop execution" })).toBeVisible();
+  await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
+  await page.clock.runFor(10_000);
+  await expect(page.locator(".result").first()).toHaveText("55");
+  await expect(page.locator(".entry").first()).toHaveAttribute("data-engine", "python");
+  await expect(page.locator("#verification-status")).toHaveText("Rust timeout");
+  await page.clock.runFor(10_000);
+  await expect(page.locator(".result")).toHaveCount(1);
+  await expect(page.locator(".error-message")).toHaveCount(0);
+});
+
+test("both interpreters can recover from a loading failure", async ({ page }) => {
+  const offline = (route) => route.fulfill({ contentType: "text/javascript", body: 'self.postMessage({type:"load-error",message:"offline"});' });
+  await page.route("**/rust-worker.js", offline);
+  await page.route("**/worker.js", offline);
+  await page.goto("./");
+  await expect(page.getByRole("button", { name: "Retry", exact: true })).toBeVisible();
+  await expect(page.locator("#runtime-status")).toHaveClass(/error/);
+  await expect(page.getByRole("button", { name: "Run expression", exact: true })).toBeDisabled();
+  await page.unroute("**/rust-worker.js"); await page.unroute("**/worker.js");
+  await page.getByRole("button", { name: "Retry", exact: true }).click();
+  await expect(page.locator(".entry").first()).toHaveAttribute("data-verification", "match", { timeout: 90000 });
 });

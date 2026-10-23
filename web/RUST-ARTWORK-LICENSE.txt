@@ -1,0 +1,13 @@
+Rust logo attribution
+
+Unmodified rust-logo-white-outline.svg from the Rust project's official artwork:
+https://github.com/rust-lang/rust-artwork/blob/main/logo/rust-logo-white-outline.svg
+
+Licensed under Creative Commons Attribution 4.0 International (CC-BY-4.0):
+https://creativecommons.org/licenses/by/4.0/
+
+Source and license information:
+https://github.com/rust-lang/rust-artwork/tree/main/logo
+
+The Rust logo is a trademark of the Rust Foundation. Its appearance identifies
+the implementation language and does not imply endorsement.

@@ -22,7 +22,7 @@ The native executable `rust/target/release/jello-engine` reads one JSON request 
 line and writes one JSON response per line:
 
 ```json
-{"code":"R²S","arguments":["5"],"prefixes":["R","R²","R²S"]}
+{"code":"R²S","arguments":["5"],"prefixes":["R","R²","R²S"],"arities":[1,1,1]}
 ```
 
 Requests use converted Jelly code and raw argument strings, so the interpreter
@@ -35,6 +35,8 @@ Python. Allocation, recursion, operation, and output limits bound resource use.
 The `value` field carries tagged values with decimal integer strings. It preserves
 list structure and values above JavaScript's safe integer range independently
 of Jelly's display rules, which unwrap singletons and join character arrays.
+Optional keyword arities generate the same combinator diagrams as the Python
+renderer without waiting for Python verification.
 
 The Wasm library exports `engine_alloc`, `engine_evaluate`, and `engine_free`.
 Requests and responses are UTF-8 JSON. Evaluation returns an `i64` containing the

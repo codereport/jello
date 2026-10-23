@@ -55,12 +55,16 @@
               <div id="transcript" class="transcript" role="log" aria-label="Expression results" aria-live="polite" aria-relevant="additions">
                 <div id="welcome" class="welcome">
                   <span class="welcome-prompt" aria-hidden="true">&gt;_</span>
-                  <h3>Initializing Jellyfish…</h3>
+                  <h3>Initializing Rust…</h3>
                   <p>The interpreter is loading.<br>Your expression is ready above.</p>
                 </div>
               </div>
               <div class="repl-footer">
-                <span id="execution-status" class="execution-status" title="Python execution time, including traces" hidden><img src="python-logo.svg" alt="Python" width="18" height="22"><span id="execution-time"></span></span>
+                <span id="execution-status" class="execution-status" role="group" aria-label="Backend execution times" hidden>
+                  <span class="engine-timing"><img id="execution-logo" src="rust-logo.svg" alt="Rust" width="18" height="22"><span id="execution-time"></span></span>
+                  <span id="python-comparison" class="engine-timing" hidden><img src="python-logo.svg" alt="Python" width="18" height="22"><span id="python-execution-time"></span></span>
+                  <span id="verification-status" class="verification-status" role="status"></span>
+                </span>
               </div>
             </div>
 

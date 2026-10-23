@@ -14,7 +14,7 @@ pub fn arity(atom: &str) -> Option<i8> {
         | "Ė" | "F" | "Ḟ" | "H" | "Ḥ" | "Ḣ" | "I" | "Ď" | "Ị" | "J" | "L" | "Ḷ" | "M" | "Ṃ"
         | "Ṁ" | "N" | "O" | "Ọ" | "P" | "Ṗ" | "Q" | "R" | "Ṛ" | "S" | "Ṡ" | "Ṣ" | "T" | "Ṫ"
         | "U" | "W" | "Ẇ" | "Ẉ" | "Ż" | "Ä" | "!" | "~" | "²" | "‘" | "’" | "¹" | "Œr" | "ÆD"
-        | "Æd" | "Æf" | "ÆF" | "Ẓ" => 1,
+        | "Æd" | "Æf" | "ÆF" | "Ẓ" | "ℙ" => 1,
         "+" | "_" | "×" | "÷" | "*" | "=" | "⁼" | ";" | "%" | "»" | "«" | "s" | "ṡ" | "<" | ">"
         | "ḷ" | "ṛ" | "a" | "o" | "," | "i" | "e" | "ṙ" | "ḳ" | "ị" | "ḣ" | ":" | "ḟ" | "f"
         | "ḍ" | "≥" | "≤" | "n" | "^" | "g" | "æl" => 2,
@@ -83,6 +83,9 @@ fn factors(engine: &mut Engine, value: &Value) -> Result<Vec<Value>> {
         .abs()
         .to_u64()
         .ok_or_else(|| Error::unsupported("factorization above 64 bits"))?;
+    if n == 0 {
+        return Err(Error::unsupported("factorization of zero"));
+    }
     let mut values = vec![];
     if value.integer()?.is_negative() {
         values.push(Value::int(-1));
@@ -163,6 +166,7 @@ pub fn monad(engine: &mut Engine, atom: &str, arg: &Value) -> Result<Value> {
         "Ḥ" => Value::Int(arg.integer()? * 2),
         "Ḣ" => match arg {
             Value::List(v) => v.first().cloned().unwrap_or_else(|| Value::int(0)),
+            Value::Char(_) => arg.clone(),
             _ => Value::int(0),
         },
         "I" => Value::list(
@@ -193,6 +197,9 @@ pub fn monad(engine: &mut Engine, atom: &str, arg: &Value) -> Result<Value> {
             })
         }
         "M" => {
+            if !matches!(arg, Value::List(_)) {
+                return Err(Error::unsupported("maximum indices of a scalar"));
+            }
             let maximum = extrema(arg, true)?;
             Value::list(
                 arg.items()
@@ -316,6 +323,16 @@ pub fn monad(engine: &mut Engine, atom: &str, arg: &Value) -> Result<Value> {
                 .map(|g| Value::list(vec![g[0].clone(), Value::int(g.len())]))
                 .collect(),
         ),
+        // Jellyfish defines ℙ as both an atom and a quick; atoms take precedence.
+        "ℙ" => {
+            let mut lengths = vec![];
+            for group in groups(&arg.digit_items()?) {
+                if group[0].compare(&Value::int(0))?.is_gt() {
+                    lengths.push(Value::int(group.len()));
+                }
+            }
+            Value::list(lengths)
+        }
         "Æf" => Value::list(factors(engine, arg)?),
         "ÆF" => Value::list(
             groups(&factors(engine, arg)?)

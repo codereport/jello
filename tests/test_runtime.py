@@ -49,6 +49,11 @@ class BrowserRuntimeTests(unittest.TestCase):
             evaluate("5 :: nonexistent")
         self.assertEqual(json.loads(evaluate("5 :: range"))["result"], "[1, 2, 3, 4, 5]")
 
+    def test_comparison_values_preserve_precision_and_structure(self):
+        self.assertEqual(json.loads(evaluate("9007199254740993 :: sq"))["value"], ["integer", "81129638414606699710187514626049"])
+        self.assertEqual(json.loads(evaluate("[1] :: rev"))["value"], ["list", [["integer", "1"]]])
+        self.assertEqual(json.loads(evaluate("1 :: i"))["value"], ["integer", "1"])
+
 
 if __name__ == "__main__":
     unittest.main()

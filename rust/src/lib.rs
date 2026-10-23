@@ -1,4 +1,5 @@
 mod atoms;
+mod diagram;
 mod eval;
 mod parser;
 mod value;
@@ -40,6 +41,8 @@ pub struct Request {
     pub arguments: Vec<String>,
     #[serde(default)]
     pub prefixes: Vec<String>,
+    #[serde(default)]
+    pub arities: Vec<i32>,
 }
 
 #[derive(Serialize)]
@@ -78,8 +81,19 @@ fn evaluate(request: Request) -> Result<Json> {
             }
         }
     }
+    let (chain, tree) = diagram::draw(&request.arities, arguments.len() <= 1).unwrap_or_default();
+    let arity = request
+        .arities
+        .iter()
+        .map(|a| match a {
+            3 | 10 | 50 => "q".to_owned(),
+            20 | 21 => "s".to_owned(),
+            _ => a.to_string(),
+        })
+        .collect::<Vec<_>>()
+        .join("-");
     Ok(
-        json!({"type":"result", "code":request.code, "result":formatted, "value":result.canonical(), "steps":steps, "tree":""}),
+        json!({"type":"result", "code":request.code, "result":formatted, "value":result.canonical(), "steps":steps, "tree":tree, "chain":chain, "arity":arity, "chainType":if arguments.len() <= 1 { "monadic" } else { "dyadic" }}),
     )
 }
 

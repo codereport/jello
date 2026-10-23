@@ -16,8 +16,8 @@ sys.path[:0] = [str(ROOT / "scripts"), str(ROOT / "web"), str(ROOT / "src")]
 import jelly
 from build_site import read_challenges
 from build_wasm import build_wasm
-from language import convert
-from runtime import ARGUMENT_ATOMS, split_arguments
+from language import convert, keyword_arity
+from runtime import ARGUMENT_ATOMS, evaluate, split_arguments
 
 
 def canonical(value):
@@ -60,8 +60,8 @@ class RustEngineTests(unittest.TestCase):
         self.engine.wait(timeout=10)
         self.engine.stdout.close()
 
-    def request(self, code, arguments, prefixes=()):
-        self.engine.stdin.write(json.dumps({"code": code, "arguments": arguments, "prefixes": prefixes}) + "\n")
+    def request(self, code, arguments, prefixes=(), arities=()):
+        self.engine.stdin.write(json.dumps({"code": code, "arguments": arguments, "prefixes": prefixes, "arities": arities}) + "\n")
         self.engine.stdin.flush()
         line = self.engine.stdout.readline()
         self.assertTrue(line, f"Rust exited while evaluating {code} {arguments}")
@@ -110,6 +110,8 @@ class RustEngineTests(unittest.TestCase):
             "[9007199254740993,9007199254740994] :: sum", "30 :: factorial",
             "[-2,-1,0,1,2] :: odd?", "[-12,0,12] :: i_to_d", "-6 :: bits",
             "[1,2,3] :: < prior", "[1,1,2,3,3] :: sum group", "[1,1,0,2,2] :: len part",
+            "[2,3,4] :: + sq . each", "[-2,3] :: + sq . sort_by", "[0,1,2] :: odd? not . filter",
+            "[1,0,1] :: i part_by", '"hi" :: head head',
         ]
         for command in commands:
             with self.subTest(command=command):
@@ -124,8 +126,19 @@ class RustEngineTests(unittest.TestCase):
             {"code": "R²S", "result": "55"},
         ])
 
+    def test_challenge_diagrams_match_the_existing_renderer(self):
+        for challenge in read_challenges():
+            with self.subTest(challenge=challenge["number"]):
+                keywords = challenge["expression"].split()
+                arities = [getattr(keyword_arity(word), "value", keyword_arity(word)) for word in keywords]
+                arguments = [json.dumps(v) for v in challenge["example"]["inputs"]]
+                actual = self.request(challenge["jelly"], arguments, arities=arities)
+                expected = json.loads(evaluate(challenge["command"]))
+                for key in ("tree", "chain", "arity", "chainType"):
+                    self.assertEqual(actual[key], expected[key], key)
+
     def test_unsupported_domains_explicitly_fall_back(self):
-        for code, arguments in [("½", ["4"]), ("X", ["5"]), ("R", ["0.5"]), ("R", ["2000001"]), ("H", ["3"]), ("S", ["'hello'"]), ("L", ["true"]), ("L", ['"\\ud83d\\ude00"'])]:
+        for code, arguments in [("½", ["4"]), ("X", ["5"]), ("R", ["0.5"]), ("R", ["2000001"]), ("H", ["3"]), ("S", ["'hello'"]), ("L", ["true"]), ("L", ['"\\ud83d\\ude00"']), ("M", ["5"]), ("Æf", ["0"])]:
             with self.subTest(code=code, arguments=arguments):
                 self.assertEqual(self.request(code, arguments)["type"], "unsupported")
         self.compare("R", ["5"])

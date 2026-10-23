@@ -58,14 +58,35 @@ def split_arguments(text):
     return result
 
 
-def run(code, arguments):
+def canonical(value):
+    """Lossless values for comparisons; Jelly's display unwraps singleton lists."""
+    if type(value) == int:
+        return ["integer", str(value)]
+    if type(value) == str:
+        return ["character" if len(value) == 1 else "string", value]
+    if type(value) == list:
+        return ["list", [canonical(item) for item in value]]
+    if type(value) == float:
+        return ["float", repr(value)]
+    return ["other", repr(value)]
+
+
+def run_value(code, arguments):
     # The CLI starts a fresh process for every prefix. Reset input atoms here too.
     for symbol, call in ARGUMENT_ATOMS.items():
         jelly.atoms[symbol].call = call
     output = OutputBuffer()
     with redirect_stdout(output):
-        jelly.main(code, [jelly.try_eval(arg) for arg in arguments], "\n")
-    return output.getvalue().strip()
+        parsed = [jelly.try_eval(arg) for arg in arguments]
+        for index, argument in enumerate(parsed):
+            jelly.atoms["³⁴⁵⁶⁷⁸⁹"[index]].call = lambda literal=argument: literal
+        value = jelly.jelly_eval(code, parsed)
+        jelly.output(value, "\n")
+    return output.getvalue().strip(), value
+
+
+def run(code, arguments):
+    return run_value(code, arguments)[0]
 
 
 def evaluate(command):
@@ -79,7 +100,8 @@ def evaluate(command):
         raise ValueError("Try a shorter expression (up to 80 keywords).")
     arguments = split_arguments(raw_args)
     code = convert(keywords)
-    result = run(code, arguments)
+    result, value = run_value(code, arguments)
+    result_value = canonical(value)
     steps, prefix = [], ""
     for keyword in keywords:
         prefix += to_jelly(keyword)
@@ -107,6 +129,7 @@ def evaluate(command):
     return json.dumps({
         "code": code,
         "result": result,
+        "value": result_value,
         "steps": steps,
         "arity": chain_arity_to_string(arities),
         "chainType": chain_type.name.lower(),

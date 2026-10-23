@@ -42,13 +42,15 @@ At the prompt, try `5 :: range`. Enter `q` to quit.
 
 ## Browser playground
 
-The [playground](https://codereport.github.io/jello/) is a dark, monospace terminal that runs the same Jello keyword converter and pinned Jellyfish interpreter in your browser using Pyodide. The expression bar sits above the evaluation session. It includes examples, evaluation traces, combinator diagrams, a searchable keyword reference, local command history, and shareable expression links. Stop cancels a calculation; runs also stop automatically after 10 seconds.
+The [playground](https://codereport.github.io/jello/) is a dark, monospace terminal with a Rust/WebAssembly evaluator and the pinned Python/Jellyfish interpreter through Pyodide. The expression bar sits above the evaluation session. It includes examples, evaluation traces, combinator diagrams, a searchable keyword reference, local command history, and shareable expression links. Stop cancels a calculation; each engine has a 10-second execution limit.
+
+Rust runs first and displays its result, trace, and diagram immediately. Python runs afterward in a separate worker and verifies both the output and structured value. **✓ match** appears when they agree, including exact large integers and nested list structure. Python timeouts or errors keep the Rust result visible with an **unverified** status; a mismatch shows both outputs. New evaluations cancel obsolete verification. Unsupported Rust operations or input types fall back to Python, and Rust download failures also leave Python available. If Python cannot load, Rust remains usable and **Retry** reloads Python verification.
 
 Turn **Live mode** on in the **settings gear** to evaluate automatically after a 600 ms typing pause. Accepting an autocomplete suggestion with Tab, Enter, or a click evaluates immediately, skipping the typing delay. With the dropdown closed, Tab also evaluates a pending edit while moving focus normally; Enter submits a complete expression immediately. Edits update one preview, and a newer expression supersedes a slow preview. Turn it off to return to manual evaluation with Enter or Run. Automatic previews do not fill command history; explicit runs are remembered. Shared links still wait for you to edit or run the expression.
 
 The converted Jelly expression appears in larger type to the right of the expression bar and updates as you type. In live mode, Run is hidden; Stop remains available during a calculation. Manual sessions keep Run and the Jelly code alongside each result in their history.
 
-The bottom-right corner shows the [Python logo](https://www.python.org/community/logos/) and the latest completed evaluation's execution time, including traces and combinator diagrams. It stays visible in live and presentation modes. Timing comes from the Python worker and excludes interpreter loading and the typing delay.
+The bottom-right corner shows the [Rust logo](https://github.com/rust-lang/rust-artwork/tree/main/logo), Rust execution time, [Python logo](https://www.python.org/community/logos/), Python time, and verification status. It stays visible in live and presentation modes. Each time includes that engine's traces and diagrams and excludes interpreter loading, the typing delay, and waiting for the other engine. Python fallback shows its own execution time. The Rust logo is used unmodified under [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/).
 
 Press **Shift+C** to open the searchable challenge picker, including from the expression editor. You can also choose **Browse challenges** in settings. Search by problem title, number, contest, or program; use the arrow keys and Enter to select, or Escape to close. Each challenge loads a complete example with sample inputs and the solution from [challenges.md](challenges.md). For example, Score of a String loads `"hello" :: ord deltas abs sum`, which returns `13`. Live mode evaluates the new expression automatically; manual mode waits for Enter or Run.
 
@@ -58,16 +60,16 @@ The **settings gear** in the REPL toolbar saves your preferences in this browser
 
 Keyword suggestions appear as you type after `::`. Click a suggestion, or use the arrow keys and Enter to select it. In live mode, Tab accepts the selected suggestion and closes the dropdown while keeping focus in the editor. In manual mode, Tab completes and cycles through matches. Escape closes suggestions; the arrow keys then browse command history. Syntax highlighting uses green for monads, cyan for dyads, purple for quicks, amber for nilads and input values, and gray for separators, including in the input and evaluation traces.
 
-The first visit downloads the Python runtime and dependencies from jsDelivr and PyPI. Pyodide is pinned to 0.27.7 (Python 3.12) for compatibility with Jellyfish. There is no application server; expressions execute in a dedicated browser worker. Shared links load the expression for you to review and run. Terminal commands such as `--find-by-example` are not included.
+The first visit loads the Rust evaluator from this site and downloads the Python runtime and dependencies from jsDelivr and PyPI in the background. Rust results do not wait for Python to initialize. Pyodide is pinned to 0.27.7 (Python 3.12) for compatibility with Jellyfish. There is no application server; both engines execute in dedicated browser workers. Shared links load the expression for you to review and run. Terminal commands such as `--find-by-example` are not included.
 
-To preview locally, initialize the submodule, then run:
+To preview locally, initialize the submodule and install [Rust using rustup](https://rustup.rs/), then run:
 
 ```sh
 python3 scripts/build_site.py
 python3 -m http.server 8000 --directory _site
 ```
 
-Open `http://localhost:8000`. The build packages the Python source from `src/` and `jellyfish/` into `_site/runtime.zip` and generates the wordbook from `src/tokens.py`. Edit the interface in `web/`, then rebuild. Generated files in `_site/` are not committed.
+Open `http://localhost:8000`. The build compiles `rust/` with the pinned toolchain and locked dependencies into `_site/jello-engine.wasm`, packages Python sources into `_site/runtime.zip`, includes runtime licenses, and generates the wordbook from `src/tokens.py`. Edit the interface in `web/`, then rebuild. Generated files in `_site/` and `rust/target/` are not committed.
 
 To run the browser and adapter tests:
 
@@ -82,7 +84,7 @@ Set `CHROMIUM_PATH` to use an existing Chromium installation. Set `PLAYGROUND_UR
 
 ## Rust evaluator
 
-The [Rust evaluator](rust/README.md) implements the Jellyfish operations used by all 30 challenge examples, with Python comparisons covering varied inputs, large integers, Unicode, and nested arrays. Install [Rust using rustup](https://rustup.rs/) to run its tests; `rust-toolchain.toml` pins the toolchain and WebAssembly target. The existing Python interpreter remains available for the full language.
+The [Rust evaluator](rust/README.md) implements the Jellyfish operations used by all 30 challenge examples, with Python comparisons covering varied inputs, large integers, Unicode, nested arrays, and diagrams in both native and Wasm builds. Install [Rust using rustup](https://rustup.rs/) to run its tests; `rust-toolchain.toml` pins the toolchain and WebAssembly target. Rust currently supports integer arithmetic; floating-point, complex, random, dynamic evaluation, and Python-specific input syntax use Python. Arrays and reductions remain eager, with allocation, recursion, operation, and output limits. There are no range-sum shortcuts or operation-fusion optimizations.
 
 ```sh
 cargo build --locked --release --manifest-path rust/Cargo.toml

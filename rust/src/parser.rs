@@ -28,7 +28,6 @@ pub enum Kind {
     Key(Box<Link>),
     Filter(Box<Link>),
     Partition(Box<Link>),
-    PartitionBy(Box<Link>),
 }
 
 fn pop(chain: &mut Vec<Link>, chains: &mut Vec<Link>) -> Result<Link> {
@@ -116,22 +115,16 @@ pub fn parse(code: &str) -> Result<Link> {
         };
         if matches!(
             token.as_str(),
-            "€" | "Ɱ"
-                | "@"
-                | "`"
-                | "þ"
-                | "Þ"
-                | "ṕ"
-                | "Œg"
-                | "ƙ"
-                | "Ƈ"
-                | "Ṕ"
-                | "ℙ"
-                | "/"
-                | "\\"
+            "€" | "Ɱ" | "@" | "`" | "þ" | "Þ" | "ṕ" | "Œg" | "ƙ" | "Ƈ" | "Ṕ" | "/" | "\\"
         ) {
             let last = pop(&mut chain, &mut chains)?;
             let a = last.arity;
+            if matches!(token.as_str(), "@" | "`" | "þ" | "ṕ") && a != 2 && a != -1 {
+                return Err(Error::unsupported("a non-dyadic link in this quick"));
+            }
+            if matches!(token.as_str(), "Œg" | "ƙ" | "Ṕ") && a != 1 && a != -1 {
+                return Err(Error::unsupported("a non-monadic link in this quick"));
+            }
             let (arity, kind) = match token.as_str() {
                 "€" => (a.max(1), Kind::Each(Box::new(last))),
                 "Ɱ" => (a.max(1), Kind::EachRight(Box::new(last))),
@@ -144,13 +137,15 @@ pub fn parse(code: &str) -> Result<Link> {
                 "ƙ" => (2, Kind::Key(Box::new(last))),
                 "Ƈ" => (a, Kind::Filter(Box::new(last))),
                 "Ṕ" => (1, Kind::Partition(Box::new(last))),
-                "ℙ" => (1, Kind::PartitionBy(Box::new(last))),
                 "/" | "\\" => {
                     let links = if a == 0 {
                         vec![pop(&mut chain, &mut chains)?, last]
                     } else {
                         vec![last]
                     };
+                    if links[0].arity != 2 && links[0].arity != -1 {
+                        return Err(Error::unsupported("a non-dyadic reduction"));
+                    }
                     (
                         1,
                         if token == "/" {

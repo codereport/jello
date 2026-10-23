@@ -36,6 +36,11 @@ impl Engine {
             return Err(Error::unsupported("deep evaluation recursion"));
         }
         self.level += 1;
+        let args = if link.arity == 1 && args.len() > 1 {
+            &args[..1]
+        } else {
+            args
+        };
         let result = self.invoke(link, args);
         self.level -= 1;
         result
@@ -47,11 +52,7 @@ impl Engine {
         match &link.kind {
             Kind::Literal(value) => Ok(value.clone()),
             Kind::Chain(links) => {
-                let count = if link.arity < 0 {
-                    args.len()
-                } else {
-                    link.arity as usize
-                };
+                let count = args.len();
                 if count == 0 {
                     if let [only] = links.as_slice() {
                         return self.call(only, &[]);
@@ -72,21 +73,35 @@ impl Engine {
                 if link.arity == 1 {
                     self.monad(name, x)
                 } else {
+                    if args.len() < 2 {
+                        return Err(Error::unsupported("missing right argument"));
+                    }
                     self.dyad(name, x, y)
                 }
             }
             Kind::Each(inner) => Ok(Value::list(
                 x.range_items()?
                     .iter()
-                    .map(|v| self.call(inner, &[v.clone(), y.clone()]))
+                    .map(|v| {
+                        if args.len() < 2 {
+                            self.call(inner, std::slice::from_ref(v))
+                        } else {
+                            self.call(inner, &[v.clone(), y.clone()])
+                        }
+                    })
                     .collect::<Result<_>>()?,
             )),
-            Kind::EachRight(inner) => Ok(Value::list(
-                y.range_items()?
-                    .iter()
-                    .map(|v| self.call(inner, &[x.clone(), v.clone()]))
-                    .collect::<Result<_>>()?,
-            )),
+            Kind::EachRight(inner) => {
+                if args.len() < 2 {
+                    return Err(Error::unsupported("monadic each_over"));
+                }
+                Ok(Value::list(
+                    y.range_items()?
+                        .iter()
+                        .map(|v| self.call(inner, &[x.clone(), v.clone()]))
+                        .collect::<Result<_>>()?,
+                ))
+            }
             Kind::Swap(inner) => self.call(inner, &[y.clone(), x.clone()]),
             Kind::Reflex(inner) => self.call(inner, &[x.clone(), x.clone()]),
             Kind::Outer(inner) => {
@@ -112,7 +127,16 @@ impl Engine {
                 let mut keyed = x
                     .range_items()?
                     .into_iter()
-                    .map(|v| Ok((self.call(inner, &[v.clone(), y.clone()])?, v)))
+                    .map(|v| {
+                        Ok((
+                            if args.len() < 2 {
+                                self.call(inner, std::slice::from_ref(&v))?
+                            } else {
+                                self.call(inner, &[v.clone(), y.clone()])?
+                            },
+                            v,
+                        ))
+                    })
                     .collect::<Result<Vec<_>>>()?;
                 let mut error = None;
                 keyed.sort_by(|a, b| {
@@ -183,7 +207,13 @@ impl Engine {
             Kind::Filter(inner) => {
                 let mut kept = vec![];
                 for v in x.range_items()? {
-                    if self.call(inner, &[v.clone(), y.clone()])?.truth() {
+                    if (if args.len() < 2 {
+                        self.call(inner, std::slice::from_ref(&v))?
+                    } else {
+                        self.call(inner, &[v.clone(), y.clone()])?
+                    })
+                    .truth()
+                    {
                         kept.push(v);
                     }
                 }
@@ -197,25 +227,6 @@ impl Engine {
                     }
                 }
                 Ok(Value::list(kept))
-            }
-            Kind::PartitionBy(inner) => {
-                let mut groups: Vec<(Value, Vec<Value>)> = vec![];
-                for v in x.items() {
-                    let key = self.call(inner, std::slice::from_ref(&v))?;
-                    if !key.truth() {
-                        continue;
-                    }
-                    if let Some((previous, group)) = groups.last_mut() {
-                        if previous == &key {
-                            group.push(v);
-                            continue;
-                        }
-                    }
-                    groups.push((key, vec![v]));
-                }
-                Ok(Value::list(
-                    groups.into_iter().map(|(_, g)| Value::list(g)).collect(),
-                ))
             }
         }
     }

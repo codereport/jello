@@ -1,6 +1,7 @@
 import { KeywordEditor } from "./editor.js";
 import { PlaygroundSettings } from "./settings.js";
 import { ChallengePicker } from "./challenges.js";
+import { Backends } from "./backends.js";
 
 const $ = (selector) => document.querySelector(selector);
 const input = $("#expression");
@@ -26,7 +27,7 @@ const descriptions = {
 };
 const typeDescriptions = { monadic: "Monad · one input", dyadic: "Dyad · two inputs", niladic: "Nilad · a constant", quick: "Quick · modifies a function", separators: "Starts a new chain" };
 const featuredWords = ["range", "sq", "sum", "rev", "double", "odd?", "filter", "each", "sort", "uniq", "len", "sums"];
-let worker, state = "loading", requestId = 0, activeEntry, executionTimer, loadTimer;
+let worker, state = "loading", requestId = 0, activeEntry, loadTimer;
 let initialRun = true, historyIndex = 0, draft = "";
 let liveEnabled = false, liveTimer, queuedLive = null, liveEntry = null, activeRun = null;
 let history = [], words = [], activeFilter = "all", expandedWords = false;
@@ -101,15 +102,13 @@ function flushLive() {
   if (queuedLive !== input.value.trim()) { queuedLive = null; return; }
   if (state === "running" && activeRun?.live) {
     // A paused edit supersedes a slow preview; never queue obsolete programs in the worker.
-    clearTimeout(executionTimer);
-    worker.terminate();
+    worker.cancel();
     ++requestId;
     activeEntry.remove();
     if (liveEntry === activeEntry) liveEntry = null;
     activeEntry = activeRun = null;
     initialRun = false;
-    startWorker();
-    return;
+    setState("ready", "ready");
   }
   if (state !== "ready") return;
   const command = queuedLive;
@@ -151,7 +150,7 @@ function setState(next, message) {
   if (next !== "ready") updateExecutionTime();
   $("#runtime-status").className = `runtime-status ${next}`;
   $("#status-text").textContent = message;
-  $("#retry").hidden = next !== "error";
+  $("#retry").hidden = next !== "error" && !worker?.pythonUnavailable;
   runButton.disabled = next === "loading" || next === "error";
   runButton.classList.toggle("running", next === "running");
   $("#run-label").textContent = next === "running" ? "Stop" : "Run";
@@ -172,7 +171,7 @@ function startWorker() {
   clearTimeout(loadTimer);
   setState("loading", "initializing…");
   try {
-    const currentWorker = new Worker(new URL("./worker.js", import.meta.url), { type: "module" });
+    const currentWorker = new Backends();
     worker = currentWorker;
     loadTimer = setTimeout(() => {
       if (worker === currentWorker && state === "loading") showLoadError();
@@ -191,8 +190,13 @@ function startWorker() {
       } else if (data.type === "load-error") {
         console.error("Interpreter initialization:", data.message);
         showLoadError();
+      } else if (data.type === "backend-status") {
+        $("#retry").hidden = state !== "error" && !worker.pythonUnavailable;
+        $("#retry").title = state === "error" ? "Retry loading interpreters" : "Retry Python verification";
+      } else if (data.type === "verification") {
+        const entry = transcript.querySelector(`[data-request-id="${data.id}"]`);
+        if (entry) renderVerification(entry, data);
       } else if (data.id === requestId && (data.type === "result" || data.type === "error")) {
-        clearTimeout(executionTimer);
         const current = !activeRun?.live || activeRun.command === input.value.trim();
         if (current) renderResponse(activeEntry, data);
         else {
@@ -256,25 +260,25 @@ function execute(command, { live = liveEnabled, remember = true } = {}) {
   setState("running", "running…");
   activeEntry = createEntry(command, live);
   activeRun = { command, live, entry: activeEntry };
-  worker.postMessage({ type: "run", id: ++requestId, command });
-  executionTimer = setTimeout(() => stopExecution("That took more than 10 seconds. Try a smaller input or a shorter program."), 10000);
+  activeEntry.dataset.requestId = String(++requestId);
+  worker.postMessage({ type: "run", id: requestId, command });
 }
 
 function stopExecution(message = "Stopped. Try a smaller input or a different expression.") {
   if (state !== "running") return;
-  clearTimeout(executionTimer);
   cancelPendingLive();
-  worker.terminate();
+  worker.cancel();
   ++requestId;
   renderResponse(activeEntry, { type: "error", message });
   activeEntry = activeRun = null;
   initialRun = false;
-  startWorker();
+  setState("ready", "ready");
 }
 
 function renderResponse(entry, data) {
   if (!entry) return;
-  updateExecutionTime(data.duration);
+  entry.dataset.engine = data.engine || "";
+  updateExecutionTime(data.duration, data.engine, data.verification);
   entry.querySelector(".pending")?.remove();
   if (data.type === "error") {
     entry.classList.add("error-entry");
@@ -294,41 +298,82 @@ function renderResponse(entry, data) {
     editor.renderAtoms(jellyCode, data.code, entry.dataset.command);
     meta.append(element("span", "", "JELLY"), jellyCode, element("span", "meta-divider", "·"), element("span", "timing", formatDuration(data.duration)));
     entry.append(output, meta);
-    if (data.steps.length || data.tree) {
-      const details = element("details", "trace");
-      if ((entry === liveEntry || transcript.children.length === 1) && !matchMedia("(max-width: 480px)").matches) details.open = true;
-      details.append(element("summary", "", "Follow the chain"));
-      const content = element("div", "trace-content");
-      const steps = element("div");
-      steps.append(element("div", "trace-label", "ONE STEP AT A TIME"));
-      for (const step of data.steps) {
-        const row = element("div", "trace-step");
-        const code = element("span");
-        editor.renderAtoms(code, step.code, entry.dataset.command);
-        row.append(code, element("span", "step-arrow", "→"), element("span", "", step.result));
-        steps.append(row);
-      }
-      content.append(steps);
-      if (data.tree) {
-        const tree = element("div");
-        tree.append(element("div", "trace-label", "THE COMBINATOR CHAIN"), element("pre", "trace-tree", data.tree), element("div", "chain-info", `${data.arity} · ${data.chainType}${data.chain ? ` · ${data.chain}` : ""}`));
-        content.append(tree);
-      }
-      details.append(content);
-      entry.append(details);
-    }
+    renderTrace(entry, data);
+    if (data.engine === "rust") renderVerification(entry, { status: "pending" });
   }
   transcript.scrollTop = entry === liveEntry ? 0 : transcript.scrollHeight;
+}
+
+function renderTrace(entry, data) {
+  const previous = entry.querySelector(".trace");
+  if (previous) {
+    if (data.tree && !previous.querySelector(".trace-tree")) appendTree(previous.querySelector(".trace-content"), data);
+    return;
+  }
+  if (data.steps?.length || data.tree) {
+    const details = element("details", "trace");
+    if ((entry === liveEntry || transcript.children.length === 1) && !matchMedia("(max-width: 480px)").matches) details.open = true;
+    details.append(element("summary", "", "Follow the chain"));
+    const content = element("div", "trace-content");
+    const steps = element("div");
+    steps.append(element("div", "trace-label", "ONE STEP AT A TIME"));
+    for (const step of data.steps || []) {
+      const row = element("div", "trace-step");
+      const code = element("span");
+      editor.renderAtoms(code, step.code, entry.dataset.command);
+      row.append(code, element("span", "step-arrow", "→"), element("span", "", step.result));
+      steps.append(row);
+    }
+    content.append(steps);
+    if (data.tree) appendTree(content, data);
+    details.append(content);
+    entry.append(details);
+  }
+}
+
+function appendTree(content, data) {
+  const tree = element("div");
+  tree.append(element("div", "trace-label", "THE COMBINATOR CHAIN"), element("pre", "trace-tree", data.tree), element("div", "chain-info", `${data.arity} · ${data.chainType}${data.chain ? ` · ${data.chain}` : ""}`));
+  content.append(tree);
 }
 
 function formatDuration(duration) {
   return duration < 1000 ? `${duration.toFixed(1)} ms` : `${(duration / 1000).toFixed(2)} s`;
 }
 
-function updateExecutionTime(duration) {
+function updateExecutionTime(duration, engine = "python", verification = "") {
   const valid = Number.isFinite(duration) && duration >= 0;
   $("#execution-status").hidden = !valid;
   $("#execution-time").textContent = valid ? formatDuration(duration) : "";
+  $("#execution-logo").src = engine === "rust" ? "rust-logo.svg" : "python-logo.svg";
+  $("#execution-logo").alt = engine === "rust" ? "Rust" : "Python";
+  $("#python-comparison").hidden = engine !== "rust";
+  $("#python-execution-time").textContent = "checking…";
+  $("#verification-status").className = "verification-status";
+  $("#verification-status").textContent = engine === "python" && verification ? `Rust ${verification}` : "";
+  $("#execution-status").title = "Backend execution times, including traces; excludes loading and typing delay";
+}
+
+function renderVerification(entry, data) {
+  const labels = { pending: "checking…", match: "✓ match", mismatch: "≠ mismatch", timeout: "unverified", unavailable: "unverified", error: "unverified", cancelled: "unverified" };
+  const reasons = { timeout: "Python timed out", unavailable: "Python unavailable", error: "Python error", cancelled: "Python cancelled" };
+  entry.dataset.verification = data.status;
+  entry.querySelector(".entry-verification")?.remove();
+  entry.querySelector(".verification-note")?.remove();
+  entry.querySelector(".entry-meta")?.append(element("span", `entry-verification verification-${data.status}`, labels[data.status]));
+  if (data.python?.type === "result") renderTrace(entry, data.python);
+  if (data.status === "mismatch" || data.status === "error") {
+    const note = element("div", "verification-note");
+    const sameText = data.python?.result === entry.querySelector(".result")?.textContent;
+    note.append(element("span", "", data.status === "mismatch" ? (sameText ? "The displayed outputs match, but their value types or structure differ:" : "Python returned a different output:") : "Python could not verify this result:"));
+    note.append(element("pre", "python-result", data.python?.result ?? data.python?.message ?? data.message));
+    entry.append(note);
+  }
+  if (Number(entry.dataset.requestId) !== requestId) return;
+  $("#python-execution-time").textContent = Number.isFinite(data.python?.duration) ? formatDuration(data.python.duration) : data.status === "pending" ? "checking…" : (reasons[data.status] || data.status).replace("Python ", "");
+  $("#verification-status").textContent = data.status === "pending" ? "" : labels[data.status];
+  $("#verification-status").className = `verification-status verification-${data.status}`;
+  $("#verification-status").title = data.status === "match" ? "Rust and Python outputs match for this input" : reasons[data.status] || "Rust and Python outputs differ";
 }
 
 $("#repl-form").addEventListener("submit", (event) => {
@@ -336,11 +381,13 @@ $("#repl-form").addEventListener("submit", (event) => {
   if (state === "running") stopExecution();
   else execute(input.value);
 });
-$("#retry").addEventListener("click", startWorker);
+$("#retry").addEventListener("click", () => { if (state === "error") startWorker(); else worker.retryPython(); });
 $("#clear").addEventListener("click", () => {
   cancelPendingLive();
   editor.closeSuggestions();
   if (state === "running") stopExecution();
+  worker.cancel();
+  ++requestId;
   transcript.replaceChildren(welcomeTemplate.cloneNode(true));
   updateExecutionTime();
   liveEntry = null;

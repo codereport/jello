@@ -8,6 +8,8 @@ import shutil
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
+from build_wasm import build_wasm
+
 ROOT = Path(__file__).resolve().parents[1]
 DESTINATION = ROOT / "_site"
 
@@ -49,9 +51,13 @@ def build():
     jelly = ROOT / "jellyfish" / "jelly"
     if not (jelly / "interpreter.py").is_file():
         raise SystemExit("Initialize Jellyfish first: git submodule update --init --recursive")
+    wasm = build_wasm()
     if DESTINATION.exists():
         shutil.rmtree(DESTINATION)
     shutil.copytree(ROOT / "web", DESTINATION, ignore=shutil.ignore_patterns("*.py", "__pycache__"))
+    shutil.copyfile(wasm, DESTINATION / "jello-engine.wasm")
+    shutil.copyfile(ROOT / "rust/LICENSE.txt", DESTINATION / "RUST-LICENSE.txt")
+    shutil.copyfile(ROOT / "rust/target/THIRD-PARTY-LICENSES.txt", DESTINATION / "THIRD-PARTY-LICENSES.txt")
     (DESTINATION / ".nojekyll").touch()
     sources = [(path, f"jelly/{path.name}") for path in sorted(jelly.glob("*.py"))]
     sources += [(ROOT / "src" / name, name) for name in ("tokens.py", "language.py", "utils.py", "draw.py", "grid.py")]

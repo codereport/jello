@@ -12,3 +12,6 @@
 - The browser UI lives in `web/`; build it with `python3 scripts/build_site.py`. Do not commit `_site/`. Both REPLs share `src/language.py`, `src/tokens.py`, and the pinned Jellyfish interpreter.
 - Keep the browser UI dark, terminal-focused, and monospace throughout. Put the REPL first; do not add a hero section or promotional introduction.
 - For browser changes, run `npm test` (Playwright, desktop and mobile). For runtime changes, also run `.venv/bin/python -m unittest discover -s tests -p 'test_*.py'`. GitHub Actions deploys Pages after tests pass.
+- The Rust engine lives in `rust/`; install Rust with rustup and use the pinned `rust-toolchain.toml` and `Cargo.lock`. The site builder compiles Wasm automatically. Do not commit `rust/target/` or generated Wasm files.
+- For Rust changes, run `cargo fmt --manifest-path rust/Cargo.toml -- --check` and `cargo clippy --locked --manifest-path rust/Cargo.toml --all-targets -- -D warnings`. Python tests compare both native and Wasm engines with Jellyfish, including all challenge examples and varied inputs.
+- Preserve explicit Python fallback for unsupported Rust semantics. Verification must compare outputs and lossless typed values for the same request; timeouts, errors, and cancelled runs must never produce a match check or replace the Rust output.
