@@ -157,6 +157,44 @@ test("live view debounces edits, replaces one preview, and switches back to manu
   await expect(page.locator(".result").last()).toHaveText("81");
 });
 
+test("live autocomplete with Tab or Enter skips the typing debounce", async ({ page }) => {
+  const now = Date.now();
+  await page.clock.install({ time: now });
+  await page.goto("./");
+  await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
+  await page.clock.pauseAt(now + 60_000);
+  await setLiveMode(page, true);
+  const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
+  const preview = page.locator(".live-entry");
+  const suggestions = page.getByRole("listbox", { name: "Keyword suggestions" });
+  await input.fill("5 :: ran");
+  await page.clock.runFor(599);
+  await expect(preview).toHaveCount(0);
+  await input.press("Tab");
+  await expect(suggestions).toBeHidden();
+  // The page clock stays paused: a debounced evaluation cannot complete here.
+  await expect(preview.locator(".result")).toHaveText("[1, 2, 3, 4, 5]");
+  await input.fill("6 :: ran");
+  await input.press("ArrowDown");
+  await input.press("Enter");
+  await expect(suggestions).toBeHidden();
+  await expect(preview.locator(".result")).toHaveText("[0, 1, 2, 3, 4, 5]");
+  await input.fill("8 :: double");
+  await expect(suggestions).toBeHidden();
+  await input.press("Tab");
+  await expect(input).not.toBeFocused();
+  await expect(preview.locator(".result")).toHaveText("16");
+  await input.fill("7 :: sq");
+  await input.press("Escape");
+  await input.press("Enter");
+  await expect(preview.locator(".result")).toHaveText("49");
+  const completed = await preview.elementHandle();
+  await page.clock.runFor(1000);
+  expect(await completed.evaluate((node) => node.isConnected)).toBe(true);
+  await expect(preview.locator(".result")).toHaveText("49");
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("jello-history")))).toEqual(["5 :: range sq sum", "7 :: sq"]);
+});
+
 test("suggestions complete the current keyword and syntax colors follow keyword types", async ({ page }, testInfo) => {
   await page.goto("./");
   await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });

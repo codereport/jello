@@ -62,6 +62,10 @@ const editor = new KeywordEditor(input, {
   closeOnTab: () => liveEnabled,
 });
 
+input.addEventListener("keydown", (event) => {
+  if (event.key === "Tab" && !event.shiftKey && !event.defaultPrevented && liveTimer) scheduleLive({ immediate: true });
+});
+
 new ChallengePicker(input, editor, (command) => {
   editor.setValue(command, { notify: true });
   input.focus({ preventScroll: true });
@@ -70,22 +74,26 @@ new ChallengePicker(input, editor, (command) => {
 
 function cancelPendingLive() {
   clearTimeout(liveTimer);
+  liveTimer = null;
   queuedLive = null;
 }
 
-function expressionChanged() {
+function expressionChanged({ immediate = false } = {}) {
   initialRun = false;
   if (activeRun?.live) activeRun.entry.hidden = activeRun.command !== input.value.trim();
-  scheduleLive();
+  scheduleLive({ immediate });
 }
 
-function scheduleLive() {
+function scheduleLive({ immediate = false } = {}) {
   cancelPendingLive();
   if (!liveEnabled || !input.value.trim()) return;
-  liveTimer = setTimeout(() => {
+  const evaluate = () => {
+    liveTimer = null;
     queuedLive = input.value.trim();
     flushLive();
-  }, LIVE_DELAY);
+  };
+  if (immediate) evaluate();
+  else liveTimer = setTimeout(evaluate, LIVE_DELAY);
 }
 
 function flushLive() {

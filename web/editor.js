@@ -183,7 +183,7 @@ export class KeywordEditor {
     const word = suggestions.matches[index];
     this.input.setRangeText(word.word, suggestions.start, suggestions.end, "end");
     this.renderInput();
-    this.onChange();
+    this.onChange({ immediate: !cycle });
     if (cycle) {
       this.tabCycle = { ...suggestions, end: this.input.selectionStart, index, value: this.input.value, caret: this.input.selectionStart };
       this.suggestions = this.tabCycle;
