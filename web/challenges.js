@@ -146,6 +146,6 @@ export class ChallengePicker {
   }
 
   sources(item) {
-    return [item.leetcode && `LeetCode ${item.leetcode}`, item.pwc && `PWC ${item.pwc}`, `Added ${item.added}`, item.contest && `Contest ${item.contest}`].filter(Boolean).join(" · ");
+    return [item.leetcode && `LeetCode ${item.leetcode}`, item.pwc && `PWC ${item.pwc}`, item.contest && `Contest ${item.contest}`, `Added ${item.added}`].filter(Boolean).join(" · ");
   }
 }

@@ -356,10 +356,10 @@ test("Shift+C opens searchable challenges and loads sample inputs in manual and 
   await expect(dialog).toBeVisible();
   await expect(search).toBeFocused();
   await expect(choices).toHaveCount(30);
-  await expect(choices.first().locator(".challenge-tags")).toHaveText("LeetCode 3005 · Added 2024-02-18 · Contest 380p1");
+  await expect(choices.first().locator(".challenge-tags")).toHaveText("LeetCode 3005 · Contest 380p1 · Added 2024-02-18");
   await expect(choices.nth(4).locator(".challenge-tags")).toHaveText("PWC 250p1 · Added 2024-02-20");
-  await expect(choices.nth(10).locator(".challenge-tags")).toHaveText("LeetCode 3046 · Added 2024-02-26 · Contest 386p1");
-  await expect(choices.last().locator(".challenge-tags")).toHaveText("LeetCode 3411 · Added 2025-01-06 · Contest 431p1");
+  await expect(choices.nth(10).locator(".challenge-tags")).toHaveText("LeetCode 3046 · Contest 386p1 · Added 2024-02-26");
+  await expect(choices.last().locator(".challenge-tags")).toHaveText("LeetCode 3411 · Contest 431p1 · Added 2025-01-06");
   await expect(input).toHaveValue("5 :: sum");
   await page.screenshot({ path: testInfo.outputPath("challenge-picker.png"), fullPage: true });
   await search.press("Shift+C");
