@@ -42,7 +42,7 @@ At the prompt, try `5 :: range`. Enter `q` to quit.
 
 ## Browser playground
 
-The [playground](https://codereport.github.io/jello/) is a dark, monospace terminal with a Rust/WebAssembly evaluator and the pinned Python/Jellyfish interpreter through Pyodide. The expression bar sits above the evaluation session. It includes examples, evaluation traces, combinator diagrams, a searchable keyword reference, local command history, and shareable expression links. Stop cancels a calculation; each engine has a 10-second execution limit.
+The [playground](https://codereport.github.io/jello/) is a dark, monospace terminal with a Rust/WebAssembly evaluator and the pinned Python/Jellyfish interpreter through Pyodide. It starts with `4 :: range . sum div len`, which returns `2.5`. The expression bar sits above the evaluation session. It includes examples, evaluation traces, combinator diagrams, a searchable keyword reference, local command history, and shareable expression links. Stop cancels a calculation; each engine has a 10-second execution limit.
 
 Rust runs first and displays its result, trace, and diagram immediately. Python runs afterward in a separate worker and verifies both the output and structured value. **✓ match** appears when they agree, including exact large integers and nested list structure. Python timeouts or errors keep the Rust result visible with an **unverified** status; a mismatch shows both outputs. New evaluations cancel obsolete verification. Unsupported Rust operations or input types fall back to Python, and Rust download failures also leave Python available. If Python cannot load, Rust remains usable and **Retry** reloads Python verification.
 

@@ -1,5 +1,14 @@
 import { test, expect } from "@playwright/test";
 
+const DEFAULT_COMMAND = "4 :: range . sum div len";
+const RUST_EXAMPLE = "5 :: range sq sum";
+
+async function openRustExample(page) {
+  await page.goto(`./#${new URLSearchParams({ code: RUST_EXAMPLE })}`);
+  await expect(page.locator("#runtime-status")).toHaveClass(/ready/, { timeout: 90000 });
+  await page.locator("#expression").press("Enter");
+}
+
 async function setLiveMode(page, enabled) {
   await page.getByRole("button", { name: "Settings", exact: true }).click();
   await page.getByRole("switch", { name: "Live mode", exact: true }).setChecked(enabled);
@@ -19,17 +28,20 @@ test("runs the real interpreter, examples, errors, wordbook, history, and sharin
     await expect(lastResult()).toHaveText(expected);
     await expect(run).toBeEnabled();
   };
-  await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
-  await expect(page.locator(".entry").first()).toHaveAttribute("data-engine", "rust");
-  await expect(page.locator(".entry").first()).toHaveAttribute("data-verification", "match", { timeout: 90000 });
+  await expect(input).toHaveValue(DEFAULT_COMMAND);
+  await expect(page.locator(".result").first()).toHaveText("2.5", { timeout: 90000 });
+  await expect(page.locator(".entry").first()).toHaveAttribute("data-engine", "python");
+  await expect(page.locator("#verification-status")).toHaveText("Rust unsupported");
   await expect(page.locator("#execution-time")).toHaveText(/^\d+\.\d+ (ms|s)$/);
   await expect(page.getByRole("img", { name: "Python", exact: true })).toBeVisible();
   expect(await page.getByRole("img", { name: "Python", exact: true }).evaluate((image) => image.complete && image.naturalWidth > 0)).toBe(true);
-  await expect(page.locator(".trace-step")).toHaveCount(3);
-  await expect(page.locator(".chain-info")).toContainText("1-1-1 · monadic · BB");
+  await expect(page.locator(".trace-step")).toHaveCount(4);
+  await expect(page.locator(".chain-info")).toContainText("1-s-1-2-1 · monadic · mB");
   await page.screenshot({ path: testInfo.outputPath("playground.png"), fullPage: true });
   await page.getByRole("button", { name: /Start small/ }).click();
   await expect(lastResult()).toHaveText("[1, 2, 3, 4, 5]");
+  await expect(page.locator(".entry").last()).toHaveAttribute("data-engine", "rust");
+  await expect(page.locator(".entry").last()).toHaveAttribute("data-verification", "match");
   await page.getByRole("button", { name: /Just the odd ones/ }).click();
   await expect(lastResult()).toHaveText("[1, 3, 5, 7, 9]");
   await execute("[1, 2, 3] :: sum", "6");
@@ -103,7 +115,7 @@ test("loads a shared expression and can stop a long calculation", async ({ page 
 
 test("live view debounces edits, replaces one preview, and switches back to manual evaluation", async ({ page }, testInfo) => {
   await page.goto("./");
-  await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
+  await expect(page.locator(".result").first()).toHaveText("2.5", { timeout: 90000 });
   const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
   const preview = page.locator(".live-entry");
   const inputBox = await input.boundingBox(), sessionBox = await page.locator("#transcript").boundingBox();
@@ -150,7 +162,7 @@ test("live view debounces edits, replaces one preview, and switches back to manu
   await expect(preview.locator(".result")).toHaveText("64");
   await expect(preview).toHaveCount(1);
   await expect(page.locator(".entry")).toHaveCount(1);
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("jello-history")))).toEqual(["5 :: range sq sum", "4 :: sq"]);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("jello-history")))).toEqual([DEFAULT_COMMAND, "4 :: sq"]);
   await input.fill("5 :: nonexistent");
   await expect(preview.locator(".error-message")).toContainText("not a valid Jello keyword");
   await input.fill("8 :: sq");
@@ -180,7 +192,7 @@ test("live autocomplete with Tab or Enter skips the typing debounce", async ({ p
   const now = Date.now();
   await page.clock.install({ time: now });
   await page.goto("./");
-  await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
+  await expect(page.locator(".result").first()).toHaveText("2.5", { timeout: 90000 });
   await page.clock.pauseAt(now + 60_000);
   await setLiveMode(page, true);
   const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
@@ -188,8 +200,8 @@ test("live autocomplete with Tab or Enter skips the typing debounce", async ({ p
   const suggestions = page.getByRole("listbox", { name: "Keyword suggestions" });
   await input.fill("5 :: ran");
   await page.clock.runFor(599);
-  await expect(preview).toHaveAttribute("data-command", "5 :: range sq sum");
-  await expect(preview.locator(".result")).toHaveText("55");
+  await expect(preview).toHaveAttribute("data-command", DEFAULT_COMMAND);
+  await expect(preview.locator(".result")).toHaveText("2.5", { timeout: 90000 });
   await input.press("Tab");
   await expect(suggestions).toBeHidden();
   // The page clock stays paused: a debounced evaluation cannot complete here.
@@ -212,16 +224,16 @@ test("live autocomplete with Tab or Enter skips the typing debounce", async ({ p
   await page.clock.runFor(1000);
   expect(await completed.evaluate((node) => node.isConnected)).toBe(true);
   await expect(preview.locator(".result")).toHaveText("49");
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("jello-history")))).toEqual(["5 :: range sq sum", "7 :: sq"]);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("jello-history")))).toEqual([DEFAULT_COMMAND, "7 :: sq"]);
 });
 
 test("suggestions complete the current keyword and syntax colors follow keyword types", async ({ page }, testInfo) => {
   await page.goto("./");
-  await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
+  await expect(page.locator(".result").first()).toHaveText("2.5", { timeout: 90000 });
   const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
   const suggestions = page.getByRole("listbox", { name: "Keyword suggestions" });
   const conversion = page.locator("#converted-expression");
-  await expect(conversion).toHaveText("R²S");
+  await expect(conversion).toHaveText("RµS÷L");
   await input.fill("5 :: ran");
   await expect(conversion).toBeHidden();
   await expect(conversion).toBeEmpty();
@@ -270,7 +282,7 @@ test("settings persist and keep the REPL usable in presentation mode", async ({ 
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("./");
-  await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
+  await expect(page.locator(".result").first()).toHaveText("2.5", { timeout: 90000 });
   const gear = page.getByRole("button", { name: "Settings", exact: true });
   const dialog = page.getByRole("dialog", { name: /settings/ });
   const live = dialog.getByRole("switch", { name: "Live mode", exact: true });
@@ -331,7 +343,7 @@ test("settings persist and keep the REPL usable in presentation mode", async ({ 
     liveMode: true, showExamples: false, theme: "dracula", showKeywords: false, presentationMode: true,
   });
   await page.reload();
-  await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
+  await expect(page.locator(".result").first()).toHaveText("2.5", { timeout: 90000 });
   await expect(page.locator(".entry")).toHaveCount(1);
   await expect(page.locator(".entry-command")).toBeHidden();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dracula");
@@ -362,7 +374,7 @@ test("Shift+C opens searchable challenges and loads sample inputs in manual and 
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("./");
-  await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
+  await expect(page.locator(".result").first()).toHaveText("2.5", { timeout: 90000 });
   const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
   const dialog = page.getByRole("dialog", { name: /challenges/ });
   const search = dialog.getByRole("searchbox", { name: "Search challenges" });
@@ -449,7 +461,7 @@ test("the challenge picker can retry a failed catalog download", async ({ page }
   test.skip(testInfo.project.name === "mobile", "Download recovery is independent of layout.");
   await page.route("**/challenges.json", (route) => route.fulfill({ status: 503, body: "Unavailable" }));
   await page.goto("./");
-  await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
+  await expect(page.locator(".result").first()).toHaveText("2.5", { timeout: 90000 });
   const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
   await input.press("Shift+C");
   const retry = page.getByRole("button", { name: "Retry loading challenges" });
@@ -466,7 +478,7 @@ test("the challenge picker can retry a failed catalog download", async ({ page }
 test("a newer live expression supersedes a busy preview", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === "mobile", "Worker cancellation is independent of layout.");
   await page.goto("./");
-  await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
+  await expect(page.locator(".result").first()).toHaveText("2.5", { timeout: 90000 });
   const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
   await setLiveMode(page, true);
   await input.fill("99999999 :: factorial");
@@ -480,7 +492,7 @@ test("a newer live expression supersedes a busy preview", async ({ page }, testI
 test("Python verification can retry without blocking Rust results", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === "mobile", "Loading failures use the same UI on both layouts.");
   await page.route("**/worker.js", (route) => route.fulfill({ contentType: "text/javascript", body: 'self.postMessage({type: "load-error", message: "offline"});' }));
-  await page.goto("./");
+  await openRustExample(page);
   await expect(page.getByRole("button", { name: "Retry", exact: true })).toBeVisible();
   await expect(page.locator(".result").first()).toHaveText("55");
   await expect(page.locator(".entry").first()).toHaveAttribute("data-engine", "rust");
@@ -493,7 +505,7 @@ test("Python verification can retry without blocking Rust results", async ({ pag
 });
 
 test("Rust and Python agree on every challenge program in real workers", async ({ page }) => {
-  await page.goto("./");
+  await openRustExample(page);
   await expect(page.locator(".entry").first()).toHaveAttribute("data-verification", "match", { timeout: 90000 });
   const challenges = await (await page.request.get("challenges.json")).json();
   const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
@@ -519,7 +531,7 @@ test("Rust and Python agree on every challenge program in real workers", async (
 
 test("unsupported Rust operations and inputs fall back to real Python", async ({ page }) => {
   await page.goto("./");
-  await expect(page.locator(".result").first()).toHaveText("55");
+  await expect(page.locator(".result").first()).toHaveText("2.5", { timeout: 90000 });
   const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
   for (const [command, expected] of [["81 :: sqrt", "9.0"], ["0.5 :: double", "1.0"], ["'hello world' :: rev", "dlrow olleh"]]) {
     await input.fill(command);
@@ -536,7 +548,7 @@ test("unsupported Rust operations and inputs fall back to real Python", async ({
 test("a missing Wasm module falls back to Python", async ({ page }) => {
   await page.route("**/jello-engine.wasm", (route) => route.fulfill({ status: 503, body: "offline" }));
   await page.goto("./");
-  await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
+  await expect(page.locator(".result").first()).toHaveText("2.5", { timeout: 90000 });
   await expect(page.locator(".entry").first()).toHaveAttribute("data-engine", "python");
   await expect(page.locator("#verification-status")).toHaveText("Rust unavailable");
 });
@@ -550,12 +562,12 @@ self.onmessage = ({data}) => {
   if (data.command === "7 :: sq") self.postMessage({type:"result",id:data.id,result:"49",value:["integer","49"],steps:[],tree:"",duration:1});
   else if (data.command === "6 :: sq") setTimeout(() => self.postMessage({type:"result",id:data.id,result:"36",value:["integer","36"],steps:[],tree:"",duration:1}), 2000);
 };` }));
-  await page.goto("./");
+  await openRustExample(page);
   await expect(page.locator(".result").first()).toHaveText("55");
   await expect.poll(async () => {
     const python = page.workers().find((worker) => worker.url().endsWith("/worker.js"));
     return python ? python.evaluate(() => self.lastCommand).catch(() => null) : null;
-  }).toBe("5 :: range sq sum");
+  }).toBe(RUST_EXAMPLE);
   await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
   await page.clock.runFor(10_000);
   await expect(page.locator(".entry").first()).toHaveAttribute("data-verification", "timeout");
@@ -579,7 +591,7 @@ self.onmessage = ({data}) => self.postMessage(data.command === "6 :: sq"
   ? {type:"error",id:data.id,message:"Verification failed",duration:2}
   : data.command === "7 :: sq" ? {type:"result",id:data.id,result:"49",value:["list",[["integer","49"]]],steps:[],tree:"",duration:2}
   : {type:"result",id:data.id,result:"56",value:["integer","56"],steps:[],tree:"",duration:2});` }));
-  await page.goto("./");
+  await openRustExample(page);
   await expect(page.locator(".entry").first()).toHaveAttribute("data-verification", "mismatch");
   await expect(page.locator(".result").first()).toHaveText("55");
   await expect(page.locator(".python-result")).toHaveText("56");
@@ -601,7 +613,7 @@ test("a Rust timeout falls back to Python without rerunning the stuck program", 
   await page.clock.install();
   await page.route("**/rust-worker.js", (route) => route.fulfill({ contentType: "text/javascript", body: 'self.postMessage({type:"ready"}); self.onmessage=({data})=>{self.lastCommand=data.command;};' }));
   await page.route("**/worker.js", (route) => route.fulfill({ contentType: "text/javascript", body: 'self.postMessage({type:"ready"}); self.onmessage=({data})=>self.postMessage({type:"result",id:data.id,code:"R²S",result:"55",value:["integer","55"],steps:[],tree:"",duration:1});' }));
-  await page.goto("./");
+  await openRustExample(page);
   await expect(page.getByRole("button", { name: "Stop execution" })).toBeVisible();
   await page.clock.pauseAt(await page.evaluate(() => Date.now() + 1000));
   await page.clock.runFor(10_000);
@@ -623,5 +635,8 @@ test("both interpreters can recover from a loading failure", async ({ page }) =>
   await expect(page.getByRole("button", { name: "Run expression", exact: true })).toBeDisabled();
   await page.unroute("**/rust-worker.js"); await page.unroute("**/worker.js");
   await page.getByRole("button", { name: "Retry", exact: true }).click();
-  await expect(page.locator(".entry").first()).toHaveAttribute("data-verification", "match", { timeout: 90000 });
+  await expect(page.locator(".result").first()).toHaveText("2.5", { timeout: 90000 });
+  await page.locator("#expression").fill(RUST_EXAMPLE);
+  await page.locator("#expression").press("Enter");
+  await expect(page.locator(".entry").last()).toHaveAttribute("data-verification", "match", { timeout: 90000 });
 });
