@@ -74,24 +74,25 @@ test("loads a shared expression and can stop a long calculation", async ({ page 
   test.skip(testInfo.project.name === "mobile", "Cancellation exercises the same worker on both layouts.");
   await page.addInitScript(() => localStorage.setItem("jello-live-view", "true"));
   await page.goto("./#code=6+7+%3A%3A+*");
-  await expect(page.getByRole("button", { name: "Run expression", exact: true })).toBeEnabled({ timeout: 90000 });
+  await expect(page.locator("#runtime-status")).toHaveClass(/ready/, { timeout: 90000 });
+  await expect(page.locator("#run")).toBeHidden();
   await expect(page.locator(".result")).toHaveCount(0);
   await page.waitForTimeout(800);
   await expect(page.locator(".result")).toHaveCount(0);
-  await page.getByRole("button", { name: "Run expression", exact: true }).click();
-  await expect(page.locator(".result").first()).toHaveText("42", { timeout: 90000 });
   const input = page.getByRole("combobox", { name: "YOUR EXPRESSION" });
+  await input.press("Enter");
+  await expect(page.locator(".result").first()).toHaveText("42", { timeout: 90000 });
   await input.fill("99999999 :: factorial");
-  await page.getByRole("button", { name: "Run expression", exact: true }).click();
+  await input.press("Enter");
   await page.getByRole("button", { name: "Stop execution" }).click();
   await expect(page.locator(".error-message").last()).toContainText("Stopped");
-  await expect(page.getByRole("button", { name: "Run expression", exact: true })).toBeEnabled({ timeout: 90000 });
+  await expect(page.locator("#runtime-status")).toHaveClass(/ready/, { timeout: 90000 });
   await input.fill("5 :: range");
-  await page.getByRole("button", { name: "Run expression", exact: true }).click();
+  await input.press("Enter");
   await expect(page.locator(".result").last()).toHaveText("[1, 2, 3, 4, 5]");
 });
 
-test("live view debounces edits, replaces one preview, and switches back to manual evaluation", async ({ page }) => {
+test("live view debounces edits, replaces one preview, and switches back to manual evaluation", async ({ page }, testInfo) => {
   await page.goto("./");
   await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
   const input = page.getByRole("combobox", { name: "YOUR EXPRESSION" });
@@ -99,6 +100,7 @@ test("live view debounces edits, replaces one preview, and switches back to manu
   const inputBox = await input.boundingBox(), sessionBox = await page.locator("#transcript").boundingBox();
   expect(inputBox.y + inputBox.height).toBeLessThan(sessionBox.y);
   await setLiveMode(page, true);
+  await expect(page.locator("#run")).toBeHidden();
   await input.fill("6 :: sq");
   await expect(preview.locator(".result")).toHaveText("36");
   await input.fill("7 :: sq");
@@ -116,7 +118,11 @@ test("live view debounces edits, replaces one preview, and switches back to manu
   await input.fill("8 :: sq");
   await expect(preview.locator(".result")).toHaveText("64");
   await expect(preview.locator(".error-message")).toHaveCount(0);
+  await expect(page.locator("#run")).toBeHidden();
+  await expect(preview.locator(".entry-meta")).toBeHidden();
+  await page.screenshot({ path: testInfo.outputPath("live-jelly-preview.png"), fullPage: true });
   await setLiveMode(page, false);
+  await expect(page.getByRole("button", { name: "Run expression", exact: true })).toBeVisible();
   await input.fill("9 :: sq");
   await page.waitForTimeout(800);
   await expect(preview.locator(".result")).toHaveText("64");
@@ -129,7 +135,11 @@ test("suggestions complete the current keyword and syntax colors follow keyword 
   await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
   const input = page.getByRole("combobox", { name: "YOUR EXPRESSION" });
   const suggestions = page.getByRole("listbox", { name: "Keyword suggestions" });
+  const conversion = page.locator("#converted-expression");
+  await expect(conversion).toHaveText("R²S");
   await input.fill("5 :: ran");
+  await expect(conversion).toBeHidden();
+  await expect(conversion).toBeEmpty();
   await expect(suggestions).toBeVisible();
   await expect(suggestions.getByRole("option").first()).toContainText("range");
   await page.screenshot({ path: testInfo.outputPath("autocomplete.png"), fullPage: true });
@@ -144,6 +154,7 @@ test("suggestions complete the current keyword and syntax colors follow keyword 
   await suggestions.getByRole("option").filter({ has: page.locator(".suggestion-word", { hasText: /^range$/ }) }).click();
   await expect(input).toHaveValue("5 :: range sum");
   await input.fill("6 7 :: range + each : digits 3");
+  await expect(conversion).toHaveText("R+€ðD3");
   const highlight = page.locator("#expression-highlight");
   await expect(highlight.locator(".token-monadic")).toHaveText("range");
   await expect(highlight.locator(".token-dyadic")).toHaveText("+");
@@ -158,7 +169,16 @@ test("suggestions complete the current keyword and syntax colors follow keyword 
   await expect(entry.locator(".result")).toHaveText("15");
   await expect(entry.locator(".command-code .token-dyadic")).toHaveText("+");
   await expect(entry.locator(".jelly-code .token-quick")).toHaveText("/");
+  await expect(conversion).toHaveText(await entry.locator(".jelly-code").textContent());
+  const inputBox = await input.boundingBox(), conversionBox = await conversion.boundingBox();
+  expect(conversionBox.x).toBeGreaterThan(inputBox.x + inputBox.width);
+  expect(await conversion.evaluate((node) => parseFloat(getComputedStyle(node).fontSize))).toBeGreaterThan(12);
+  await input.fill("0 :: [-2,3] rev");
+  await expect(conversion).toHaveText("[-2,3]Ṛ");
+  await input.fill(`5 :: ${"range ".repeat(30)}sum`);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await input.fill("5");
+  await expect(conversion).toBeHidden();
 });
 
 test("settings persist and keep the REPL usable in presentation mode", async ({ page }, testInfo) => {
@@ -201,6 +221,7 @@ test("settings persist and keep the REPL usable in presentation mode", async ({ 
   await expect(page.getByRole("listbox", { name: "Keyword suggestions" })).toBeVisible();
   await input.press("Tab");
   await expect(input).toHaveValue("5 :: range");
+  await expect(page.locator("#converted-expression")).toHaveText("R");
   await expect(page.locator(".live-entry .result")).toHaveText("[1, 2, 3, 4, 5]");
   await gear.click();
   await presentation.check();

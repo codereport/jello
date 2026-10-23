@@ -16,6 +16,7 @@ export class KeywordEditor {
     this.onStop = onStop;
     this.vocabulary = new Map();
     this.overlay = document.querySelector("#expression-highlight span");
+    this.conversion = document.querySelector("#converted-expression");
     this.panel = document.querySelector("#autocomplete");
     this.list = document.querySelector("#keyword-suggestions");
     this.composing = false;
@@ -78,9 +79,21 @@ export class KeywordEditor {
 
   renderInput() {
     this.renderCommand(this.overlay, this.input.value);
+    this.renderConversion();
     this.input.parentElement.classList.add("highlighted");
     this.syncScroll();
     requestAnimationFrame(() => this.syncScroll());
+  }
+
+  renderConversion() {
+    const separator = this.input.value.indexOf("::");
+    const keywords = separator < 0 ? [] : this.input.value.slice(separator + 2).trim().split(/\s+/).filter(Boolean);
+    // The vocabulary comes from the Python converter, with the same precedence.
+    const atoms = keywords.map((keyword) => this.vocabulary.get(keyword)?.atom ?? (/^[-\d,\[\]]+$/.test(keyword) ? keyword : null));
+    const valid = atoms.length > 0 && !atoms.includes(null);
+    this.conversion.parentElement.hidden = !valid;
+    if (valid) this.renderAtoms(this.conversion, atoms.join(""), this.input.value);
+    else this.conversion.replaceChildren();
   }
 
   syncScroll() { this.overlay.style.transform = `translateX(${-this.input.scrollLeft}px)`; }

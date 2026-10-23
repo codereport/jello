@@ -40,7 +40,7 @@ if (sharedExpression) {
   input.value = sharedExpression.slice(0, 2000);
   initialRun = false;
   $("#welcome h3").textContent = "Shared expression loaded.";
-  $("#welcome p").textContent = "Review the expression above, then press Run.";
+  $("#welcome p").textContent = "Review the expression above, then press Enter.";
 }
 
 const settings = new PlaygroundSettings((key, value) => {

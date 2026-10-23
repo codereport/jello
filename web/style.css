@@ -194,9 +194,13 @@ main { padding-top: 24px; }
 .suggestion-type { font-size: 9px; }
 .autocomplete-help { border-top: 1px solid var(--line); padding: 7px 11px; color: var(--muted); font-size: 9px; }
 .input-row:focus-within { box-shadow: 0 1px 0 var(--focus-line); }
+.converted-preview { display: flex; align-items: center; gap: 14px; max-width: 38%; min-width: 0; padding: 0 2px 0 8px; }
+.conversion-arrow { flex-shrink: 0; color: var(--muted); font-size: 16px; }
+#converted-expression { min-width: 0; color: var(--cyan); font-size: 24px; line-height: 1.6; text-align: right; overflow-wrap: anywhere; }
 .run-button { display: flex; align-items: center; gap: 18px; padding: 8px 15px; border: 1px solid var(--run-border); border-radius: 3px; background: var(--run-background); color: var(--run-foreground); font-size: 12px; font-weight: 500; flex-shrink: 0; }
 .run-button:hover:enabled { background: var(--run-hover-background); border-color: var(--green); }
 .run-button.running { color: var(--stop-foreground); background: var(--stop-background); border-color: var(--stop-border); }
+.live-mode .run-button:not(.running), .live-mode .live-entry .entry-meta:not(.pending) { display: none; }
 #run-icon { font-size: 18px; font-weight: 400; line-height: 1; }
 .input-help { display: flex; justify-content: space-between; gap: 10px; font-size: 10px; color: var(--muted); }
 kbd { font-size: inherit; color: var(--key-foreground); }
@@ -291,6 +295,7 @@ label.setting-row { cursor: pointer; }
 .presentation-mode .playground-grid { grid-template-columns: minmax(0, 1fr); }
 .presentation-mode .transcript { height: clamp(240px, 60svh, 620px); }
 .presentation-mode .expression-editor { font-size: 20px; }
+.presentation-mode #converted-expression { font-size: 28px; }
 .presentation-mode .entry-command { font-size: 16px; }
 .presentation-mode .result { font-size: 28px; }
 .presentation-mode .presentation-note { display: block; }
@@ -341,6 +346,8 @@ label.setting-row { cursor: pointer; }
   .trace-step { font-size: 11px; }
   .composer { padding: 14px 13px; }
   .input-row { gap: 7px; }
+  .converted-preview { gap: 8px; padding-left: 0; }
+  #converted-expression { font-size: 20px; }
   .expression-editor { font-size: 16px; }
   .syntax-legend { flex-basis: 100%; gap: 10px; margin-left: 0; }
   .suggestion { padding: 9px; gap: 8px; }
@@ -370,6 +377,7 @@ label.setting-row { cursor: pointer; }
   .setting-row { gap: 14px; }
   .presentation-mode .page-shell { padding: 12px; }
   .presentation-mode .expression-editor { font-size: 16px; }
+  .presentation-mode #converted-expression { font-size: 24px; }
   .presentation-mode .entry-command { font-size: 13px; }
   .presentation-mode .result { font-size: 23px; }
 }

@@ -46,6 +46,8 @@ The [playground](https://codereport.github.io/jello/) is a dark, monospace termi
 
 Turn **Live mode** on in the **settings gear** to evaluate automatically after a 600 ms typing pause. Edits update one preview, and a newer expression supersedes a slow preview. Turn it off to return to manual evaluation with Enter or Run. Automatic previews do not fill command history; explicit runs are remembered. Shared links still wait for you to edit or run the expression.
 
+The converted Jelly expression appears in larger type to the right of the expression bar and updates as you type. In live mode, Run is hidden; Stop remains available during a calculation. Manual sessions keep Run and the Jelly code alongside each result in their history.
+
 The **settings gear** in the REPL toolbar saves your preferences in this browser: live mode, examples, keywords, theme, and presentation mode. Choose the original **Terminal** theme or [**Dracula**](https://draculatheme.com/contribute). **Presentation mode** centers the REPL, increases the expression and result text size, and hides the surrounding UI. The gear stays available to exit presentation mode; your examples and keywords preferences are preserved. Hiding the keyword reference keeps autocomplete and syntax highlighting available.
 
 Keyword suggestions appear as you type after `::`. Click a suggestion, use the arrow keys and Enter to select it, or press Tab to complete and cycle through matches. Escape closes suggestions; the arrow keys then browse command history. Syntax highlighting uses green for monads, cyan for dyads, purple for quicks, amber for nilads and input values, and gray for separators, including in the input and evaluation traces.
