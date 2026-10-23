@@ -1,7 +1,10 @@
 Rust logo attribution
 
-Unmodified rust-logo-white-outline.svg from the Rust project's official artwork:
-https://github.com/rust-lang/rust-artwork/blob/main/logo/rust-logo-white-outline.svg
+White, transparent Rust logo (rust_darkmode.png) from codereport/logos:
+https://github.com/codereport/logos/blob/main/rust_darkmode.png
+
+Original Rust project artwork:
+https://github.com/rust-lang/rust-artwork/tree/main/logo
 
 Licensed under Creative Commons Attribution 4.0 International (CC-BY-4.0):
 https://creativecommons.org/licenses/by/4.0/

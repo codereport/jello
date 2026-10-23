@@ -146,7 +146,7 @@ main { padding-top: 24px; }
 .repl-footer { display: flex; justify-content: flex-end; align-items: center; min-height: 34px; padding: 0 21px 10px; }
 .execution-status { display: inline-flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 5px 16px; color: var(--muted); font-size: 11px; line-height: 22px; font-variant-numeric: tabular-nums; }
 .engine-timing { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
-.execution-status img { display: block; flex-shrink: 0; }
+.execution-status img { display: block; flex-shrink: 0; object-fit: contain; }
 .verification-status { white-space: nowrap; }
 .verification-match { color: var(--green); }
 .verification-mismatch, .verification-error { color: var(--error-foreground); }

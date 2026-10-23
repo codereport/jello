@@ -345,7 +345,7 @@ function updateExecutionTime(duration, engine = "python", verification = "") {
   const valid = Number.isFinite(duration) && duration >= 0;
   $("#execution-status").hidden = !valid;
   $("#execution-time").textContent = valid ? formatDuration(duration) : "";
-  $("#execution-logo").src = engine === "rust" ? "rust-logo.svg" : "python-logo.svg";
+  $("#execution-logo").src = engine === "rust" ? "rust-logo.png" : "python-logo.svg";
   $("#execution-logo").alt = engine === "rust" ? "Rust" : "Python";
   $("#python-comparison").hidden = engine !== "rust";
   $("#python-execution-time").textContent = "checking…";
