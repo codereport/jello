@@ -1,0 +1,222 @@
+const typeLabels = { monadic: "monad", dyadic: "dyad", quick: "quick", niladic: "nilad", separators: "separator" };
+const commonWords = ["range", "sq", "sum", "rev", "double", "odd?", "filter", "each"];
+
+function span(className, text) {
+  const node = document.createElement("span");
+  node.className = className;
+  node.textContent = text;
+  return node;
+}
+
+export class KeywordEditor {
+  constructor(input, { onChange, onHistory, onStop }) {
+    this.input = input;
+    this.onChange = onChange;
+    this.onHistory = onHistory;
+    this.onStop = onStop;
+    this.vocabulary = new Map();
+    this.overlay = document.querySelector("#expression-highlight span");
+    this.panel = document.querySelector("#autocomplete");
+    this.list = document.querySelector("#keyword-suggestions");
+    this.composing = false;
+    this.suggestions = null;
+    this.tabCycle = null;
+    input.addEventListener("input", (event) => {
+      if (event.isComposing || this.composing) this.renderInput();
+      else this.edited();
+    });
+    input.addEventListener("compositionstart", () => { this.composing = true; this.closeSuggestions(); });
+    input.addEventListener("compositionend", () => { this.composing = false; this.edited(); });
+    input.addEventListener("focus", () => this.showSuggestions());
+    input.addEventListener("click", () => { this.tabCycle = null; this.showSuggestions(); });
+    input.addEventListener("blur", () => this.closeSuggestions());
+    input.addEventListener("scroll", () => this.syncScroll());
+    input.addEventListener("keydown", (event) => this.keydown(event));
+    input.addEventListener("keyup", (event) => {
+      this.syncScroll();
+      if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) this.showSuggestions();
+    });
+    this.renderInput();
+  }
+
+  setVocabulary(words) {
+    this.vocabulary.clear();
+    // Match the converter's precedence when a spelling appears in multiple categories.
+    for (const word of words) if (!this.vocabulary.has(word.word)) this.vocabulary.set(word.word, word);
+    this.renderInput();
+    if (document.activeElement === this.input) this.showSuggestions();
+    return [...this.vocabulary.values()];
+  }
+
+  type(word) {
+    return this.vocabulary.get(word)?.type || (/^[-\d,\[\]]+$/.test(word) ? "niladic" : "unknown");
+  }
+
+  renderCommand(target, command) {
+    target.replaceChildren();
+    const separator = command.indexOf("::");
+    if (separator < 0) { target.append(span("token-argument", command)); return; }
+    target.append(span("token-argument", command.slice(0, separator)), span("token-separators", "::"));
+    for (const token of command.slice(separator + 2).split(/(\s+)/)) {
+      if (token) target.append(span(/^\s+$/.test(token) ? "" : `token-${this.type(token)}`, token));
+    }
+  }
+
+  renderAtoms(target, code, command) {
+    const keywords = command.slice(command.indexOf("::") + 2).trim().split(/\s+/);
+    const parts = [];
+    let prefix = "";
+    for (const keyword of keywords) {
+      const atom = this.vocabulary.get(keyword)?.atom || keyword;
+      prefix += atom;
+      parts.push(span(`token-${this.type(keyword)}`, atom));
+      if (prefix.length >= code.length) break;
+    }
+    if (prefix === code) target.replaceChildren(...parts);
+    else target.textContent = code;
+  }
+
+  renderInput() {
+    this.renderCommand(this.overlay, this.input.value);
+    this.input.parentElement.classList.add("highlighted");
+    this.syncScroll();
+    requestAnimationFrame(() => this.syncScroll());
+  }
+
+  syncScroll() { this.overlay.style.transform = `translateX(${-this.input.scrollLeft}px)`; }
+
+  setValue(value, { notify = false, suggest = false } = {}) {
+    this.input.value = value;
+    this.input.setSelectionRange(value.length, value.length);
+    this.closeSuggestions();
+    this.tabCycle = null;
+    this.renderInput();
+    if (suggest) this.showSuggestions();
+    if (notify) this.onChange();
+  }
+
+  edited() {
+    this.tabCycle = null;
+    this.renderInput();
+    this.showSuggestions();
+    this.onChange();
+  }
+
+  context() {
+    const value = this.input.value, caret = this.input.selectionStart;
+    const separator = value.indexOf("::");
+    if (separator < 0 || caret < separator + 2 || caret !== this.input.selectionEnd) return null;
+    let start = caret, end = caret;
+    while (start > separator + 2 && !/\s/.test(value[start - 1])) --start;
+    while (end < value.length && !/\s/.test(value[end])) ++end;
+    return { start, end, prefix: value.slice(start, caret) };
+  }
+
+  showSuggestions() {
+    const context = this.context();
+    if (!context || this.composing) { this.closeSuggestions(); return; }
+    const matches = [...this.vocabulary.values()]
+      .filter(({ word }) => word.toLowerCase().startsWith(context.prefix.toLowerCase()))
+      .sort((a, b) => {
+        if (!context.prefix) {
+          const ai = commonWords.indexOf(a.word), bi = commonWords.indexOf(b.word);
+          const preferred = (ai < 0 ? 1000 : ai) - (bi < 0 ? 1000 : bi);
+          if (preferred) return preferred;
+        }
+        return a.word.length - b.word.length || a.word.localeCompare(b.word);
+      })
+      .slice(0, 8);
+    if (!matches.length) { this.closeSuggestions(); return; }
+    if (matches.length === 1 && matches[0].word === context.prefix && this.input.value.slice(context.start, context.end) === context.prefix) {
+      this.closeSuggestions();
+      return;
+    }
+    this.suggestions = { ...context, matches, index: 0, navigated: false };
+    this.renderSuggestions();
+  }
+
+  renderSuggestions() {
+    const suggestions = this.suggestions;
+    if (!suggestions) return;
+    this.list.replaceChildren();
+    suggestions.matches.forEach((word, index) => {
+      const option = document.createElement("div");
+      option.id = `keyword-option-${index}`;
+      option.className = `suggestion${index === suggestions.index ? " active" : ""}`;
+      option.setAttribute("role", "option");
+      option.setAttribute("aria-selected", String(index === suggestions.index));
+      option.append(span(`suggestion-word token-${word.type}`, word.word), span(`suggestion-atom token-${word.type}`, word.atom), span(`suggestion-type token-${word.type}`, typeLabels[word.type]));
+      option.addEventListener("pointerdown", (event) => event.preventDefault());
+      option.addEventListener("click", () => this.accept(index));
+      this.list.append(option);
+    });
+    this.panel.hidden = false;
+    this.input.setAttribute("aria-expanded", "true");
+    this.input.setAttribute("aria-activedescendant", `keyword-option-${suggestions.index}`);
+    this.list.children[suggestions.index]?.scrollIntoView({ block: "nearest" });
+  }
+
+  closeSuggestions() {
+    this.suggestions = null;
+    this.panel.hidden = true;
+    this.input.setAttribute("aria-expanded", "false");
+    this.input.removeAttribute("aria-activedescendant");
+  }
+
+  accept(index, cycle = false) {
+    const suggestions = this.suggestions;
+    if (!suggestions) return;
+    const word = suggestions.matches[index];
+    this.input.setRangeText(word.word, suggestions.start, suggestions.end, "end");
+    this.renderInput();
+    this.onChange();
+    if (cycle) {
+      this.tabCycle = { ...suggestions, end: this.input.selectionStart, index, value: this.input.value, caret: this.input.selectionStart };
+      this.suggestions = this.tabCycle;
+      this.renderSuggestions();
+    } else {
+      this.tabCycle = null;
+      this.closeSuggestions();
+    }
+  }
+
+  keydown(event) {
+    if (event.isComposing || this.composing) return;
+    if (event.key === "Escape") {
+      event.preventDefault();
+      if (this.suggestions) this.closeSuggestions();
+      else this.onStop();
+      this.tabCycle = null;
+    } else if (event.key === "Tab" && !event.shiftKey) {
+      if (this.tabCycle?.value === this.input.value && this.tabCycle.caret === this.input.selectionStart) {
+        this.suggestions = this.tabCycle;
+        this.suggestions.index = (this.suggestions.index + 1) % this.suggestions.matches.length;
+      } else {
+        this.showSuggestions();
+      }
+      if (!this.suggestions) return;
+      event.preventDefault();
+      this.accept(this.suggestions.index, true);
+    } else if (["ArrowUp", "ArrowDown"].includes(event.key)) {
+      event.preventDefault();
+      if (this.suggestions) {
+        const count = this.suggestions.matches.length;
+        this.suggestions.index = (this.suggestions.index + (event.key === "ArrowDown" ? 1 : -1) + count) % count;
+        this.suggestions.navigated = true;
+        this.renderSuggestions();
+      } else {
+        this.onHistory(event.key === "ArrowUp" ? -1 : 1);
+      }
+    } else if (event.key === "Enter" && this.suggestions) {
+      const { index, matches, start, end, navigated } = this.suggestions;
+      if (navigated || this.input.value.slice(start, end) !== matches[index].word) {
+        event.preventDefault();
+        this.accept(index);
+      } else {
+        this.closeSuggestions();
+      }
+    } else if (event.key !== "Tab") {
+      this.tabCycle = null;
+    }
+  }
+}

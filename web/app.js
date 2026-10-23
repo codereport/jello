@@ -1,7 +1,11 @@
+import { KeywordEditor } from "./editor.js";
+
 const $ = (selector) => document.querySelector(selector);
 const input = $("#expression");
 const transcript = $("#transcript");
 const runButton = $("#run");
+const liveToggle = $("#live-toggle");
+const LIVE_DELAY = 600;
 const welcomeTemplate = $("#welcome").cloneNode(true);
 const descriptions = {
   range: "The integers from 1 to your input", iota: "The integers from 1 to your input",
@@ -22,12 +26,14 @@ const descriptions = {
 const typeDescriptions = { monadic: "Monad · one input", dyadic: "Dyad · two inputs", niladic: "Nilad · a constant", quick: "Quick · modifies a function", separators: "Starts a new chain" };
 const featuredWords = ["range", "sq", "sum", "rev", "double", "odd?", "filter", "each", "sort", "uniq", "len", "sums"];
 let worker, state = "loading", requestId = 0, activeEntry, executionTimer, loadTimer;
-let initialRun = true, historyIndex = 0, draft = "", completion;
+let initialRun = true, historyIndex = 0, draft = "";
+let liveEnabled = false, liveTimer, queuedLive = null, liveEntry = null, activeRun = null;
 let history = [], words = [], activeFilter = "all", expandedWords = false;
 
 try {
   const saved = JSON.parse(localStorage.getItem("jello-history") || "[]");
   if (Array.isArray(saved)) history = saved.filter((item) => typeof item === "string").slice(-100);
+  liveEnabled = localStorage.getItem("jello-live-view") === "true";
 } catch { /* The playground also works when storage is unavailable. */ }
 historyIndex = history.length;
 const sharedExpression = new URLSearchParams(location.hash.slice(1)).get("code");
@@ -35,7 +41,77 @@ if (sharedExpression) {
   input.value = sharedExpression.slice(0, 2000);
   initialRun = false;
   $("#welcome h3").textContent = "Shared expression loaded.";
-  $("#welcome p").textContent = "Review the expression below, then press Run.";
+  $("#welcome p").textContent = "Review the expression above, then press Run.";
+}
+
+const editor = new KeywordEditor(input, {
+  onChange: expressionChanged,
+  onHistory: recallHistory,
+  onStop: () => { if (state === "running") stopExecution(); else cancelPendingLive(); },
+});
+
+function cancelPendingLive() {
+  clearTimeout(liveTimer);
+  queuedLive = null;
+}
+
+function expressionChanged() {
+  initialRun = false;
+  if (activeRun?.live) activeRun.entry.hidden = activeRun.command !== input.value.trim();
+  scheduleLive();
+}
+
+function scheduleLive() {
+  cancelPendingLive();
+  if (!liveEnabled || !input.value.trim()) return;
+  liveTimer = setTimeout(() => {
+    queuedLive = input.value.trim();
+    flushLive();
+  }, LIVE_DELAY);
+}
+
+function flushLive() {
+  if (!liveEnabled || !queuedLive || editor.composing) return;
+  if (queuedLive !== input.value.trim()) { queuedLive = null; return; }
+  if (state === "running" && activeRun?.live) {
+    // A paused edit supersedes a slow preview; never queue obsolete programs in the worker.
+    clearTimeout(executionTimer);
+    worker.terminate();
+    ++requestId;
+    activeEntry.remove();
+    if (liveEntry === activeEntry) liveEntry = null;
+    activeEntry = activeRun = null;
+    initialRun = false;
+    startWorker();
+    return;
+  }
+  if (state !== "ready") return;
+  const command = queuedLive;
+  queuedLive = null;
+  execute(command, { live: true, remember: false });
+}
+
+function updateLiveMode() {
+  liveToggle.setAttribute("aria-checked", String(liveEnabled));
+  $(".repl").classList.toggle("live-mode", liveEnabled);
+  $("#session-mode").textContent = liveEnabled ? "/ live" : "/ session";
+  if (liveEntry?.isConnected) liveEntry.querySelector(".entry-badge").textContent = liveEnabled ? "live" : "preview";
+}
+
+liveToggle.addEventListener("click", () => {
+  liveEnabled = !liveEnabled;
+  initialRun = false;
+  updateLiveMode();
+  try { localStorage.setItem("jello-live-view", String(liveEnabled)); } catch { /* Optional preference. */ }
+  if (liveEnabled) scheduleLive();
+  else cancelPendingLive();
+});
+
+function recallHistory(direction) {
+  if (!history.length) return;
+  if (historyIndex === history.length) draft = input.value;
+  historyIndex = Math.max(0, Math.min(history.length, historyIndex + direction));
+  editor.setValue(historyIndex === history.length ? draft : history[historyIndex], { notify: true });
 }
 
 function element(tag, className, text) {
@@ -94,16 +170,22 @@ function startWorker() {
         if (initialRun) {
           initialRun = false;
           execute(input.value);
-        }
+        } else flushLive();
       } else if (data.type === "load-error") {
         console.error("Interpreter initialization:", data.message);
         showLoadError();
       } else if (data.id === requestId && (data.type === "result" || data.type === "error")) {
         clearTimeout(executionTimer);
-        renderResponse(activeEntry, data);
-        activeEntry = null;
+        const current = !activeRun?.live || activeRun.command === input.value.trim();
+        if (current) renderResponse(activeEntry, data);
+        else {
+          activeEntry?.remove();
+          if (liveEntry === activeEntry) liveEntry = null;
+        }
+        activeEntry = activeRun = null;
         setState("ready", "ready");
-        $("#input-state").textContent = data.type === "error" ? "exit: error" : "exit: 0";
+        if (current) $("#input-state").textContent = data.type === "error" ? "exit: error" : "exit: 0";
+        flushLive();
       }
     };
     currentWorker.onerror = (event) => {
@@ -117,41 +199,46 @@ function startWorker() {
   }
 }
 
-function createEntry(command) {
+function createEntry(command, live) {
   $("#welcome")?.remove();
   const entry = element("article", "entry");
+  entry.dataset.command = command;
   const row = element("div", "entry-command");
   row.append(element("span", "entry-prompt", "›"));
-  const commandText = element("div");
-  const separator = command.indexOf("::");
-  if (separator < 0) {
-    commandText.textContent = command;
-  } else {
-    commandText.append(element("span", "argument", command.slice(0, separator).trim()));
-    commandText.append(element("span", "separator", "::"));
-    commandText.append(element("span", "program", command.slice(separator + 2).trim()));
-  }
+  const commandText = element("div", "command-code");
+  editor.renderCommand(commandText, command);
   row.append(commandText);
+  if (live) row.append(element("span", "entry-badge", "live"));
   entry.append(row, element("div", "entry-meta pending", "Thinking…"));
-  transcript.append(entry);
-  while (transcript.children.length > 30) transcript.firstElementChild.remove();
-  transcript.scrollTop = transcript.scrollHeight;
+  if (live) {
+    entry.classList.add("live-entry");
+    if (liveEntry?.isConnected) liveEntry.replaceWith(entry);
+    else transcript.prepend(entry);
+    liveEntry = entry;
+  } else transcript.append(entry);
+  while (transcript.children.length > 30) {
+    [...transcript.children].find((child) => child !== liveEntry).remove();
+  }
+  transcript.scrollTop = live ? 0 : transcript.scrollHeight;
   return entry;
 }
 
-function execute(command) {
+function execute(command, { live = liveEnabled, remember = true } = {}) {
   if (state !== "ready") return;
   command = command.trim();
   if (!command) { input.focus(); return; }
-  input.value = command;
-  completion = null;
-  if (history.at(-1) !== command) history.push(command);
-  history = history.slice(-100);
-  historyIndex = history.length;
-  draft = "";
-  try { localStorage.setItem("jello-history", JSON.stringify(history)); } catch { /* Optional persistence. */ }
+  if (remember) {
+    cancelPendingLive();
+    editor.setValue(command);
+    if (history.at(-1) !== command) history.push(command);
+    history = history.slice(-100);
+    historyIndex = history.length;
+    draft = "";
+    try { localStorage.setItem("jello-history", JSON.stringify(history)); } catch { /* Optional persistence. */ }
+  }
   setState("running", "running…");
-  activeEntry = createEntry(command);
+  activeEntry = createEntry(command, live);
+  activeRun = { command, live, entry: activeEntry };
   worker.postMessage({ type: "run", id: ++requestId, command });
   executionTimer = setTimeout(() => stopExecution("That took more than 10 seconds. Try a smaller input or a shorter program."), 10000);
 }
@@ -159,10 +246,11 @@ function execute(command) {
 function stopExecution(message = "Stopped. Try a smaller input or a different expression.") {
   if (state !== "running") return;
   clearTimeout(executionTimer);
+  cancelPendingLive();
   worker.terminate();
   ++requestId;
   renderResponse(activeEntry, { type: "error", message });
-  activeEntry = null;
+  activeEntry = activeRun = null;
   initialRun = false;
   startWorker();
 }
@@ -184,18 +272,22 @@ function renderResponse(entry, data) {
     });
     output.append(result, copy);
     const meta = element("div", "entry-meta");
-    meta.append(element("span", "", "JELLY"), element("code", "jelly-code", data.code), element("span", "meta-divider", "·"), element("span", "", `${Math.max(1, Math.round(data.duration))} ms`));
+    const jellyCode = element("code", "jelly-code");
+    editor.renderAtoms(jellyCode, data.code, entry.dataset.command);
+    meta.append(element("span", "", "JELLY"), jellyCode, element("span", "meta-divider", "·"), element("span", "", `${Math.max(1, Math.round(data.duration))} ms`));
     entry.append(output, meta);
     if (data.steps.length || data.tree) {
       const details = element("details", "trace");
-      if (transcript.children.length === 1 && !matchMedia("(max-width: 480px)").matches) details.open = true;
+      if ((entry === liveEntry || transcript.children.length === 1) && !matchMedia("(max-width: 480px)").matches) details.open = true;
       details.append(element("summary", "", "Follow the chain"));
       const content = element("div", "trace-content");
       const steps = element("div");
       steps.append(element("div", "trace-label", "ONE STEP AT A TIME"));
       for (const step of data.steps) {
         const row = element("div", "trace-step");
-        row.append(element("span", "", step.code), element("span", "step-arrow", "→"), element("span", "", step.result));
+        const code = element("span");
+        editor.renderAtoms(code, step.code, entry.dataset.command);
+        row.append(code, element("span", "step-arrow", "→"), element("span", "", step.result));
         steps.append(row);
       }
       content.append(steps);
@@ -208,7 +300,7 @@ function renderResponse(entry, data) {
       entry.append(details);
     }
   }
-  transcript.scrollTop = transcript.scrollHeight;
+  transcript.scrollTop = entry === liveEntry ? 0 : transcript.scrollHeight;
 }
 
 $("#repl-form").addEventListener("submit", (event) => {
@@ -218,10 +310,13 @@ $("#repl-form").addEventListener("submit", (event) => {
 });
 $("#retry").addEventListener("click", startWorker);
 $("#clear").addEventListener("click", () => {
+  cancelPendingLive();
+  editor.closeSuggestions();
   if (state === "running") stopExecution();
   transcript.replaceChildren(welcomeTemplate.cloneNode(true));
+  liveEntry = null;
   $("#welcome h3").textContent = "Session cleared.";
-  $("#welcome p").textContent = "Enter an expression below or select an example.";
+  $("#welcome p").textContent = "Enter an expression above or select an example.";
   $("#input-state").textContent = "";
   input.focus();
 });
@@ -235,45 +330,11 @@ $("#share").addEventListener("click", async () => {
 document.querySelectorAll(".example").forEach((example) => {
   example.addEventListener("click", () => {
     if (state === "running") { notify("Stop the current expression to try another."); return; }
-    input.value = example.dataset.command;
+    editor.setValue(example.dataset.command);
     execute(input.value);
     input.focus({ preventScroll: true });
     if (matchMedia("(max-width: 760px)").matches) $(".repl").scrollIntoView({ block: "start", behavior: "smooth" });
   });
-});
-
-input.addEventListener("input", () => { completion = null; });
-input.addEventListener("keydown", (event) => {
-  if (event.key === "Escape" && state === "running") stopExecution();
-  if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-    if (!history.length) return;
-    event.preventDefault();
-    if (historyIndex === history.length) draft = input.value;
-    historyIndex = Math.max(0, Math.min(history.length, historyIndex + (event.key === "ArrowUp" ? -1 : 1)));
-    input.value = historyIndex === history.length ? draft : history[historyIndex];
-    input.setSelectionRange(input.value.length, input.value.length);
-    completion = null;
-  } else if (event.key === "Tab" && !event.shiftKey) {
-    const beforeCaret = input.value.slice(0, input.selectionStart);
-    if (!beforeCaret.includes("::")) return;
-    if (!completion || completion.value !== input.value || completion.caret !== input.selectionStart) {
-      const prefix = beforeCaret.match(/[^\s:]+$/)?.[0];
-      if (!prefix) return;
-      const matches = words.map((word) => word.word).filter((word) => word.startsWith(prefix)).sort((a, b) => a.length - b.length || a.localeCompare(b));
-      if (!matches.length) return;
-      completion = { matches, index: 0, start: beforeCaret.length - prefix.length, end: input.selectionStart };
-    } else {
-      completion.index = (completion.index + 1) % completion.matches.length;
-    }
-    event.preventDefault();
-    const replacement = completion.matches[completion.index];
-    input.setRangeText(replacement, completion.start, completion.end, "end");
-    completion.end = input.selectionStart;
-    completion.value = input.value;
-    completion.caret = input.selectionStart;
-  } else if (event.key !== "Tab") {
-    completion = null;
-  }
 });
 
 function renderWords() {
@@ -289,15 +350,14 @@ function renderWords() {
   for (const word of visible) {
     const button = element("button", "word");
     const line = element("span", "word-line");
-    line.append(element("span", "word-name", word.word), element("span", "word-atom", word.atom));
+    line.append(element("span", `word-name token-${word.type}`, word.word), element("span", `word-atom token-${word.type}`, word.atom));
     button.append(line, element("span", "word-description", descriptions[word.word] || typeDescriptions[word.type]));
     button.title = `${typeDescriptions[word.type]} — add ${word.word}`;
     button.addEventListener("click", () => {
-      if (!input.value.includes("::")) input.value = `${input.value.trim()} ::`;
-      input.value = `${input.value.trimEnd()} ${word.word}`;
+      const value = input.value.includes("::") ? input.value : `${input.value.trim()} ::`;
+      editor.setValue(`${value.trimEnd()} ${word.word}`, { notify: true });
       input.focus({ preventScroll: true });
       input.setSelectionRange(input.value.length, input.value.length);
-      completion = null;
       notify(`Added ${word.word} to your expression.`);
     });
     grid.append(button);
@@ -324,7 +384,12 @@ document.querySelectorAll(".filter").forEach((filter) => {
 fetch(new URL("./keywords.json", import.meta.url)).then((response) => {
   if (!response.ok) throw new Error("Wordbook unavailable");
   return response.json();
-}).then((vocabulary) => { words = vocabulary; renderWords(); }).catch(() => {
+}).then((vocabulary) => {
+  words = editor.setVocabulary(vocabulary);
+  document.querySelectorAll(".example").forEach((example) => editor.renderCommand(example.querySelector("code"), example.dataset.command));
+  renderWords();
+}).catch(() => {
   $("#word-grid").append(element("p", "empty-words", "The wordbook couldn't load. Reload to try again."));
 });
+updateLiveMode();
 startWorker();

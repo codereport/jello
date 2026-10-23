@@ -27,26 +27,37 @@
           <div class="playground-grid">
             <div class="repl">
               <div class="repl-toolbar">
-                <span class="session-label"><span class="mini-prompt" aria-hidden="true">›_</span> playground <span class="muted">/ session</span></span>
+                <span class="session-label"><span class="mini-prompt" aria-hidden="true">›_</span> playground <span id="session-mode" class="muted">/ session</span></span>
                 <div id="runtime-status" class="runtime-status" role="status"><span class="status-dot"></span><span id="status-text">initializing…</span><button id="retry" class="text-button" hidden>Retry</button></div>
                 <div class="toolbar-actions"><button id="share" class="toolbar-button" title="Copy a link to your expression"><span aria-hidden="true">↗</span> Share</button><span class="toolbar-divider"></span><button id="clear" class="toolbar-button">Clear</button></div>
               </div>
-              <div id="transcript" class="transcript" role="log" aria-label="Expression results" aria-live="polite" aria-relevant="additions">
-                <div id="welcome" class="welcome">
-                  <span class="welcome-prompt" aria-hidden="true">&gt;_</span>
-                  <h3>Initializing Jellyfish…</h3>
-                  <p>The interpreter is loading.<br>Your expression is ready below.</p>
-                </div>
-              </div>
               <form id="repl-form" class="composer" autocomplete="off">
-                <label for="expression" class="eyebrow">YOUR EXPRESSION</label>
+                <div class="composer-heading">
+                  <label for="expression" class="eyebrow">YOUR EXPRESSION</label>
+                  <button id="live-toggle" class="live-toggle" type="button" role="switch" aria-checked="false" aria-label="Live view" title="Automatically evaluate after a 600 ms typing pause"><span class="switch-track" aria-hidden="true"><i></i></span>live view</button>
+                  <div class="syntax-legend" aria-label="Syntax colors"><span class="token-monadic">monad</span><span class="token-dyadic">dyad</span><span class="token-quick">quick</span><span class="token-niladic">nilad</span><span class="token-separators">separator</span></div>
+                </div>
                 <div class="input-row">
                   <span class="input-prompt" aria-hidden="true">›</span>
-                  <input id="expression" name="expression" type="text" value="5 :: range sq sum" spellcheck="false" autocapitalize="off" autocorrect="off" maxlength="2000" aria-describedby="input-help">
+                  <div class="expression-editor">
+                    <pre id="expression-highlight" class="expression-highlight" aria-hidden="true"><span></span></pre>
+                    <input id="expression" name="expression" type="text" role="combobox" value="5 :: range sq sum" spellcheck="false" autocapitalize="off" autocorrect="off" maxlength="2000" aria-describedby="input-help" aria-autocomplete="list" aria-controls="keyword-suggestions" aria-expanded="false">
+                    <div id="autocomplete" class="autocomplete" hidden>
+                      <div id="keyword-suggestions" role="listbox" aria-label="Keyword suggestions"></div>
+                      <div class="autocomplete-help">↑ ↓ select · tab complete · esc close</div>
+                    </div>
+                  </div>
                   <button id="run" class="run-button" type="submit" disabled><span id="run-label">Run</span><span id="run-icon" aria-hidden="true">↵</span></button>
                 </div>
                 <div id="input-help" class="input-help"><span><kbd>enter</kbd> run <span class="help-dot">/</span> <kbd>↑</kbd> <kbd>↓</kbd> history <span class="help-dot">/</span> <kbd>tab</kbd> complete</span><span id="input-state"></span></div>
               </form>
+              <div id="transcript" class="transcript" role="log" aria-label="Expression results" aria-live="polite" aria-relevant="additions">
+                <div id="welcome" class="welcome">
+                  <span class="welcome-prompt" aria-hidden="true">&gt;_</span>
+                  <h3>Initializing Jellyfish…</h3>
+                  <p>The interpreter is loading.<br>Your expression is ready above.</p>
+                </div>
+              </div>
             </div>
 
             <aside class="examples-panel" aria-labelledby="examples-heading">

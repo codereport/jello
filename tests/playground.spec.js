@@ -4,7 +4,7 @@ test("runs the real interpreter, examples, errors, wordbook, history, and sharin
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("./");
-  const input = page.getByRole("textbox", { name: "YOUR EXPRESSION" });
+  const input = page.getByRole("combobox", { name: "YOUR EXPRESSION" });
   const run = page.getByRole("button", { name: "Run expression", exact: true });
   const lastResult = () => page.locator(".result").last();
   const execute = async (command, expected) => {
@@ -30,6 +30,7 @@ test("runs the real interpreter, examples, errors, wordbook, history, and sharin
   await expect(page.locator(".error-message").last()).toContainText("not_a_keyword is not a valid Jello keyword");
   await execute("5 :: range", "[1, 2, 3, 4, 5]");
   await input.fill("draft :: sq");
+  await input.press("Escape");
   await input.press("ArrowUp");
   await expect(input).toHaveValue("5 :: range");
   await input.press("ArrowDown");
@@ -65,12 +66,15 @@ test("runs the real interpreter, examples, errors, wordbook, history, and sharin
 
 test("loads a shared expression and can stop a long calculation", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name === "mobile", "Cancellation exercises the same worker on both layouts.");
+  await page.addInitScript(() => localStorage.setItem("jello-live-view", "true"));
   await page.goto("./#code=6+7+%3A%3A+*");
   await expect(page.getByRole("button", { name: "Run expression", exact: true })).toBeEnabled({ timeout: 90000 });
   await expect(page.locator(".result")).toHaveCount(0);
+  await page.waitForTimeout(800);
+  await expect(page.locator(".result")).toHaveCount(0);
   await page.getByRole("button", { name: "Run expression", exact: true }).click();
   await expect(page.locator(".result").first()).toHaveText("42", { timeout: 90000 });
-  const input = page.getByRole("textbox", { name: "YOUR EXPRESSION" });
+  const input = page.getByRole("combobox", { name: "YOUR EXPRESSION" });
   await input.fill("99999999 :: factorial");
   await page.getByRole("button", { name: "Run expression", exact: true }).click();
   await page.getByRole("button", { name: "Stop execution" }).click();
@@ -79,6 +83,93 @@ test("loads a shared expression and can stop a long calculation", async ({ page 
   await input.fill("5 :: range");
   await page.getByRole("button", { name: "Run expression", exact: true }).click();
   await expect(page.locator(".result").last()).toHaveText("[1, 2, 3, 4, 5]");
+});
+
+test("live view debounces edits, replaces one preview, and switches back to manual evaluation", async ({ page }) => {
+  await page.goto("./");
+  await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
+  const input = page.getByRole("combobox", { name: "YOUR EXPRESSION" });
+  const toggle = page.getByRole("switch", { name: "Live view" });
+  const preview = page.locator(".live-entry");
+  const inputBox = await input.boundingBox(), sessionBox = await page.locator("#transcript").boundingBox();
+  expect(inputBox.y + inputBox.height).toBeLessThan(sessionBox.y);
+  await expect(toggle).not.toBeChecked();
+  await toggle.click();
+  await input.fill("6 :: sq");
+  await expect(preview.locator(".result")).toHaveText("36");
+  await input.fill("7 :: sq");
+  await page.waitForTimeout(250);
+  await expect(preview.locator(".result")).toHaveText("36");
+  await input.fill("8 :: sq");
+  await page.waitForTimeout(400);
+  await expect(preview.locator(".result")).toHaveText("36");
+  await expect(preview.locator(".result")).toHaveText("64");
+  await expect(preview).toHaveCount(1);
+  await expect(page.locator(".entry")).toHaveCount(2);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("jello-history")))).toEqual(["5 :: range sq sum"]);
+  await input.fill("5 :: nonexistent");
+  await expect(preview.locator(".error-message")).toContainText("not a valid Jello keyword");
+  await input.fill("8 :: sq");
+  await expect(preview.locator(".result")).toHaveText("64");
+  await expect(preview.locator(".error-message")).toHaveCount(0);
+  await input.fill("9 :: sq");
+  await toggle.click();
+  await expect(toggle).not.toBeChecked();
+  await page.waitForTimeout(800);
+  await expect(preview.locator(".result")).toHaveText("64");
+  await input.press("Enter");
+  await expect(page.locator(".result").last()).toHaveText("81");
+});
+
+test("suggestions complete the current keyword and syntax colors follow keyword types", async ({ page }, testInfo) => {
+  await page.goto("./");
+  await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
+  const input = page.getByRole("combobox", { name: "YOUR EXPRESSION" });
+  const suggestions = page.getByRole("listbox", { name: "Keyword suggestions" });
+  await input.fill("5 :: ran");
+  await expect(suggestions).toBeVisible();
+  await expect(suggestions.getByRole("option").first()).toContainText("range");
+  await page.screenshot({ path: testInfo.outputPath("autocomplete.png"), fullPage: true });
+  await input.press("ArrowDown");
+  await input.press("Enter");
+  await expect(input).toHaveValue("5 :: range0");
+  await expect(suggestions).toBeHidden();
+  await input.press("Enter");
+  await expect(page.locator(".result").last()).toHaveText("[0, 1, 2, 3, 4]");
+  await input.fill("5 :: ra sum");
+  await input.evaluate((node) => { node.setSelectionRange(7, 7); node.dispatchEvent(new Event("click")); });
+  await suggestions.getByRole("option").filter({ has: page.locator(".suggestion-word", { hasText: /^range$/ }) }).click();
+  await expect(input).toHaveValue("5 :: range sum");
+  await input.fill("6 7 :: range + each : digits 3");
+  const highlight = page.locator("#expression-highlight");
+  await expect(highlight.locator(".token-monadic")).toHaveText("range");
+  await expect(highlight.locator(".token-dyadic")).toHaveText("+");
+  await expect(highlight.locator(".token-quick")).toHaveText("each");
+  await expect(highlight.locator(".token-niladic")).toHaveText(["digits", "3"]);
+  await expect(highlight.locator(".token-separators")).toHaveText(["::", ":"]);
+  const colors = await highlight.locator(".token-monadic, .token-dyadic, .token-quick").evaluateAll((nodes) => nodes.map((node) => getComputedStyle(node).color));
+  expect(new Set(colors).size).toBe(3);
+  await input.fill("5 :: range + fold");
+  await page.getByRole("button", { name: "Run expression", exact: true }).click();
+  const entry = page.locator(".entry").last();
+  await expect(entry.locator(".result")).toHaveText("15");
+  await expect(entry.locator(".command-code .token-dyadic")).toHaveText("+");
+  await expect(entry.locator(".jelly-code .token-quick")).toHaveText("/");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+
+test("a newer live expression supersedes a busy preview", async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name === "mobile", "Worker cancellation is independent of layout.");
+  await page.goto("./");
+  await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
+  const input = page.getByRole("combobox", { name: "YOUR EXPRESSION" });
+  await page.getByRole("switch", { name: "Live view" }).click();
+  await input.fill("99999999 :: factorial");
+  await expect(page.getByRole("button", { name: "Stop execution" })).toBeVisible();
+  await input.fill("5 :: range");
+  await expect(page.locator(".live-entry .result")).toHaveText("[1, 2, 3, 4, 5]", { timeout: 90000 });
+  await expect(page.locator(".live-entry")).toHaveCount(1);
+  await expect(page.locator(".command-code", { hasText: "99999999" })).toHaveCount(0);
 });
 
 test("offers a retry when the interpreter cannot load", async ({ page }, testInfo) => {

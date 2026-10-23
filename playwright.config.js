@@ -8,6 +8,7 @@ export default defineConfig({
   workers: 2,
   reporter: "list",
   use: {
+    actionTimeout: 15000,
     baseURL: process.env.PLAYGROUND_URL || "http://127.0.0.1:8765",
     trace: "retain-on-failure",
     launchOptions: process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {},

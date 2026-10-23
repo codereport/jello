@@ -42,7 +42,11 @@ At the prompt, try `5 :: range`. Enter `q` to quit.
 
 ## Browser playground
 
-The [playground](https://codereport.github.io/jello/) is a dark, monospace terminal that runs the same Jello keyword converter and pinned Jellyfish interpreter in your browser using Pyodide. It includes examples, evaluation traces, combinator diagrams, a searchable keyword reference, local command history, and shareable expression links. Press Enter to run, use the arrow keys for history, and Tab to complete a keyword. Stop cancels a calculation; runs also stop automatically after 10 seconds.
+The [playground](https://codereport.github.io/jello/) is a dark, monospace terminal that runs the same Jello keyword converter and pinned Jellyfish interpreter in your browser using Pyodide. The expression bar sits above the evaluation session. It includes examples, evaluation traces, combinator diagrams, a searchable keyword reference, local command history, and shareable expression links. Stop cancels a calculation; runs also stop automatically after 10 seconds.
+
+Turn **live view** on to evaluate automatically after a 600 ms typing pause. Edits update one preview, and a newer expression supersedes a slow preview. Turn it off to return to manual evaluation with Enter or Run. Automatic previews do not fill command history; explicit runs are remembered. The live-view preference is saved locally, and shared links still wait for you to edit or run the expression.
+
+Keyword suggestions appear as you type after `::`. Click a suggestion, use the arrow keys and Enter to select it, or press Tab to complete and cycle through matches. Escape closes suggestions; the arrow keys then browse command history. Syntax highlighting uses green for monads, cyan for dyads, purple for quicks, amber for nilads and input values, and gray for separators, including in the input and evaluation traces.
 
 The first visit downloads the Python runtime and dependencies from jsDelivr and PyPI. Pyodide is pinned to 0.27.7 (Python 3.12) for compatibility with Jellyfish. There is no application server; expressions execute in a dedicated browser worker. Shared links load the expression for you to review and run. Terminal commands such as `--find-by-example` are not included.
 
