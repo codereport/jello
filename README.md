@@ -80,6 +80,16 @@ npm test
 
 Set `CHROMIUM_PATH` to use an existing Chromium installation. Set `PLAYGROUND_URL` to test a deployed site instead of a local build. GitHub Actions tests both the terminal and browser versions before deploying the static site to GitHub Pages on pushes to `main`. The repository's Pages publishing source should be **GitHub Actions**.
 
+## Rust evaluator
+
+The [Rust evaluator](rust/README.md) implements the Jellyfish operations used by all 30 challenge examples, with Python comparisons covering varied inputs, large integers, Unicode, and nested arrays. Install [Rust using rustup](https://rustup.rs/) to run its tests; `rust-toolchain.toml` pins the toolchain and WebAssembly target. The existing Python interpreter remains available for the full language.
+
+```sh
+cargo build --locked --release --manifest-path rust/Cargo.toml
+.venv/bin/python -m unittest discover -s tests -p 'test_rust.py'
+.venv/bin/python scripts/build_wasm.py
+```
+
 ## Links
 
 ### Jelly(fish) Links

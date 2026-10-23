@@ -27,6 +27,15 @@ jobs:
         with:
           node-version: '24'
           cache: npm
+      - uses: dtolnay/rust-toolchain@1.90.0
+        with:
+          targets: wasm32-unknown-unknown
+          components: rustfmt, clippy
+      - name: Check Rust evaluator
+        run: |
+          cargo fmt --manifest-path rust/Cargo.toml -- --check
+          cargo clippy --locked --manifest-path rust/Cargo.toml --all-targets -- -D warnings
+          python scripts/build_wasm.py
       - name: Install Python dependencies
         run: python -m pip install -r requirements.txt
       - name: Test interpreter adapter
