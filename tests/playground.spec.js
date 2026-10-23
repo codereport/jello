@@ -108,7 +108,16 @@ test("live view debounces edits, replaces one preview, and switches back to manu
   const preview = page.locator(".live-entry");
   const inputBox = await input.boundingBox(), sessionBox = await page.locator("#transcript").boundingBox();
   expect(inputBox.y + inputBox.height).toBeLessThan(sessionBox.y);
+  await input.fill("4 :: sq");
+  await input.press("Enter");
+  await expect(page.locator(".result").last()).toHaveText("16");
+  await expect(page.locator(".entry")).toHaveCount(2);
+  await expect(page.locator(".entry-command").last()).toBeVisible();
   await setLiveMode(page, true);
+  await expect(page.locator(".entry")).toHaveCount(1);
+  await expect(preview).toHaveAttribute("data-command", "4 :: sq");
+  await expect(preview.locator(".result")).toHaveText("16");
+  await expect(preview.locator(".entry-command")).toBeHidden();
   await expect(page.locator("#run")).toBeHidden();
   const suggestions = page.getByRole("listbox", { name: "Keyword suggestions" });
   await input.fill("5 :: ran");
@@ -140,8 +149,8 @@ test("live view debounces edits, replaces one preview, and switches back to manu
   await expect(preview.locator(".result")).toHaveText("36");
   await expect(preview.locator(".result")).toHaveText("64");
   await expect(preview).toHaveCount(1);
-  await expect(page.locator(".entry")).toHaveCount(2);
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("jello-history")))).toEqual(["5 :: range sq sum"]);
+  await expect(page.locator(".entry")).toHaveCount(1);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem("jello-history")))).toEqual(["5 :: range sq sum", "4 :: sq"]);
   await input.fill("5 :: nonexistent");
   await expect(preview.locator(".error-message")).toContainText("not a valid Jello keyword");
   await input.fill("8 :: sq");
@@ -152,11 +161,19 @@ test("live view debounces edits, replaces one preview, and switches back to manu
   await page.screenshot({ path: testInfo.outputPath("live-jelly-preview.png"), fullPage: true });
   await setLiveMode(page, false);
   await expect(page.getByRole("button", { name: "Run expression", exact: true })).toBeVisible();
+  await expect(preview.locator(".entry-command")).toBeVisible();
   await input.fill("9 :: sq");
   await page.waitForTimeout(800);
   await expect(preview.locator(".result")).toHaveText("64");
   await input.press("Enter");
   await expect(page.locator(".result").last()).toHaveText("81");
+  await expect(page.locator(".entry")).toHaveCount(2);
+  await expect(page.locator(".entry-command").last()).toBeVisible();
+  await setLiveMode(page, true);
+  await expect(page.locator(".entry")).toHaveCount(1);
+  await expect(preview).toHaveAttribute("data-command", "9 :: sq");
+  await expect(preview.locator(".result")).toHaveText("81");
+  await expect(preview.locator(".entry-command")).toBeHidden();
 });
 
 test("live autocomplete with Tab or Enter skips the typing debounce", async ({ page }) => {
@@ -171,7 +188,8 @@ test("live autocomplete with Tab or Enter skips the typing debounce", async ({ p
   const suggestions = page.getByRole("listbox", { name: "Keyword suggestions" });
   await input.fill("5 :: ran");
   await page.clock.runFor(599);
-  await expect(preview).toHaveCount(0);
+  await expect(preview).toHaveAttribute("data-command", "5 :: range sq sum");
+  await expect(preview.locator(".result")).toHaveText("55");
   await input.press("Tab");
   await expect(suggestions).toBeHidden();
   // The page clock stays paused: a debounced evaluation cannot complete here.
@@ -314,6 +332,8 @@ test("settings persist and keep the REPL usable in presentation mode", async ({ 
   });
   await page.reload();
   await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
+  await expect(page.locator(".entry")).toHaveCount(1);
+  await expect(page.locator(".entry-command")).toBeHidden();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dracula");
   await expect(page.locator(".site-header")).toBeHidden();
   await gear.click();

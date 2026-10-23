@@ -119,6 +119,16 @@ function flushLive() {
 function updateLiveMode() {
   $(".repl").classList.toggle("live-mode", liveEnabled);
   $("#session-mode").textContent = liveEnabled ? "/ live" : "/ session";
+  if (liveEnabled) {
+    liveEntry = [...transcript.querySelectorAll(".entry")].at(-1) || null;
+    if (liveEntry) {
+      transcript.replaceChildren(liveEntry);
+      liveEntry.classList.add("live-entry");
+      if (!liveEntry.querySelector(".entry-badge")) liveEntry.querySelector(".entry-command").append(element("span", "entry-badge", "live"));
+      transcript.scrollTop = 0;
+    }
+  }
+  if (activeRun?.entry === liveEntry) activeRun.live = liveEnabled;
   if (liveEntry?.isConnected) liveEntry.querySelector(".entry-badge").textContent = liveEnabled ? "live" : "preview";
 }
 
@@ -233,8 +243,7 @@ function createEntry(command, live) {
   entry.append(row, element("div", "entry-meta pending", "Thinking…"));
   if (live) {
     entry.classList.add("live-entry");
-    if (liveEntry?.isConnected) liveEntry.replaceWith(entry);
-    else transcript.prepend(entry);
+    transcript.replaceChildren(entry);
     liveEntry = entry;
   } else transcript.append(entry);
   while (transcript.children.length > 30) {

@@ -209,7 +209,7 @@ main { padding-top: 24px; }
 .run-button { display: flex; align-items: center; gap: 18px; padding: 8px 15px; border: 1px solid var(--run-border); border-radius: 3px; background: var(--run-background); color: var(--run-foreground); font-size: 12px; font-weight: 500; flex-shrink: 0; }
 .run-button:hover:enabled { background: var(--run-hover-background); border-color: var(--green); }
 .run-button.running { color: var(--stop-foreground); background: var(--stop-background); border-color: var(--stop-border); }
-.live-mode .run-button:not(.running), .live-mode .live-entry .entry-meta:not(.pending) { display: none; }
+.live-mode .run-button:not(.running), .live-mode .entry-command, .live-mode .live-entry .entry-meta:not(.pending) { display: none; }
 #run-icon { font-size: 18px; font-weight: 400; line-height: 1; }
 .input-help { display: flex; justify-content: space-between; gap: 10px; font-size: 10px; color: var(--muted); }
 kbd { font-size: inherit; color: var(--key-foreground); }
