@@ -5,6 +5,7 @@ import json
 import re
 import runpy
 import shutil
+from datetime import date
 from pathlib import Path
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
@@ -23,22 +24,26 @@ def read_challenges():
     challenges = []
     for line in text.split("### Video Solutions", 1)[0].splitlines():
         cells = [cell.strip() for cell in line.split("|")[1:-1]]
-        if len(cells) != 6 or not cells[0].isdigit():
+        if not cells or not cells[0].isdigit():
             continue
         number = int(cells[0])
+        if len(cells) != 7:
+            raise ValueError(f"Add an Added date for challenge #{number} in challenges.md")
+        added = date.fromisoformat(cells[4]).isoformat()
         example = examples.get(str(number))
         if not example or not 1 <= len(example["inputs"]) <= 2:
             raise ValueError(f"Add sample inputs for challenge #{number} in data/challenge_inputs.json")
         arguments = " ".join(json.dumps(value, ensure_ascii=False, separators=(",", ":")) for value in example["inputs"])
-        expression = cells[4].strip("`")
+        expression = cells[5].strip("`")
         challenges.append({
             "number": number,
             "title": titles.get(number, f"LeetCode {cells[1]}" if cells[1] else f"PWC {cells[3]}"),
             "leetcode": cells[1],
             "contest": cells[2],
             "pwc": cells[3],
+            "added": added,
             "expression": expression,
-            "jelly": cells[5].strip("`"),
+            "jelly": cells[6].strip("`"),
             "command": f"{arguments} :: {expression}",
             "example": example,
         })

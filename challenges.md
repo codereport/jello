@@ -1,37 +1,39 @@
 ### LeetCode / PWC Problems
 
-|   #   | Number | Contest |  PWC  |                              Jello Solution                               | Jellyfish Solution |
-| :---: | :----: | :-----: | :---: | :-----------------------------------------------------------------------: | :----------------: |
-|   1   |  3005  |  380p1  |       |                     `len key . idx_max at_idx . sum`                      |     `LƙµMịµS`      |
-|   2   |  3010  | b122p1  |       |                   `tail sort take 2 pair head flat sum`                   |     `ḊṢḣ2,ḢFS`     |
-|   3   |  3028  |  383p1  |       |                              `sums = 0 sum`                               |       `Ä=0S`       |
-|   4   |  3038  | b124p1  |       |              `len idiv 2 take c + 2 chunk_fold . = head sum`              |   `L:2ḣ@+2/µ=ḢS`   |
-|   5   |        |         | 250p1 |                     `len iota0 mod 10 = : keep head`                      |    `LḶ%10=ðḳḢ`     |
-|   6   |  1380  |         | 251p2 |                     `minr each rev = maxr * maxr sum`                     |     `Ṃ€Ṛ=Ṁ×ṀS`     |
-|   7   |  2778  |         | 252p1 |                           `divs? len * sq sum`                            |      `ḍL×²S`       |
-|   8   |  1365  |         | 257p1 |                           `< outer w sum each`                            |     ``<þ`S€``      |
-|   9   |  1295  |         | 258p1 |                      `i_to_d len_each odd? not sum`                       |      `DẈḂCS`       |
-|  10   |  2859  |         | 258p2 |                       `len iota0 bits = r * l sum`                        |     `LḶ①=ṛ×ḷS`     |
-|  11   |  3046  |  386p1  |       |                            `len key maxr < 3`                             |      `LƙṀ<3`       |
-|  12   |  3065  | b125p1  |       |                                  `< sum`                                  |        `<S`        |
-|  13   |  1833  |  237p2  |       |                            `sort sums <= sum`                             |       `ṢÄ≤S`       |
-|  14   |  1207  |         | 260p1 |                        `len key . uniq len = len`                         |     `LƙµQL=L`      |
-|  15   |  3074  |  388p1  |       |                   `< . sort rev sums . sum . sum add1`                    |    `<µṢṚÄµSµS‘`    |
-|  16   |  3079  | b126p1  |       |                   `i_to_d . maxr max . each d_to_i sum`                   |     `DµṀ»µ€ḌS`     |
-|  17   |  2535  |         | 261p1 |                        `i_to_d flat sum _ sum abs`                        |      `DFS_SA`      |
-|  18   |  2529  |         | 262p1 |                   `filter_out 0 sign . len key . maxr`                    |     `ḟ0ṠµLƙµṀ`     |
-|  19   |  2089  |  269p1  | 263p1 |                             `sort = idx sub1`                             |       `Ṣ=T’`       |
-|  20   |  3155  |  393p2  |       |                       `is_prime idx . last _ head`                        |      `ẒTµṪ_Ḣ`      |
-|  21   |  3105  |  392p1  |       |                   `deltas sign sum group abs maxr add1`                   |     `IṠSŒgAṀ‘`     |
-|  22   |  3110  | b128p1  |       |                           `ord deltas abs sum`                            |       `OIAS`       |
-|  23   |  3131  |  395p1  |       |                             `_ minr minr abs`                             |       `_ṂṂA`       |
-|  24   |  1822  |  236p1  | 267p1 |                                `sign prod`                                |        `ṠP`        |
-|  25   |        |         | 269p1 |                              `even? sum > 1`                              |       `ÉS>1`       |
-|  26   |  3151  |  398p1  |       |                             `odd? differ all`                             |       `ḂĎẠ`        |
-|  27   |        |         | 271p1 |                            `sum each idx_max`                             |       `S€M`        |
-|  28   |        |         | 271p2 |                              `bits sort_by`                               |        `①Þ`        |
-|  29   |  3190  | b133p1  |       |                             `3 divs? not sum`                             |       `3ḍCS`       |
-|  30   |  3411  |  431p1  |       | `sublists . gcd fold each * lcm fold each = prod each keep len_each maxr` | `Ẇµg/€×æl/€=P€ḳẈṀ` |
+“Added” records the first appearance in this catalog, including its original `leetcode.md` history, using the commit author’s local date. Existing dates were recovered from Git history; keep this date when revising a solution.
+
+|   #   | Number | Contest |  PWC  |   Added    |                              Jello Solution                               | Jellyfish Solution |
+| :---: | :----: | :-----: | :---: | :--------: | :-----------------------------------------------------------------------: | :----------------: |
+|   1   |  3005  |  380p1  |       | 2024-02-18 |                     `len key . idx_max at_idx . sum`                      |     `LƙµMịµS`      |
+|   2   |  3010  | b122p1  |       | 2024-02-18 |                   `tail sort take 2 pair head flat sum`                   |     `ḊṢḣ2,ḢFS`     |
+|   3   |  3028  |  383p1  |       | 2024-02-18 |                              `sums = 0 sum`                               |       `Ä=0S`       |
+|   4   |  3038  | b124p1  |       | 2024-02-18 |              `len idiv 2 take c + 2 chunk_fold . = head sum`              |   `L:2ḣ@+2/µ=ḢS`   |
+|   5   |        |         | 250p1 | 2024-02-20 |                     `len iota0 mod 10 = : keep head`                      |    `LḶ%10=ðḳḢ`     |
+|   6   |  1380  |         | 251p2 | 2024-02-20 |                     `minr each rev = maxr * maxr sum`                     |     `Ṃ€Ṛ=Ṁ×ṀS`     |
+|   7   |  2778  |         | 252p1 | 2024-02-20 |                           `divs? len * sq sum`                            |      `ḍL×²S`       |
+|   8   |  1365  |         | 257p1 | 2024-02-20 |                           `< outer w sum each`                            |     ``<þ`S€``      |
+|   9   |  1295  |         | 258p1 | 2024-02-26 |                      `i_to_d len_each odd? not sum`                       |      `DẈḂCS`       |
+|  10   |  2859  |         | 258p2 | 2024-02-28 |                       `len iota0 bits = r * l sum`                        |     `LḶ①=ṛ×ḷS`     |
+|  11   |  3046  |  386p1  |       | 2024-02-26 |                            `len key maxr < 3`                             |      `LƙṀ<3`       |
+|  12   |  3065  | b125p1  |       | 2024-03-07 |                                  `< sum`                                  |        `<S`        |
+|  13   |  1833  |  237p2  |       | 2024-03-07 |                            `sort sums <= sum`                             |       `ṢÄ≤S`       |
+|  14   |  1207  |         | 260p1 | 2024-03-11 |                        `len key . uniq len = len`                         |     `LƙµQL=L`      |
+|  15   |  3074  |  388p1  |       | 2024-03-13 |                   `< . sort rev sums . sum . sum add1`                    |    `<µṢṚÄµSµS‘`    |
+|  16   |  3079  | b126p1  |       | 2024-03-17 |                   `i_to_d . maxr max . each d_to_i sum`                   |     `DµṀ»µ€ḌS`     |
+|  17   |  2535  |         | 261p1 | 2024-03-19 |                        `i_to_d flat sum _ sum abs`                        |      `DFS_SA`      |
+|  18   |  2529  |         | 262p1 | 2024-03-27 |                   `filter_out 0 sign . len key . maxr`                    |     `ḟ0ṠµLƙµṀ`     |
+|  19   |  2089  |  269p1  | 263p1 | 2024-04-03 |                             `sort = idx sub1`                             |       `Ṣ=T’`       |
+|  20   |  3155  |  393p2  |       | 2024-04-14 |                       `is_prime idx . last _ head`                        |      `ẒTµṪ_Ḣ`      |
+|  21   |  3105  |  392p1  |       | 2024-04-17 |                   `deltas sign sum group abs maxr add1`                   |     `IṠSŒgAṀ‘`     |
+|  22   |  3110  | b128p1  |       | 2024-04-18 |                           `ord deltas abs sum`                            |       `OIAS`       |
+|  23   |  3131  |  395p1  |       | 2024-04-30 |                             `_ minr minr abs`                             |       `_ṂṂA`       |
+|  24   |  1822  |  236p1  | 267p1 | 2024-04-30 |                                `sign prod`                                |        `ṠP`        |
+|  25   |        |         | 269p1 | 2024-05-13 |                              `even? sum > 1`                              |       `ÉS>1`       |
+|  26   |  3151  |  398p1  |       | 2024-05-22 |                             `odd? differ all`                             |       `ḂĎẠ`        |
+|  27   |        |         | 271p1 | 2024-06-01 |                            `sum each idx_max`                             |       `S€M`        |
+|  28   |        |         | 271p2 | 2024-06-01 |                              `bits sort_by`                               |        `①Þ`        |
+|  29   |  3190  | b133p1  |       | 2024-06-30 |                             `3 divs? not sum`                             |       `3ḍCS`       |
+|  30   |  3411  |  431p1  |       | 2025-01-06 | `sublists . gcd fold each * lcm fold each = prod each keep len_each maxr` | `Ẇµg/€×æl/€=P€ḳẈṀ` |
 ### Video Solutions
    
 |   #   |    Date    |     Languages      |                               Video Link                                |

@@ -296,9 +296,9 @@ kbd { font-size: inherit; color: var(--key-foreground); }
 .challenge-option { display: block; width: 100%; padding: 15px 10px 9px; text-align: left; border: 0; border-radius: 2px; background: none; }
 .challenge-sample-source { display: block; width: fit-content; margin: 0 10px 4px; font-size: 9px; color: var(--cyan); }
 .challenge-option:hover, .challenge-option:focus-visible { background: var(--raised); }
-.challenge-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.challenge-heading { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 5px 12px; }
 .challenge-title { font-size: 12px; }
-.challenge-tags { color: var(--muted); font-size: 9px; text-align: right; }
+.challenge-tags { margin-left: auto; color: var(--muted); font-size: 9px; text-align: right; }
 .challenge-expression { display: block; margin-top: 9px; font-size: 11px; line-height: 1.9; overflow-wrap: anywhere; }
 .challenge-empty { margin: 24px 0; color: var(--muted); font-size: 11px; text-align: center; }
 .challenges-help { margin: 17px 0 10px; font-size: 10px; color: var(--muted); }
@@ -405,7 +405,7 @@ label.setting-row { cursor: pointer; }
   .settings-dialog, .challenges-dialog { padding: 18px; }
   .challenge-search { font-size: 16px; }
   .challenge-heading { flex-direction: column; gap: 5px; }
-  .challenge-tags { text-align: left; }
+  .challenge-tags { margin-left: 0; text-align: left; }
   .setting-row { gap: 14px; }
   .presentation-mode .page-shell { padding: 12px; }
   .presentation-mode .expression-editor { font-size: 16px; }
