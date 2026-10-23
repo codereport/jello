@@ -53,6 +53,8 @@ class BrowserRuntimeTests(unittest.TestCase):
         self.assertEqual(json.loads(evaluate("9007199254740993 :: sq"))["value"], ["integer", "81129638414606699710187514626049"])
         self.assertEqual(json.loads(evaluate("[1] :: rev"))["value"], ["list", [["integer", "1"]]])
         self.assertEqual(json.loads(evaluate("1 :: i"))["value"], ["integer", "1"])
+        self.assertEqual(json.loads(evaluate("-0.0 :: i"))["value"], ["float", "8000000000000000"])
+        self.assertEqual(json.loads(evaluate("4 :: range . sum div len"))["value"], ["float", "4004000000000000"])
 
 
 if __name__ == "__main__":

@@ -4,6 +4,7 @@ import io
 import json
 import random
 import shutil
+import struct
 import subprocess
 import sys
 import unittest
@@ -27,6 +28,8 @@ def canonical(value):
         return ["character", value]
     if type(value) == list:
         return ["list", [canonical(item) for item in value]]
+    if type(value) == float:
+        return ["float", struct.pack(">d", value).hex()]
     return ["other", repr(value)]
 
 
@@ -138,10 +141,76 @@ class RustEngineTests(unittest.TestCase):
                     self.assertEqual(actual[key], expected[key], key)
 
     def test_unsupported_domains_explicitly_fall_back(self):
-        for code, arguments in [("½", ["4"]), ("X", ["5"]), ("R", ["0.5"]), ("R", ["2000001"]), ("H", ["3"]), ("S", ["'hello'"]), ("L", ["true"]), ("L", ['"\\ud83d\\ude00"']), ("M", ["5"]), ("Æf", ["0"])]:
+        for code, arguments in [("½", ["-4"]), ("X", ["5"]), ("R", ["2000001"]), ("÷", ["1", "0"]), ("×", ["1e308", "2.0"]), ("S", ["'hello'"]), ("L", ["true"]), ("L", ['"\\ud83d\\ude00"']), ("M", ["5"]), ("Æf", ["0"])]:
             with self.subTest(code=code, arguments=arguments):
                 self.assertEqual(self.request(code, arguments)["type"], "unsupported")
         self.compare("R", ["5"])
+
+    def test_floating_point_arithmetic_and_numeric_types(self):
+        commands = [
+            "4 :: range . sum div len", "3 :: half", "4 :: half", "4.0 :: half",
+            "81 :: sqrt", "2 :: sqrt", "4 :: inv", "0.5 :: double",
+            "[1.5,2,3.25] :: sum", "[1.5,2,3.25] :: prod",
+            "[1.5,2,3.25] :: sums", "[1.5,2,3.25] :: deltas",
+            "[1.5,-2.25,0.0] :: abs", "[1.5,-2.25,-0.0] :: neg",
+            "[1.5,-2.25,-0.0] :: sign", "[1.5,-2.25,0.0] :: ceil",
+            "[1.5,-2.25,-0.0] :: floor", "[0.5,-1.5] :: add1 sub1 sq",
+            "[1.5,2.5] :: odd?", "[1.5,2.5] :: even?",
+            "[0.5,-1.5] :: abs_le_one", "0.5 :: not",
+            "3.9 :: range", "3.9 :: iota0", "-0.5 :: range",
+            "[1.0,1,2.5,2.5,-0.0,0] :: uniq",
+            "[1.0,1,2.5,2.5,-0.0,0] :: len key",
+            "[9007199254740993,9007199254740992.0,-1.5,0] :: sort",
+            "[[0.5,1],[2.5]] :: sum", '["x",1.0,1e-7] :: i',
+            "1 2 :: div", "4 2 :: div", "4.0 2 :: div",
+            "1.0 0.1 :: idiv", "-1.0 0.1 :: idiv",
+            "0.0 -3.0 :: mod", "-3.5 2 :: mod", "3.5 -2 :: mod",
+            "2 -1 :: pow", "1.5 3 :: pow", "4 0.5 :: pow",
+            "9007199254740993 9007199254740992.0 :: =",
+            "9007199254740993 9007199254740992.0 :: >",
+            "1 1.0 :: =", "-0.0 0 :: =", "0.5 1.5 :: divs?",
+        ]
+        for command in commands:
+            with self.subTest(command=command):
+                inputs, keywords = command.split("::", 1)
+                self.compare(convert(keywords.split()), split_arguments(inputs))
+
+    def test_float_formatting_and_lossless_values(self):
+        rng = random.Random(73)
+        values = [0.0, -0.0, 1.0, 1e-4, 1e-5, 1e15, 1e16, 1e20,
+                  5e-324, 2.2250738585072014e-308, 1.7976931348623157e308]
+        while len(values) < 600:
+            number = struct.unpack(">d", rng.getrandbits(64).to_bytes(8, "big"))[0]
+            if float("-inf") < number < float("inf"):
+                values.append(number)
+        for value in values:
+            with self.subTest(value=value):
+                self.compare("¹", [repr(value)])
+
+    def test_fractional_division_rounding_with_large_integers(self):
+        rng = random.Random(19)
+        for _ in range(100):
+            numerator = rng.randrange(-(10 ** 100), 10 ** 100)
+            denominator = rng.randrange(1, 10 ** 100)
+            self.compare("÷", [str(numerator), str(denominator)])
+        self.compare("÷", [str(10 ** 400 + 1), str(3 * 10 ** 400)])
+
+    def test_mixed_float_arithmetic_matches_python(self):
+        rng = random.Random(88)
+        pairs = [(1.0, 0.1), (-0.0, -3.0), (0.1, -0.01), (2 ** 53 + 1, 0.5)]
+        pairs += [(rng.uniform(-1e8, 1e8), rng.uniform(-10, 10)) for _ in range(100)]
+        for left, right in pairs:
+            for atom in ("+", "_", "×", "÷", "%", ":", "<", "=", "»"):
+                with self.subTest(left=left, right=right, atom=atom):
+                    self.compare(atom, [repr(left), repr(right)])
+
+    def test_floating_point_default_traces(self):
+        command = "4 :: range . sum div len"
+        expected = json.loads(evaluate(command))
+        actual = self.request(expected["code"], ["4"], [step["code"] for step in expected["steps"]])
+        self.assertEqual(actual["type"], "result", actual)
+        self.assertEqual(actual["steps"], expected["steps"])
+        self.assertEqual(actual["value"], expected["value"])
 
 
 class WasmEngineTests(RustEngineTests):

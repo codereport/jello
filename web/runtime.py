@@ -2,6 +2,7 @@
 
 import io
 import json
+import struct
 from contextlib import redirect_stdout
 
 import draw
@@ -67,7 +68,7 @@ def canonical(value):
     if type(value) == list:
         return ["list", [canonical(item) for item in value]]
     if type(value) == float:
-        return ["float", repr(value)]
+        return ["float", struct.pack(">d", value).hex()]
     return ["other", repr(value)]
 
 

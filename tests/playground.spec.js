@@ -30,8 +30,9 @@ test("runs the real interpreter, examples, errors, wordbook, history, and sharin
   };
   await expect(input).toHaveValue(DEFAULT_COMMAND);
   await expect(page.locator(".result").first()).toHaveText("2.5", { timeout: 90000 });
-  await expect(page.locator(".entry").first()).toHaveAttribute("data-engine", "python");
-  await expect(page.locator("#verification-status")).toHaveText("Rust unsupported");
+  await expect(page.locator(".entry").first()).toHaveAttribute("data-engine", "rust");
+  await expect(page.locator(".entry").first()).toHaveAttribute("data-verification", "match", { timeout: 90000 });
+  await expect(page.locator("#verification-status")).toHaveText("✓ match");
   await expect(page.locator("#execution-time")).toHaveText(/^\d+\.\d+ (ms|s)$/);
   await expect(page.getByRole("img", { name: "Python", exact: true })).toBeVisible();
   expect(await page.getByRole("img", { name: "Python", exact: true }).evaluate((image) => image.complete && image.naturalWidth > 0)).toBe(true);
@@ -519,7 +520,7 @@ test("Rust and Python agree on every challenge program in real workers", async (
     const expected = typeof challenge.example.expected === "boolean" ? Number(challenge.example.expected) : challenge.example.expected;
     await expect(entry.locator(".result")).toHaveText(JSON.stringify(expected).replaceAll(",", ", "));
   }
-  for (const command of ["9007199254740993 :: sq", '"😀é" :: ord', "[[1,2],[3]] :: sum"]) {
+  for (const command of [DEFAULT_COMMAND, "0.5 :: double", "81 :: sqrt", "-0.0 :: i", "[1.5,2,3.25] :: sum", "1.0 0.1 :: idiv", "9007199254740993 :: sq", '"😀é" :: ord', "[[1,2],[3]] :: sum"]) {
     await input.fill(command); await input.press("Enter");
     await expect(page.locator(".entry").last()).toHaveAttribute("data-verification", "match");
     await expect(page.locator(".entry").last()).toHaveAttribute("data-engine", "rust");
@@ -533,7 +534,7 @@ test("unsupported Rust operations and inputs fall back to real Python", async ({
   await page.goto("./");
   await expect(page.locator(".result").first()).toHaveText("2.5", { timeout: 90000 });
   const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
-  for (const [command, expected] of [["81 :: sqrt", "9.0"], ["0.5 :: double", "1.0"], ["'hello world' :: rev", "dlrow olleh"]]) {
+  for (const [command, expected] of [["-1 :: sqrt", "1j"], ["1 0 :: div", "inf"], ["'hello world' :: rev", "dlrow olleh"]]) {
     await input.fill(command);
     await input.press("Enter");
     const entry = page.locator(".entry").last();

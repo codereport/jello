@@ -1,5 +1,6 @@
 use crate::{
     eval::{groups, Engine},
+    numeric,
     value::Value,
     Error, Result,
 };
@@ -14,7 +15,7 @@ pub fn arity(atom: &str) -> Option<i8> {
         | "Ė" | "F" | "Ḟ" | "H" | "Ḥ" | "Ḣ" | "I" | "Ď" | "Ị" | "J" | "L" | "Ḷ" | "M" | "Ṃ"
         | "Ṁ" | "N" | "O" | "Ọ" | "P" | "Ṗ" | "Q" | "R" | "Ṛ" | "S" | "Ṡ" | "Ṣ" | "T" | "Ṫ"
         | "U" | "W" | "Ẇ" | "Ẉ" | "Ż" | "Ä" | "!" | "~" | "²" | "‘" | "’" | "¹" | "Œr" | "ÆD"
-        | "Æd" | "Æf" | "ÆF" | "Ẓ" | "ℙ" => 1,
+        | "Æd" | "Æf" | "ÆF" | "Ẓ" | "ℙ" | "½" | "İ" => 1,
         "+" | "_" | "×" | "÷" | "*" | "=" | "⁼" | ";" | "%" | "»" | "«" | "s" | "ṡ" | "<" | ">"
         | "ḷ" | "ṛ" | "a" | "o" | "," | "i" | "e" | "ṙ" | "ḳ" | "ị" | "ḣ" | ":" | "ḟ" | "f"
         | "ḍ" | "≥" | "≤" | "n" | "^" | "g" | "æl" => 2,
@@ -27,9 +28,8 @@ pub fn depths(atom: &str) -> (Option<usize>, Option<usize>) {
         "+" | "_" | "×" | "÷" | "*" | "=" | "%" | "»" | "«" | "<" | ">" | "a" | "o" | ":" | "ḍ"
         | "≥" | "≤" | "n" | "^" | "g" | "æl" => (Some(0), Some(0)),
         "A" | "B" | "Ḃ" | "É" | "①" | "C" | "Ċ" | "D" | "Ḟ" | "H" | "Ḥ" | "Ị" | "Ḷ" | "N" | "O"
-        | "Ọ" | "R" | "Ṡ" | "!" | "~" | "²" | "‘" | "’" | "ÆD" | "Æd" | "Æf" | "ÆF" | "Ẓ" => {
-            (Some(0), None)
-        }
+        | "Ọ" | "R" | "Ṡ" | "!" | "~" | "²" | "‘" | "’" | "ÆD" | "Æd" | "Æf" | "ÆF" | "Ẓ" | "½"
+        | "İ" => (Some(0), None),
         "Ḅ" | "Ḍ" | "I" | "Ď" | "U" => (Some(1), None),
         "ị" => (Some(0), None),
         "s" | "ṡ" | "ḣ" | "ṙ" => (None, Some(0)),
@@ -107,7 +107,9 @@ fn factors(engine: &mut Engine, value: &Value) -> Result<Vec<Value>> {
 
 pub fn monad(engine: &mut Engine, atom: &str, arg: &Value) -> Result<Value> {
     Ok(match atom {
-        "A" => Value::Int(arg.integer()?.abs()),
+        "A" | "N" | "C" | "H" | "Ḥ" | "²" | "‘" | "’" | "Ċ" | "Ḟ" | "½" | "İ" => {
+            numeric::unary(atom, arg)?
+        }
         "Ạ" => boolean(arg.items().iter().all(Value::truth)),
         "Ȧ" => {
             let mut all = vec![];
@@ -124,8 +126,14 @@ pub fn monad(engine: &mut Engine, atom: &str, arg: &Value) -> Result<Value> {
             }
             Value::Int(number)
         }
-        "Ḃ" => Value::Int(arg.integer()?.mod_floor(&BigInt::from(2))),
-        "É" => Value::Int(BigInt::one() - arg.integer()?.mod_floor(&BigInt::from(2))),
+        "Ḃ" | "É" => {
+            let remainder = numeric::binary("%", arg, &Value::int(2))?;
+            if atom == "É" {
+                numeric::binary("_", &Value::int(1), &remainder)?
+            } else {
+                remainder
+            }
+        }
         "①" => {
             let digits = arg.digits(2)?;
             Value::Int(
@@ -137,8 +145,7 @@ pub fn monad(engine: &mut Engine, atom: &str, arg: &Value) -> Result<Value> {
                     .sum(),
             )
         }
-        "C" => Value::Int(BigInt::one() - arg.integer()?),
-        "Ċ" | "Ḟ" | "¹" => arg.clone(),
+        "¹" => arg.clone(),
         "Ḋ" => Value::list(arg.items().into_iter().skip(1).collect()),
         "E" => {
             let v = arg.items();
@@ -156,14 +163,6 @@ pub fn monad(engine: &mut Engine, atom: &str, arg: &Value) -> Result<Value> {
             flatten(arg, &mut values);
             Value::list(values)
         }
-        "H" => {
-            let (quotient, remainder) = arg.integer()?.div_rem(&BigInt::from(2));
-            if !remainder.is_zero() {
-                return Err(Error::unsupported("fractional results"));
-            }
-            Value::Int(quotient)
-        }
-        "Ḥ" => Value::Int(arg.integer()? * 2),
         "Ḣ" => match arg {
             Value::List(v) => v.first().cloned().unwrap_or_else(|| Value::int(0)),
             Value::Char(_) => arg.clone(),
@@ -172,7 +171,7 @@ pub fn monad(engine: &mut Engine, atom: &str, arg: &Value) -> Result<Value> {
         "I" => Value::list(
             arg.items()
                 .windows(2)
-                .map(|v| Ok(Value::Int(v[1].integer()? - v[0].integer()?)))
+                .map(|v| numeric::binary("_", &v[1], &v[0]))
                 .collect::<Result<_>>()?,
         ),
         "Ď" => Value::list(
@@ -181,14 +180,15 @@ pub fn monad(engine: &mut Engine, atom: &str, arg: &Value) -> Result<Value> {
                 .map(|v| boolean(v[0] != v[1]))
                 .collect(),
         ),
-        "Ị" => boolean(arg.integer()?.abs() <= BigInt::one()),
+        "Ị" => boolean(!numeric::unary("A", arg)?.compare(&Value::int(1))?.is_gt()),
         "J" => Value::list((1..=arg.items().len()).map(Value::int).collect()),
         "L" => Value::int(arg.items().len()),
         "Ḷ" | "R" => {
-            let n = if arg.integer()?.is_negative() {
+            let integer = Value::Int(arg.truncated()?);
+            let n = if integer.integer()?.is_negative() {
                 0
             } else {
-                arg.size()?
+                integer.size()?
             };
             Value::list(if atom == "R" {
                 (1..=n).map(Value::int).collect()
@@ -211,7 +211,6 @@ pub fn monad(engine: &mut Engine, atom: &str, arg: &Value) -> Result<Value> {
             )
         }
         "Ṃ" | "Ṁ" => extrema(arg, atom == "Ṁ")?,
-        "N" => Value::Int(-arg.integer()?.clone()),
         "O" => match arg {
             Value::Char(c) => Value::int(u32::from(*c)),
             _ => arg.clone(),
@@ -250,7 +249,11 @@ pub fn monad(engine: &mut Engine, atom: &str, arg: &Value) -> Result<Value> {
             )
         }
         "Ṛ" => Value::list(arg.digit_items()?.into_iter().rev().collect()),
-        "Ṡ" => Value::Int(arg.integer()?.signum()),
+        "Ṡ" => Value::int(match arg.compare(&Value::int(0))? {
+            Ordering::Less => -1,
+            Ordering::Equal => 0,
+            Ordering::Greater => 1,
+        }),
         "Ṣ" => Value::list(sorted(arg.digit_items()?)?),
         "T" => match arg {
             Value::List(v) => Value::list(
@@ -314,9 +317,6 @@ pub fn monad(engine: &mut Engine, atom: &str, arg: &Value) -> Result<Value> {
             Value::Int(result)
         }
         "~" => Value::Int(!arg.integer()?.clone()),
-        "²" => Value::Int(arg.integer()?.pow(2)),
-        "‘" => Value::Int(arg.integer()? + 1),
-        "’" => Value::Int(arg.integer()? - 1),
         "Œr" => Value::list(
             groups(&arg.digit_items()?)
                 .into_iter()
@@ -378,28 +378,7 @@ pub fn monad(engine: &mut Engine, atom: &str, arg: &Value) -> Result<Value> {
 
 pub fn dyad(engine: &mut Engine, atom: &str, left: &Value, right: &Value) -> Result<Value> {
     Ok(match atom {
-        "+" => Value::Int(left.integer()? + right.integer()?),
-        "_" => Value::Int(left.integer()? - right.integer()?),
-        "×" => Value::Int(left.integer()? * right.integer()?),
-        "÷" | ":" | "%" => {
-            let divisor = right.integer()?;
-            if divisor.is_zero() {
-                return Err(Error::unsupported("division by zero"));
-            }
-            let (quotient, remainder) = left.integer()?.div_mod_floor(divisor);
-            if atom == "÷" && !remainder.is_zero() {
-                return Err(Error::unsupported("fractional results"));
-            }
-            Value::Int(if atom == "%" { remainder } else { quotient })
-        }
-        "*" => {
-            let base = left.integer()?;
-            let exponent = right.size()?;
-            if base.bits().saturating_mul(exponent as u64) > 20_000_000 {
-                return Err(Error::unsupported("large powers"));
-            }
-            Value::Int(base.pow(exponent as u32))
-        }
+        "+" | "_" | "×" | "÷" | ":" | "%" | "*" => numeric::binary(atom, left, right)?,
         "=" | "⁼" => boolean(left == right),
         "n" => boolean(left != right),
         "<" | ">" | "≤" | "≥" => {
@@ -510,10 +489,10 @@ pub fn dyad(engine: &mut Engine, atom: &str, left: &Value, right: &Value) -> Res
                     .collect(),
             )
         }
-        "ḍ" => boolean(if left.integer()?.is_zero() {
-            right.integer()?.is_zero()
+        "ḍ" => boolean(if !left.truth() {
+            !right.truth()
         } else {
-            right.integer()?.is_multiple_of(left.integer()?)
+            !numeric::binary("%", right, left)?.truth()
         }),
         "^" => Value::Int(left.integer()? ^ right.integer()?),
         "g" => Value::Int(left.integer()?.gcd(right.integer()?)),

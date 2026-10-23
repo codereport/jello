@@ -1,6 +1,7 @@
 mod atoms;
 mod diagram;
 mod eval;
+mod numeric;
 mod parser;
 mod value;
 

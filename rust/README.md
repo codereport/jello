@@ -6,7 +6,7 @@ It uses eager arrays and ordinary reductions; it does not fuse operations or
 replace programs with mathematical shortcuts.
 
 Train composition, quicks, vectorization, nested arrays, character values, and
-arbitrary-precision integer arithmetic follow the pinned interpreter in
+arbitrary-precision integer and finite 64-bit floating-point arithmetic follow the pinned interpreter in
 `../jellyfish/`. The port retains the upstream MIT license in `LICENSE.txt`.
 
 Install Rust with [rustup](https://rustup.rs/). The repository's
@@ -28,11 +28,16 @@ line and writes one JSON response per line:
 Requests use converted Jelly code and raw argument strings, so the interpreter
 does not duplicate Jello's keyword vocabulary. Responses distinguish `result`,
 `unsupported`, and `error`. Unsupported atoms and numeric/input domains must fall
-back to Python. This version supports integer arithmetic; floating-point,
-complex, random, Python-specific input syntax, and dynamic evaluation remain on
-Python. Allocation, recursion, operation, and output limits bound resource use.
+back to Python. Numeric support includes mixed integer/float arithmetic,
+fractional division, floor division and modulo, powers, square roots, rounding,
+reductions, and comparisons. Exact integer division retains its integer type;
+fractional division produces a float. JSON decimal/exponent inputs are accepted.
+Complex and non-finite values, operations outside the supported numeric domain,
+random operations, Python-specific input syntax, and dynamic evaluation remain
+on Python. Allocation, recursion, operation, and output limits bound resource use.
 
-The `value` field carries tagged values with decimal integer strings. It preserves
+The `value` field carries tagged values with decimal integer strings and exact
+float bit patterns encoded as 16 hexadecimal digits in big-endian order. It preserves
 list structure and values above JavaScript's safe integer range independently
 of Jelly's display rules, which unwrap singletons and join character arrays.
 Optional keyword arities generate the same combinator diagrams as the Python

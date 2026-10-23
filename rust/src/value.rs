@@ -1,14 +1,62 @@
 use crate::{Error, Result};
 use num_bigint::BigInt;
-use num_traits::{Signed, ToPrimitive, Zero};
+use num_traits::{FromPrimitive, Signed, ToPrimitive, Zero};
 use serde_json::{json, Value as Json};
-use std::{cmp::Ordering, rc::Rc};
+use std::{
+    cmp::Ordering,
+    hash::{Hash, Hasher},
+    rc::Rc,
+};
 
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Debug)]
 pub enum Value {
     Int(BigInt),
+    // Only finite values enter the engine, through Value::float.
+    Float(f64),
     Char(char),
     List(Rc<Vec<Value>>),
+}
+
+impl PartialEq for Value {
+    fn eq(&self, other: &Self) -> bool {
+        match (self, other) {
+            (Self::Int(a), Self::Int(b)) => a == b,
+            (Self::Float(a), Self::Float(b)) => a == b,
+            (Self::Int(a), Self::Float(b)) | (Self::Float(b), Self::Int(a)) => {
+                b.fract() == 0.0 && BigInt::from_f64(*b).as_ref() == Some(a)
+            }
+            (Self::Char(a), Self::Char(b)) => a == b,
+            (Self::List(a), Self::List(b)) => a == b,
+            _ => false,
+        }
+    }
+}
+impl Eq for Value {}
+impl Hash for Value {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        match self {
+            Self::Int(n) => {
+                0u8.hash(state);
+                n.hash(state);
+            }
+            Self::Float(n) if n.fract() == 0.0 => {
+                0u8.hash(state);
+                BigInt::from_f64(*n).unwrap().hash(state);
+            }
+            Self::Float(n) => {
+                1u8.hash(state);
+                n.to_bits().hash(state);
+            }
+            Self::Char(c) => {
+                2u8.hash(state);
+                c.hash(state);
+            }
+            Self::List(v) => {
+                3u8.hash(state);
+                v.hash(state);
+            }
+        }
+    }
 }
 
 impl Value {
@@ -17,6 +65,32 @@ impl Value {
     }
     pub fn list(v: Vec<Self>) -> Self {
         Self::List(Rc::new(v))
+    }
+    pub fn float(n: f64) -> Result<Self> {
+        if n.is_finite() {
+            Ok(Self::Float(n))
+        } else {
+            Err(Error::unsupported("non-finite numeric results"))
+        }
+    }
+    pub fn number(&self) -> Result<f64> {
+        match self {
+            Self::Float(n) => Ok(*n),
+            Self::Int(n) => n
+                .to_f64()
+                .filter(|n| n.is_finite())
+                .ok_or_else(|| Error::unsupported("integers outside the floating-point range")),
+            _ => Err(Error::unsupported("non-numeric arithmetic")),
+        }
+    }
+    pub fn truncated(&self) -> Result<BigInt> {
+        match self {
+            Self::Int(n) => Ok(n.clone()),
+            Self::Float(n) => {
+                BigInt::from_f64(*n).ok_or_else(|| Error::unsupported("non-finite integers"))
+            }
+            _ => Err(Error::unsupported("non-numeric arithmetic")),
+        }
     }
     pub fn integer(&self) -> Result<&BigInt> {
         match self {
@@ -39,6 +113,7 @@ impl Value {
     pub fn truth(&self) -> bool {
         match self {
             Self::Int(n) => !n.is_zero(),
+            Self::Float(n) => *n != 0.0,
             Self::Char(_) => true,
             Self::List(v) => !v.is_empty(),
         }
@@ -62,19 +137,29 @@ impl Value {
     pub fn digit_items(&self) -> Result<Vec<Self>> {
         match self {
             Self::Int(_) => self.digits(10),
+            Self::Float(_) => Err(Error::unsupported("digits of a floating-point scalar")),
             _ => Ok(self.items()),
         }
     }
     pub fn range_items(&self) -> Result<Vec<Self>> {
         match self {
-            Self::Int(n) if n.is_negative() => Ok(vec![]),
-            Self::Int(_) => Ok((1..=self.size()?).map(Self::int).collect()),
+            Self::Int(_) | Self::Float(_) => {
+                let n = Self::Int(self.truncated()?);
+                if n.integer()?.is_negative() {
+                    Ok(vec![])
+                } else {
+                    Ok((1..=n.size()?).map(Self::int).collect())
+                }
+            }
             _ => Ok(self.items()),
         }
     }
     pub fn compare(&self, other: &Self) -> Result<Ordering> {
         match (self, other) {
             (Self::Int(a), Self::Int(b)) => Ok(a.cmp(b)),
+            (Self::Float(a), Self::Float(b)) => Ok(a.partial_cmp(b).unwrap()),
+            (Self::Int(a), Self::Float(b)) => Ok(compare_int_float(a, *b)),
+            (Self::Float(a), Self::Int(b)) => Ok(compare_int_float(b, *a).reverse()),
             (Self::Char(a), Self::Char(b)) => Ok(a.cmp(b)),
             (Self::List(a), Self::List(b)) => {
                 for (a, b) in a.iter().zip(b.iter()) {
@@ -91,6 +176,7 @@ impl Value {
     pub fn canonical(&self) -> Json {
         match self {
             Self::Int(n) => json!(["integer", n.to_string()]),
+            Self::Float(n) => json!(["float", format!("{:016x}", n.to_bits())]),
             Self::Char(c) => json!(["character", c.to_string()]),
             Self::List(v) => json!(["list", v.iter().map(Self::canonical).collect::<Vec<_>>()]),
         }
@@ -100,11 +186,19 @@ impl Value {
             return Err(Error::unsupported("deeply nested input"));
         }
         match value {
-            Json::Number(n) => n
-                .to_string()
-                .parse::<BigInt>()
-                .map(Self::Int)
-                .map_err(|_| Error::unsupported("floating-point input")),
+            Json::Number(n) => {
+                let raw = n.to_string();
+                if raw.contains(['.', 'e', 'E']) {
+                    Self::float(
+                        raw.parse()
+                            .map_err(|_| Error::unsupported("this floating-point input"))?,
+                    )
+                } else {
+                    raw.parse::<BigInt>()
+                        .map(Self::Int)
+                        .map_err(|_| Error::unsupported("this integer input"))
+                }
+            }
             Json::String(s) => Ok(Self::list(s.chars().map(Self::Char).collect())),
             Json::Array(a) => Ok(Self::list(
                 a.iter()
@@ -114,6 +208,28 @@ impl Value {
             Json::Bool(_) => Err(Error::unsupported("boolean input syntax")),
             _ => Err(Error::unsupported("this input type")),
         }
+    }
+}
+
+fn compare_int_float(integer: &BigInt, float: f64) -> Ordering {
+    let order = integer.cmp(&BigInt::from_f64(float).unwrap());
+    if order != Ordering::Equal || float.fract() == 0.0 {
+        order
+    } else if float.is_sign_negative() {
+        Ordering::Greater
+    } else {
+        Ordering::Less
+    }
+}
+
+// Python's shortest float representation uses signed, two-digit exponents.
+fn float_repr(n: f64) -> String {
+    let text = format!("{n:?}");
+    if let Some((mantissa, exponent)) = text.split_once('e') {
+        let exponent: i32 = exponent.parse().unwrap();
+        format!("{mantissa}e{exponent:+03}")
+    } else {
+        text
     }
 }
 
@@ -144,6 +260,7 @@ enum DisplayValue {
 fn stringify(value: &Value, recurse: bool) -> DisplayValue {
     match value {
         Value::Int(n) => DisplayValue::Scalar(n.to_string()),
+        Value::Float(n) => DisplayValue::Scalar(float_repr(*n)),
         Value::Char(c) => DisplayValue::Text(c.to_string()),
         Value::List(v) if v.len() == 1 => stringify(&v[0], true),
         Value::List(v) => {
@@ -156,6 +273,7 @@ fn stringify(value: &Value, recurse: bool) -> DisplayValue {
                         .map(|v| match v {
                             Value::Char(c) => c.to_string(),
                             Value::Int(n) => n.to_string(),
+                            Value::Float(n) => float_repr(*n),
                             _ => unreachable!(),
                         })
                         .collect(),

@@ -21,12 +21,14 @@ def challenge_tests():
         for line in file:
             if line and line[0] == "|":
                 t = line.split("|")
-                if len(t) == 8:
-                    a = t[5].strip()
-                    b = t[6].strip()
+                if len(t) == 9:
+                    a = t[6].strip()
+                    b = t[7].strip()
                     if a[0] == '`':
                         t = 2 if b[:2] == "``" else 1
                         res.append((a[1:-1], b[t:-t]))
+    if not res:
+        raise ValueError("No challenge solutions found in challenges.md")
     return res
 
 if __name__ == "__main__":
