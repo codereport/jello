@@ -20,6 +20,9 @@ test("runs the real interpreter, examples, errors, wordbook, history, and sharin
     await expect(run).toBeEnabled();
   };
   await expect(page.locator(".result").first()).toHaveText("55", { timeout: 90000 });
+  await expect(page.locator("#execution-time")).toHaveText(/^\d+\.\d+ (ms|s)$/);
+  await expect(page.getByRole("img", { name: "Python", exact: true })).toBeVisible();
+  expect(await page.getByRole("img", { name: "Python", exact: true }).evaluate((image) => image.complete && image.naturalWidth > 0)).toBe(true);
   await expect(page.locator(".trace-step")).toHaveCount(3);
   await expect(page.locator(".chain-info")).toContainText("1-1-1 · monadic · BB");
   await page.screenshot({ path: testInfo.outputPath("playground.png"), fullPage: true });
@@ -34,6 +37,7 @@ test("runs the real interpreter, examples, errors, wordbook, history, and sharin
   await input.fill("5 :: not_a_keyword");
   await run.click();
   await expect(page.locator(".error-message").last()).toContainText("not_a_keyword is not a valid Jello keyword");
+  await expect(page.locator("#execution-time")).toHaveText(/^\d+\.\d+ (ms|s)$/);
   await execute("5 :: range", "[1, 2, 3, 4, 5]");
   await input.fill("draft :: sq");
   await input.press("Escape");
@@ -66,6 +70,7 @@ test("runs the real interpreter, examples, errors, wordbook, history, and sharin
   await page.getByRole("button", { name: "Clear", exact: true }).click();
   await expect(page.locator(".entry")).toHaveCount(0);
   await expect(page.getByText("Session cleared.")).toBeVisible();
+  await expect(page.locator("#execution-status")).toBeHidden();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   expect(errors).toEqual([]);
 });
@@ -77,6 +82,7 @@ test("loads a shared expression and can stop a long calculation", async ({ page 
   await expect(page.locator("#runtime-status")).toHaveClass(/ready/, { timeout: 90000 });
   await expect(page.locator("#run")).toBeHidden();
   await expect(page.locator(".result")).toHaveCount(0);
+  await expect(page.locator("#execution-status")).toBeHidden();
   await page.waitForTimeout(800);
   await expect(page.locator(".result")).toHaveCount(0);
   const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
@@ -86,6 +92,7 @@ test("loads a shared expression and can stop a long calculation", async ({ page 
   await input.press("Enter");
   await page.getByRole("button", { name: "Stop execution" }).click();
   await expect(page.locator(".error-message").last()).toContainText("Stopped");
+  await expect(page.locator("#execution-status")).toBeHidden();
   await expect(page.locator("#runtime-status")).toHaveClass(/ready/, { timeout: 90000 });
   await input.fill("5 :: range");
   await input.press("Enter");
@@ -250,7 +257,14 @@ test("settings persist and keep the REPL usable in presentation mode", async ({ 
     await expect(page.locator(selector).first()).toBeHidden();
   }
   await expect(gear).toBeVisible();
+  await expect(page.locator("#execution-status")).toBeVisible();
+  await expect(page.locator("#execution-time")).toHaveText(/^\d+\.\d+ (ms|s)$/);
   const box = await page.locator(".repl").boundingBox();
+  const timingBox = await page.locator("#execution-status").boundingBox();
+  expect(box.x + box.width - timingBox.x - timingBox.width).toBeGreaterThan(0);
+  expect(box.x + box.width - timingBox.x - timingBox.width).toBeLessThan(24);
+  expect(box.y + box.height - timingBox.y - timingBox.height).toBeGreaterThan(0);
+  expect(box.y + box.height - timingBox.y - timingBox.height).toBeLessThan(16);
   const viewport = page.viewportSize();
   expect(Math.abs(box.x + box.width / 2 - viewport.width / 2)).toBeLessThan(2);
   expect(Math.abs(box.y + box.height / 2 - viewport.height / 2)).toBeLessThan(2);

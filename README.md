@@ -48,6 +48,8 @@ Turn **Live mode** on in the **settings gear** to evaluate automatically after a
 
 The converted Jelly expression appears in larger type to the right of the expression bar and updates as you type. In live mode, Run is hidden; Stop remains available during a calculation. Manual sessions keep Run and the Jelly code alongside each result in their history.
 
+The bottom-right corner shows the [Python logo](https://www.python.org/community/logos/) and the latest completed evaluation's execution time, including traces and combinator diagrams. It stays visible in live and presentation modes. Timing comes from the Python worker and excludes interpreter loading and the typing delay.
+
 Press **Shift+C** to open the searchable challenge picker, including from the expression editor. You can also choose **Browse challenges** in settings. Search by problem title, number, contest, or program; use the arrow keys and Enter to select, or Escape to close. Each challenge loads a complete example with sample inputs and the solution from [challenges.md](challenges.md). For example, Score of a String loads `"hello" :: ord deltas abs sum`, which returns `13`. Live mode evaluates the new expression automatically; manual mode waits for Enter or Run.
 
 The catalog combines `challenges.md` with [sample inputs and expected Jello results](data/challenge_inputs.json) at build time. Samples come from the linked LeetCode and Weekly Challenge problem pages; each picker entry has a **Sample source** link. Inputs follow the argument order expected by the Jello solution. When adding a challenge, add its sourced example to the data file too. The build uses these saved examples and needs no access to the problem sites.

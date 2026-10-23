@@ -31,7 +31,7 @@ self.onmessage = ({ data }) => {
   } catch (error) {
     const lines = String(error.message).trim().split("\n");
     const message = lines.at(-1).replace(/^\w+(?:Error|Exception):\s*/, "");
-    self.postMessage({ type: "error", id: data.id, message });
+    self.postMessage({ type: "error", id: data.id, message, duration: performance.now() - started });
   }
 };
 

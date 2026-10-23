@@ -143,6 +143,9 @@ main { padding-top: 24px; }
 .icon-button:hover { color: var(--green); border-color: var(--control-border); background: var(--surface); }
 .toolbar-divider { height: 12px; border-left: 1px solid var(--control-border); }
 .transcript { height: clamp(330px, calc(100dvh - 320px), 650px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--scrollbar) transparent; padding: 22px 22px 10px; }
+.repl-footer { display: flex; justify-content: flex-end; align-items: center; min-height: 34px; padding: 0 21px 10px; }
+.execution-status { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 11px; line-height: 22px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.execution-status img { display: block; flex-shrink: 0; }
 .welcome { min-height: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; padding: 0 10px 25px; }
 .welcome-prompt { font-size: 28px; color: var(--green); margin-bottom: 20px; }
 .welcome h3 { font-size: 14px; font-weight: 500; margin: 0 0 10px; }
@@ -356,6 +359,7 @@ label.setting-row { cursor: pointer; }
   .runtime-status:not(.ready) { order: 3; margin-left: 0; flex-basis: 100%; }
   .toolbar-actions { margin-left: auto; }
   .transcript { height: clamp(240px, calc(100svh - 285px), 420px); padding: 18px 13px 8px; }
+  .repl-footer { padding-right: 13px; }
   .entry-command { gap: 9px; font-size: 12px; }
   .entry-output, .entry-meta { padding-left: 20px; }
   .result { font-size: 21px; }

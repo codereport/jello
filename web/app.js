@@ -140,6 +140,7 @@ function notify(message) {
 
 function setState(next, message) {
   state = next;
+  if (next !== "ready") updateExecutionTime();
   $("#runtime-status").className = `runtime-status ${next}`;
   $("#status-text").textContent = message;
   $("#retry").hidden = next !== "error";
@@ -265,6 +266,7 @@ function stopExecution(message = "Stopped. Try a smaller input or a different ex
 
 function renderResponse(entry, data) {
   if (!entry) return;
+  updateExecutionTime(data.duration);
   entry.querySelector(".pending")?.remove();
   if (data.type === "error") {
     entry.classList.add("error-entry");
@@ -282,7 +284,7 @@ function renderResponse(entry, data) {
     const meta = element("div", "entry-meta");
     const jellyCode = element("code", "jelly-code");
     editor.renderAtoms(jellyCode, data.code, entry.dataset.command);
-    meta.append(element("span", "", "JELLY"), jellyCode, element("span", "meta-divider", "·"), element("span", "timing", `${Math.max(1, Math.round(data.duration))} ms`));
+    meta.append(element("span", "", "JELLY"), jellyCode, element("span", "meta-divider", "·"), element("span", "timing", formatDuration(data.duration)));
     entry.append(output, meta);
     if (data.steps.length || data.tree) {
       const details = element("details", "trace");
@@ -311,6 +313,16 @@ function renderResponse(entry, data) {
   transcript.scrollTop = entry === liveEntry ? 0 : transcript.scrollHeight;
 }
 
+function formatDuration(duration) {
+  return duration < 1000 ? `${duration.toFixed(1)} ms` : `${(duration / 1000).toFixed(2)} s`;
+}
+
+function updateExecutionTime(duration) {
+  const valid = Number.isFinite(duration) && duration >= 0;
+  $("#execution-status").hidden = !valid;
+  $("#execution-time").textContent = valid ? formatDuration(duration) : "";
+}
+
 $("#repl-form").addEventListener("submit", (event) => {
   event.preventDefault();
   if (state === "running") stopExecution();
@@ -322,6 +334,7 @@ $("#clear").addEventListener("click", () => {
   editor.closeSuggestions();
   if (state === "running") stopExecution();
   transcript.replaceChildren(welcomeTemplate.cloneNode(true));
+  updateExecutionTime();
   liveEntry = null;
   $("#welcome h3").textContent = "Session cleared.";
   $("#welcome p").textContent = "Enter an expression above or select an example.";
