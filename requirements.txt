@@ -1,2 +1,3 @@
 colorama
 prompt_toolkit
+-e ./jellyfish

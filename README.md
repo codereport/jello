@@ -21,6 +21,23 @@ A Python script for wrapping the Jellyfish (a fork of Jelly) executable so you c
 
 ![image](https://github.com/codereport/jello/assets/36027403/26c99f84-36a2-4857-b0f0-1b8f5bd4eef9)
 
+## Installation
+
+Jellyfish is included as a Git submodule and installed into the same Python environment as Jello.
+
+```sh
+git clone --recurse-submodules https://github.com/codereport/jello.git
+cd jello
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python src/jello.py
+```
+
+For an existing clone, run `git submodule update --init --recursive` before installing the requirements.
+
+At the prompt, try `5 :: range`. Enter `q` to quit.
+
 ## Links
 
 ### Jelly(fish) Links

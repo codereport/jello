@@ -1,4 +1,5 @@
 jello_history.txt
 src/jello_history.txt
+.venv/
 __py*
 src/py*

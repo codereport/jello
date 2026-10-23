@@ -2,6 +2,7 @@
 
 import multiprocessing
 import subprocess
+import sys
 from functools import partial
 from itertools import permutations
 
@@ -24,7 +25,7 @@ def clear_screen():
 
 def run_jelly(expr: str, args: list[str], display):
     try:
-        command = ["jelly", "eun", expr, *args]
+        command = [sys.executable, "-m", "jelly", "eun", expr, *args]
         result = subprocess.run(command, text=True, capture_output=True, check=True)
         output_text = result.stdout.strip()
 

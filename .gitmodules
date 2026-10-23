@@ -1,0 +1,3 @@
+[submodule "jellyfish"]
+	path = jellyfish
+	url = https://github.com/codereport/jellyfish.git
