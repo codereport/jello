@@ -59,6 +59,7 @@ const editor = new KeywordEditor(input, {
   onChange: expressionChanged,
   onHistory: recallHistory,
   onStop: () => { if (state === "running") stopExecution(); else cancelPendingLive(); },
+  closeOnTab: () => liveEnabled,
 });
 
 new ChallengePicker(input, editor, (command) => {

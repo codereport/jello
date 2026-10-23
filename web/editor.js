@@ -9,11 +9,12 @@ function span(className, text) {
 }
 
 export class KeywordEditor {
-  constructor(input, { onChange, onHistory, onStop }) {
+  constructor(input, { onChange, onHistory, onStop, closeOnTab = () => false }) {
     this.input = input;
     this.onChange = onChange;
     this.onHistory = onHistory;
     this.onStop = onStop;
+    this.closeOnTab = closeOnTab;
     this.vocabulary = new Map();
     this.overlay = document.querySelector("#expression-highlight span");
     this.conversion = document.querySelector("#converted-expression");
@@ -201,15 +202,16 @@ export class KeywordEditor {
       else this.onStop();
       this.tabCycle = null;
     } else if (event.key === "Tab" && !event.shiftKey) {
-      if (this.tabCycle?.value === this.input.value && this.tabCycle.caret === this.input.selectionStart) {
+      const cycle = !this.closeOnTab();
+      if (cycle && this.tabCycle?.value === this.input.value && this.tabCycle.caret === this.input.selectionStart) {
         this.suggestions = this.tabCycle;
         this.suggestions.index = (this.suggestions.index + 1) % this.suggestions.matches.length;
-      } else {
+      } else if (cycle) {
         this.showSuggestions();
       }
       if (!this.suggestions) return;
       event.preventDefault();
-      this.accept(this.suggestions.index, true);
+      this.accept(this.suggestions.index, cycle);
     } else if (["ArrowUp", "ArrowDown"].includes(event.key)) {
       event.preventDefault();
       if (this.suggestions) {
