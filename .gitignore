@@ -1,5 +1,9 @@
 jello_history.txt
 src/jello_history.txt
 .venv/
+_site/
+node_modules/
+playwright-report/
+test-results/
 __py*
 src/py*

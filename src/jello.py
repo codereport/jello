@@ -13,11 +13,20 @@ import tokens
 import utils
 from colorama import Fore, init
 from grid import Grid
+from language import (
+    arity_chain_repr as arity_chain_repr,
+    chain_arity_to_string,
+    convert,
+    is_nilad_array as is_nilad_array,
+    keyword_arity,
+    skip_trace,
+    to_jelly,
+)
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.shortcuts import CompleteStyle
-from utils import Chain, Quick, Separator
+from utils import Chain
 
 
 def clear_screen():
@@ -53,41 +62,6 @@ completer = WordCompleter(
 
 history = FileHistory("jello_history.txt")
 
-def is_nilad_array(s: str) -> bool:
-    return set(list(s)).issubset(list("-0123456789,[]"))
-
-def to_jelly(token: str) -> str:
-    if token in tokens.monadic:     return tokens.monadic[token]
-    if token in tokens.dyadic:      return tokens.dyadic[token]
-    if token in tokens.niladic:     return tokens.niladic[token]
-    if token in tokens.quick:       return tokens.quick[token]
-    if token in tokens.separators:  return tokens.separators[token]
-    if is_nilad_array(token):       return token
-    raise Exception(f"{token} is not a valid Jello keyword.")
-
-def convert(expr: list[str]) -> str:
-    return "".join([to_jelly(t) for t in expr])
-
-def keyword_arity(k: str) -> int:
-    if k in tokens.niladic:    return 0
-    if k in tokens.monadic:    return 1
-    if k in tokens.dyadic:     return 2
-    if k == "each":            return Quick.EACH
-    if k == "c":               return Quick.FLIP
-    if k in tokens.quick:      return Quick.QUICK
-    if k == ".":               return Separator.MONADIC
-    if k == ":":               return Separator.DYADIC
-    if is_nilad_array(k):      return 0
-    raise Exception(f"{k} not handled in keyword_arity function.")
-
-def arity_chain_repr(i: int) -> str:
-    if i in [Quick.QUICK, Quick.EACH, Quick.FLIP]: return "q"
-    if i in [Separator.MONADIC, Separator.DYADIC]: return "s"
-    return str(i)
-
-def chain_arity_to_string(chain_arity: list[int]) -> str:
-    return "-".join([arity_chain_repr(e) for e in chain_arity])
-
 def keyword_color(k: str):
     if k in tokens.monadic:    return Fore.GREEN
     if k in tokens.dyadic:     return Fore.BLUE
@@ -101,13 +75,6 @@ def spaced_jelly_atoms(args, expr):
     indent = " " * (2 + len(args) + 4)
     spaced_jelly_atoms = " ".join(to_jelly(k).center(len(k)) for k in expr.split())
     draw.cprint(indent + spaced_jelly_atoms, Fore.YELLOW, True)
-
-def skip_trace(converted_expr: list[str], i: int) -> bool:
-    if converted_expr[i - 1] in list(tokens.separators.values()) + ["Œ", "œ", "Ð"]:
-        return True
-    if i < len(converted_expr) and converted_expr[i] in tokens.quick.values():
-        return True
-    return False
 
 def process_combinations(arg, out, combinations):
     for (keyword1, atom1), (keyword2, atom2) in combinations:

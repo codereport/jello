@@ -9,3 +9,5 @@
 - Run the existing tests from `src/` with `../.venv/bin/python test.py`. Confirm there are no `❌` results; the runner does not signal failures with its exit status.
 - For interpreter changes, also check that `5 :: range` returns `[1, 2, 3, 4, 5]` in the REPL.
 - Update `README.md` when setup or user-facing behavior changes. Keep changes small and follow the surrounding code style.
+- The browser UI lives in `web/`; build it with `python3 scripts/build_site.py`. Do not commit `_site/`. Both REPLs share `src/language.py`, `src/tokens.py`, and the pinned Jellyfish interpreter.
+- For browser changes, run `npm test` (Playwright, desktop and mobile). For runtime changes, also run `.venv/bin/python -m unittest discover -s tests -p 'test_*.py'`. GitHub Actions deploys Pages after tests pass.

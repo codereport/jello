@@ -19,6 +19,8 @@
 
 A Python script for wrapping the Jellyfish (a fork of Jelly) executable so you can more easily play with the language.
 
+[**Try the Jello playground →**](https://codereport.github.io/jello/)
+
 ![image](https://github.com/codereport/jello/assets/36027403/26c99f84-36a2-4857-b0f0-1b8f5bd4eef9)
 
 ## Installation
@@ -37,6 +39,32 @@ python src/jello.py
 For an existing clone, run `git submodule update --init --recursive` before installing the requirements.
 
 At the prompt, try `5 :: range`. Enter `q` to quit.
+
+## Browser playground
+
+The [playground](https://codereport.github.io/jello/) runs the same Jello keyword converter and pinned Jellyfish interpreter in your browser using Pyodide. It includes examples, evaluation traces, combinator diagrams, a searchable keyword reference, local command history, and shareable expression links. Press Enter to run, use the arrow keys for history, and Tab to complete a keyword. Stop cancels a calculation; runs also stop automatically after 10 seconds.
+
+The first visit downloads the Python runtime and dependencies from jsDelivr and PyPI. Pyodide is pinned to 0.27.7 (Python 3.12) for compatibility with Jellyfish. There is no application server; expressions execute in a dedicated browser worker. Shared links load the expression for you to review and run. Terminal commands such as `--find-by-example` are not included.
+
+To preview locally, initialize the submodule, then run:
+
+```sh
+python3 scripts/build_site.py
+python3 -m http.server 8000 --directory _site
+```
+
+Open `http://localhost:8000`. The build packages the Python source from `src/` and `jellyfish/` into `_site/runtime.zip` and generates the wordbook from `src/tokens.py`. Edit the interface in `web/`, then rebuild. Generated files in `_site/` are not committed.
+
+To run the browser and adapter tests:
+
+```sh
+npm ci
+npx playwright install chromium
+npm test
+.venv/bin/python -m unittest discover -s tests -p 'test_*.py'
+```
+
+Set `CHROMIUM_PATH` to use an existing Chromium installation. Set `PLAYGROUND_URL` to test a deployed site instead of a local build. GitHub Actions tests both the terminal and browser versions before deploying the static site to GitHub Pages on pushes to `main`. The repository's Pages publishing source should be **GitHub Actions**.
 
 ## Links
 

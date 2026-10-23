@@ -1,0 +1,72 @@
+name: Test and deploy the playground
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install Python dependencies
+        run: python -m pip install -r requirements.txt
+      - name: Test interpreter adapter
+        run: python -m unittest discover -s tests -p 'test_*.py'
+      - name: Test existing Jello behavior
+        working-directory: src
+        run: |
+          python - <<'PY'
+          import subprocess, sys
+          result = subprocess.run([sys.executable, "test.py"], capture_output=True, text=True, check=True)
+          print(result.stdout)
+          if "❌" in result.stdout:
+              raise SystemExit(1)
+          PY
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - name: Build and test the browser playground
+        run: npm test
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: browser-test-results
+          path: test-results/
+      - uses: actions/upload-pages-artifact@v4
+        if: github.event_name != 'pull_request'
+        with:
+          path: _site
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/configure-pages@v5
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
