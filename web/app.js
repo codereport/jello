@@ -1,5 +1,6 @@
 import { KeywordEditor } from "./editor.js";
 import { PlaygroundSettings } from "./settings.js";
+import { ChallengePicker } from "./challenges.js";
 
 const $ = (selector) => document.querySelector(selector);
 const input = $("#expression");
@@ -58,6 +59,14 @@ const editor = new KeywordEditor(input, {
   onChange: expressionChanged,
   onHistory: recallHistory,
   onStop: () => { if (state === "running") stopExecution(); else cancelPendingLive(); },
+});
+
+new ChallengePicker(input, editor, (expression) => {
+  const separator = input.value.indexOf("::");
+  const argumentsText = (separator < 0 ? input.value : input.value.slice(0, separator)).trimEnd();
+  editor.setValue(`${argumentsText}${argumentsText ? " " : ""}:: ${expression}`, { notify: true });
+  input.focus({ preventScroll: true });
+  editor.closeSuggestions();
 });
 
 function cancelPendingLive() {

@@ -2,6 +2,7 @@
 """Build a self-contained static site from the pinned interpreter and Jello sources."""
 
 import json
+import re
 import runpy
 import shutil
 from pathlib import Path
@@ -9,6 +10,31 @@ from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 ROOT = Path(__file__).resolve().parents[1]
 DESTINATION = ROOT / "_site"
+
+
+def read_challenges():
+    text = (ROOT / "challenges.md").read_text(encoding="utf-8")
+    titles = {}
+    for match in re.finditer(r"^(\d+)\.\s+\[([^\]]+)\]", text, re.MULTILINE):
+        titles[int(match[1])] = re.sub(r"^(?:PWC\s+\d+\s*-?\s*Task\s+\d+\s*:\s*|\d+\s*[.\-]\s*)", "", match[2])
+    challenges = []
+    for line in text.split("### Video Solutions", 1)[0].splitlines():
+        cells = [cell.strip() for cell in line.split("|")[1:-1]]
+        if len(cells) != 6 or not cells[0].isdigit():
+            continue
+        number = int(cells[0])
+        challenges.append({
+            "number": number,
+            "title": titles.get(number, f"LeetCode {cells[1]}" if cells[1] else f"PWC {cells[3]}"),
+            "leetcode": cells[1],
+            "contest": cells[2],
+            "pwc": cells[3],
+            "expression": cells[4].strip("`"),
+            "jelly": cells[5].strip("`"),
+        })
+    if not challenges:
+        raise ValueError("No solution programs found in challenges.md")
+    return challenges
 
 
 def build():
@@ -33,7 +59,9 @@ def build():
         for word, atom in vocabulary[category].items()
     ]
     (DESTINATION / "keywords.json").write_text(json.dumps(words, ensure_ascii=False), encoding="utf-8")
-    print(f"Built _site/ with {len(words)} keywords and the pinned Jellyfish interpreter.")
+    challenges = read_challenges()
+    (DESTINATION / "challenges.json").write_text(json.dumps(challenges, ensure_ascii=False), encoding="utf-8")
+    print(f"Built _site/ with {len(words)} keywords, {len(challenges)} challenges, and the pinned Jellyfish interpreter.")
 
 
 if __name__ == "__main__":

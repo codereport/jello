@@ -269,12 +269,29 @@ kbd { font-size: inherit; color: var(--key-foreground); }
 .token-niladic, .token-argument { color: var(--yellow); }
 .token-separators { color: var(--separator-foreground); }
 .token-unknown { color: var(--red); text-decoration: underline dotted var(--invalid-underline); text-underline-offset: 4px; }
-.settings-dialog { width: min(440px, calc(100vw - 32px)); max-height: calc(100svh - 32px); padding: 22px; overflow-y: auto; background: var(--surface); color: var(--ink); border: 1px solid var(--control-border); border-radius: 5px; box-shadow: 0 16px 60px #0006; }
-.settings-dialog::backdrop { background: #0009; }
-.settings-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-bottom: 6px; }
-.settings-heading h2 { margin: 0; font-size: 14px; font-weight: 500; color: var(--cyan); }
-.settings-heading h2::before { content: "# "; color: var(--muted); }
-#settings-close { font-size: 23px; line-height: 1; }
+.settings-dialog, .challenges-dialog { width: min(440px, calc(100vw - 32px)); max-height: calc(100svh - 32px); padding: 22px; overflow-y: auto; background: var(--surface); color: var(--ink); border: 1px solid var(--control-border); border-radius: 5px; box-shadow: 0 16px 60px #0006; }
+.settings-dialog::backdrop, .challenges-dialog::backdrop { background: #0009; }
+.dialog-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-bottom: 6px; }
+.dialog-heading h2 { margin: 0; font-size: 14px; font-weight: 500; color: var(--cyan); }
+.dialog-heading h2::before { content: "# "; color: var(--muted); }
+.dialog-close { font-size: 23px; line-height: 1; }
+.browse-challenges { display: flex; justify-content: space-between; align-items: center; gap: 18px; width: 100%; margin-top: 18px; padding: 11px; border: 1px solid var(--line); border-radius: 3px; background: var(--raised); color: var(--cyan); font-size: 11px; }
+.browse-challenges:hover { border-color: var(--control-border); }
+.browse-challenges kbd { font-size: 9px; color: var(--muted); }
+.challenges-dialog { width: min(780px, calc(100vw - 32px)); }
+.challenge-search { display: block; width: 100%; margin: 16px 0 12px; padding: 10px 12px; border: 1px solid var(--control-border); border-radius: 3px; background: var(--raised); color: var(--ink); font-size: 12px; }
+.challenge-search::placeholder { color: var(--muted); }
+.challenge-summary { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px 18px; margin-bottom: 10px; color: var(--muted); font-size: 9px; }
+.challenge-list { height: min(500px, 50svh); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; padding: 5px; margin: 0 -5px; }
+.challenge-option { display: block; width: 100%; padding: 15px 10px; text-align: left; border: 0; border-bottom: 1px solid var(--line); border-radius: 2px; background: none; }
+.challenge-option:hover, .challenge-option:focus-visible { background: var(--completion-selected); }
+.challenge-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.challenge-title { font-size: 12px; }
+.challenge-tags { color: var(--muted); font-size: 9px; text-align: right; }
+.challenge-expression { display: block; margin-top: 9px; font-size: 11px; line-height: 1.9; overflow-wrap: anywhere; }
+.challenge-empty { margin: 24px 0; color: var(--muted); font-size: 11px; text-align: center; }
+.challenges-help { margin: 17px 0 10px; font-size: 10px; color: var(--muted); }
+.challenges-source { font-size: 10px; color: var(--cyan); }
 .setting-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 17px 0; border-bottom: 1px solid var(--line); }
 label.setting-row { cursor: pointer; }
 .setting-label { font-size: 12px; }
@@ -373,7 +390,10 @@ label.setting-row { cursor: pointer; }
   .wordbook-footer { font-size: 9px; flex-wrap: wrap; }
   .site-footer { align-items: flex-start; flex-direction: column; gap: 13px; }
   .site-footer > div { gap: 22px; }
-  .settings-dialog { padding: 18px; }
+  .settings-dialog, .challenges-dialog { padding: 18px; }
+  .challenge-search { font-size: 16px; }
+  .challenge-heading { flex-direction: column; gap: 5px; }
+  .challenge-tags { text-align: left; }
   .setting-row { gap: 14px; }
   .presentation-mode .page-shell { padding: 12px; }
   .presentation-mode .expression-editor { font-size: 16px; }
