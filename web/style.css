@@ -185,7 +185,7 @@ main { padding-top: 24px; }
 .composer-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; }
 .syntax-legend { display: flex; flex-wrap: wrap; gap: 12px; margin-left: auto; font-size: 9px; }
 .eyebrow { margin: 0; font-size: 10px; font-weight: 400; line-height: 1.5; color: var(--muted); }
-.input-row { display: flex; align-items: center; gap: 12px; margin: 8px 0 12px; }
+.input-row { position: relative; display: flex; align-items: center; gap: 12px; margin: 8px 0 12px; }
 .input-prompt { font-size: 26px; line-height: 1; color: var(--green); }
 .expression-editor { position: relative; flex: 1; min-width: 0; font-size: 15px; line-height: 1.7; }
 #expression { position: relative; z-index: 1; display: block; width: 100%; min-width: 0; margin: 0; padding: 8px 0; font: inherit; color: var(--ink); caret-color: var(--ink); background: transparent; border: 0; border-radius: 0; outline: none; }
@@ -194,14 +194,13 @@ main { padding-top: 24px; }
 .highlighted .expression-highlight { display: block; }
 .highlighted #expression { color: transparent; -webkit-text-fill-color: transparent; }
 .highlighted #expression::selection { color: transparent; background: var(--input-selection); }
-.autocomplete { position: absolute; top: 100%; left: 0; right: 0; z-index: 20; min-width: 195px; border: 1px solid var(--completion-border); border-radius: 4px; background: var(--completion-background); box-shadow: 0 8px 24px #0008; overflow: hidden; }
-#keyword-suggestions { max-height: min(320px, 42svh); overflow-y: auto; scrollbar-width: thin; }
-.suggestion { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 13px; padding: 10px 12px; border-left: 2px solid transparent; cursor: pointer; }
+.autocomplete { position: absolute; top: 100%; left: 0; right: 0; z-index: 20; border: 1px solid var(--completion-border); border-radius: 4px; background: var(--completion-background); box-shadow: 0 8px 24px #0008; overflow: hidden; }
+#keyword-suggestions { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); max-height: min(320px, 42svh); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--scrollbar) transparent; }
+.suggestion { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; padding: 8px 10px; border-left: 2px solid transparent; cursor: pointer; }
 .suggestion.active, .suggestion:hover { background: var(--completion-selected); border-left-color: var(--green); }
 .suggestion-word { font-size: 12px; overflow-wrap: anywhere; }
-.suggestion-atom { font-size: 12px; }
-.suggestion-type { font-size: 9px; }
-.autocomplete-help { border-top: 1px solid var(--line); padding: 7px 11px; color: var(--muted); font-size: 9px; }
+.suggestion-atom { flex-shrink: 0; font-size: 12px; }
+.autocomplete-help { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; border-top: 1px solid var(--line); padding: 7px 11px; color: var(--muted); font-size: 9px; }
 .input-row:focus-within { box-shadow: 0 1px 0 var(--focus-line); }
 .converted-preview { display: flex; align-items: center; gap: 14px; max-width: 38%; min-width: 0; padding: 0 2px 0 8px; }
 .conversion-arrow { flex-shrink: 0; color: var(--muted); font-size: 16px; }
@@ -379,8 +378,6 @@ label.setting-row { cursor: pointer; }
   #converted-expression { font-size: 20px; }
   .expression-editor { font-size: 16px; }
   .syntax-legend { flex-basis: 100%; gap: 10px; margin-left: 0; }
-  .suggestion { padding: 9px; gap: 8px; }
-  .suggestion-type { font-size: 8px; }
   .run-button { padding: 9px 10px; gap: 9px; font-size: 11px; }
   .input-help { font-size: 9px; }
   .help-dot { margin: 0 3px; }

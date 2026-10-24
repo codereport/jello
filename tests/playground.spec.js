@@ -279,6 +279,64 @@ test("suggestions complete the current keyword and syntax colors follow keyword 
   await expect(conversion).toBeHidden();
 });
 
+test("autocomplete browses every prefix match and scrolls the full keyword grid", async ({ page }, testInfo) => {
+  await page.goto(`./#${new URLSearchParams({ code: "10 :: a" })}`);
+  const vocabulary = await (await page.request.get("./keywords.json")).json();
+  const words = [...new Set(vocabulary.map(({ word }) => word))];
+  const prefixMatches = words.filter((word) => word.toLowerCase().startsWith("a"));
+  expect(prefixMatches.length).toBeGreaterThan(8);
+  const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
+  const suggestions = page.getByRole("listbox", { name: "Keyword suggestions" });
+  const options = suggestions.getByRole("option");
+  await input.click();
+  await expect(options).toHaveCount(prefixMatches.length);
+  expect((await suggestions.locator(".suggestion-word").allTextContents()).sort()).toEqual(prefixMatches.sort());
+  await expect(options.filter({ hasText: "all_not_empty" })).toBeVisible();
+  const firstOption = await options.first().elementHandle();
+  await input.press("ArrowUp");
+  await expect(options.first()).toHaveAttribute("aria-selected", "true");
+  for (let i = 0; i < prefixMatches.length; i++) await input.press("ArrowDown");
+  await expect(options.last()).toHaveAttribute("aria-selected", "true");
+  // Browsing keeps the existing cells and stops at the end instead of cycling.
+  expect(await firstOption.evaluate((node) => node.isConnected)).toBe(true);
+  const finalMatch = await options.last().locator(".suggestion-word").textContent();
+  await input.press("Enter");
+  await expect(input).toHaveValue(`10 :: ${finalMatch}`);
+  await expect(suggestions).toBeHidden();
+
+  for (const command of ["10 :: ", "10 :: range "]) {
+    await input.fill(command);
+    await expect(options).toHaveCount(words.length);
+    expect((await suggestions.locator(".suggestion-word").allTextContents()).sort()).toEqual([...words].sort());
+    await expect(page.locator("#keyword-match-count")).toHaveText(`${words.length} matches`);
+  }
+  const columns = await suggestions.evaluate((node) => getComputedStyle(node).gridTemplateColumns.split(" ").length);
+  expect(columns).toBeGreaterThan(1);
+  expect(await suggestions.evaluate((node) => node.scrollHeight > node.clientHeight)).toBe(true);
+  const pageScroll = await page.evaluate(() => scrollY);
+  const popup = await suggestions.boundingBox();
+  await page.mouse.move(popup.x + popup.width / 2, popup.y + popup.height / 2);
+  await page.mouse.wheel(0, 10000);
+  await expect.poll(() => suggestions.evaluate((node) => node.scrollTop + node.clientHeight >= node.scrollHeight - 1)).toBe(true);
+  // Scrolling at the end stays in the popup, without moving the whole page.
+  await page.mouse.wheel(0, 500);
+  expect(await page.evaluate(() => scrollY)).toBe(pageScroll);
+  const lastWord = await options.last().locator(".suggestion-word").textContent();
+  await options.last().click();
+  await expect(input).toHaveValue(`10 :: range ${lastWord}`);
+  await expect(input).toBeFocused();
+  await expect(suggestions).toBeHidden();
+
+  await page.getByRole("button", { name: "Settings", exact: true }).click();
+  await page.getByLabel("Theme", { exact: true }).selectOption("dracula");
+  await page.getByRole("switch", { name: "Presentation mode", exact: true }).check();
+  await page.getByRole("button", { name: "Close settings" }).click();
+  await input.fill("10 :: ");
+  await expect(options).toHaveCount(words.length);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath("autocomplete-grid.png"), fullPage: true });
+});
+
 test("settings persist and keep the REPL usable in presentation mode", async ({ page }, testInfo) => {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));

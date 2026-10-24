@@ -138,8 +138,7 @@ export class KeywordEditor {
           if (preferred) return preferred;
         }
         return a.word.length - b.word.length || a.word.localeCompare(b.word);
-      })
-      .slice(0, 8);
+      });
     if (!matches.length) { this.closeSuggestions(); return; }
     if (matches.length === 1 && matches[0].word === context.prefix && this.input.value.slice(context.start, context.end) === context.prefix) {
       this.closeSuggestions();
@@ -156,18 +155,36 @@ export class KeywordEditor {
     suggestions.matches.forEach((word, index) => {
       const option = document.createElement("div");
       option.id = `keyword-option-${index}`;
-      option.className = `suggestion${index === suggestions.index ? " active" : ""}`;
+      option.className = "suggestion";
       option.setAttribute("role", "option");
-      option.setAttribute("aria-selected", String(index === suggestions.index));
-      option.append(span(`suggestion-word token-${word.type}`, word.word), span(`suggestion-atom token-${word.type}`, word.atom), span(`suggestion-type token-${word.type}`, typeLabels[word.type]));
+      option.setAttribute("aria-selected", "false");
+      option.title = `${word.word} · ${word.atom} · ${typeLabels[word.type]}`;
+      option.setAttribute("aria-label", option.title);
+      option.append(span(`suggestion-word token-${word.type}`, word.word), span(`suggestion-atom token-${word.type}`, word.atom));
       option.addEventListener("pointerdown", (event) => event.preventDefault());
       option.addEventListener("click", () => this.accept(index));
       this.list.append(option);
     });
     this.panel.hidden = false;
     this.input.setAttribute("aria-expanded", "true");
-    this.input.setAttribute("aria-activedescendant", `keyword-option-${suggestions.index}`);
-    this.list.children[suggestions.index]?.scrollIntoView({ block: "nearest" });
+    document.querySelector("#keyword-match-count").textContent = `${suggestions.matches.length} ${suggestions.matches.length === 1 ? "match" : "matches"}`;
+    this.list.scrollTop = 0;
+    this.selectSuggestion(suggestions.index);
+  }
+
+  selectSuggestion(index) {
+    this.suggestions.index = index;
+    const previous = this.list.querySelector(".active");
+    previous?.classList.remove("active");
+    previous?.setAttribute("aria-selected", "false");
+    const option = this.list.children[index];
+    option.classList.add("active");
+    option.setAttribute("aria-selected", "true");
+    this.input.setAttribute("aria-activedescendant", option.id);
+    // Scroll only the popup, keeping the editor and the page in place.
+    const bounds = this.list.getBoundingClientRect(), selected = option.getBoundingClientRect();
+    if (selected.top < bounds.top) this.list.scrollTop -= bounds.top - selected.top;
+    else if (selected.bottom > bounds.bottom) this.list.scrollTop += selected.bottom - bounds.bottom;
   }
 
   closeSuggestions() {
@@ -187,7 +204,7 @@ export class KeywordEditor {
     if (cycle) {
       this.tabCycle = { ...suggestions, end: this.input.selectionStart, index, value: this.input.value, caret: this.input.selectionStart };
       this.suggestions = this.tabCycle;
-      this.renderSuggestions();
+      this.selectSuggestion(index);
     } else {
       this.tabCycle = null;
       this.closeSuggestions();
@@ -216,9 +233,9 @@ export class KeywordEditor {
       event.preventDefault();
       if (this.suggestions) {
         const count = this.suggestions.matches.length;
-        this.suggestions.index = (this.suggestions.index + (event.key === "ArrowDown" ? 1 : -1) + count) % count;
+        const index = Math.max(0, Math.min(count - 1, this.suggestions.index + (event.key === "ArrowDown" ? 1 : -1)));
         this.suggestions.navigated = true;
-        this.renderSuggestions();
+        this.selectSuggestion(index);
       } else {
         this.onHistory(event.key === "ArrowUp" ? -1 : 1);
       }

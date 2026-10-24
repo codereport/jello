@@ -42,10 +42,10 @@
                   <div class="expression-editor">
                     <pre id="expression-highlight" class="expression-highlight" aria-hidden="true"><span></span></pre>
                     <input id="expression" name="expression" type="text" role="combobox" value="4 :: range . sum div len" spellcheck="false" autocapitalize="off" autocorrect="off" maxlength="2000" aria-describedby="input-help" aria-autocomplete="list" aria-controls="keyword-suggestions" aria-expanded="false">
-                    <div id="autocomplete" class="autocomplete" hidden>
-                      <div id="keyword-suggestions" role="listbox" aria-label="Keyword suggestions"></div>
-                      <div class="autocomplete-help">↑ ↓ select · tab complete · esc close</div>
-                    </div>
+                  </div>
+                  <div id="autocomplete" class="autocomplete" hidden>
+                    <div id="keyword-suggestions" role="listbox" aria-label="Keyword suggestions"></div>
+                    <div class="autocomplete-help"><span>↑ ↓ browse · tab complete · esc close</span><span id="keyword-match-count"></span></div>
                   </div>
                   <div id="converted-preview" class="converted-preview" hidden><span class="conversion-arrow" aria-hidden="true">→</span><output id="converted-expression" for="expression" aria-label="Jelly expression" aria-live="off" title="Converted Jelly expression"></output></div>
                   <button id="run" class="run-button" type="submit" disabled><span id="run-label">Run</span><span id="run-icon" aria-hidden="true">↵</span></button>
