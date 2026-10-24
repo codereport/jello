@@ -36,7 +36,7 @@ export class KeywordEditor {
     input.addEventListener("keydown", (event) => this.keydown(event));
     input.addEventListener("keyup", (event) => {
       this.syncScroll();
-      if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) this.showSuggestions();
+      if (this.suggestions && ["Home", "End"].includes(event.key)) this.showSuggestions();
     });
     this.renderInput();
   }
@@ -187,6 +187,19 @@ export class KeywordEditor {
     else if (selected.bottom > bounds.bottom) this.list.scrollTop += selected.bottom - bounds.bottom;
   }
 
+  navigateSuggestions(key) {
+    const { index, matches } = this.suggestions;
+    const columns = getComputedStyle(this.list).gridTemplateColumns.split(" ").length;
+    const column = index % columns, row = Math.floor(index / columns);
+    let next = index;
+    if (key === "ArrowLeft" && column > 0) next--;
+    else if (key === "ArrowRight" && column < columns - 1 && index < matches.length - 1) next++;
+    else if (key === "ArrowUp" && row > 0) next -= columns;
+    else if (key === "ArrowDown" && row < Math.floor((matches.length - 1) / columns)) next = Math.min(index + columns, matches.length - 1);
+    this.suggestions.navigated = true;
+    this.selectSuggestion(next);
+  }
+
   closeSuggestions() {
     this.suggestions = null;
     this.panel.hidden = true;
@@ -229,16 +242,12 @@ export class KeywordEditor {
       if (!this.suggestions) return;
       event.preventDefault();
       this.accept(this.suggestions.index, cycle);
+    } else if (this.suggestions && ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.key)) {
+      event.preventDefault();
+      this.navigateSuggestions(event.key);
     } else if (["ArrowUp", "ArrowDown"].includes(event.key)) {
       event.preventDefault();
-      if (this.suggestions) {
-        const count = this.suggestions.matches.length;
-        const index = Math.max(0, Math.min(count - 1, this.suggestions.index + (event.key === "ArrowDown" ? 1 : -1)));
-        this.suggestions.navigated = true;
-        this.selectSuggestion(index);
-      } else {
-        this.onHistory(event.key === "ArrowUp" ? -1 : 1);
-      }
+      this.onHistory(event.key === "ArrowUp" ? -1 : 1);
     } else if (event.key === "Enter" && this.suggestions) {
       const { index, matches, start, end, navigated } = this.suggestions;
       if (navigated || this.input.value.slice(start, end) !== matches[index].word) {

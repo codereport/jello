@@ -67,6 +67,15 @@ input.addEventListener("keydown", (event) => {
   if (event.key === "Tab" && !event.shiftKey && !event.defaultPrevented && liveTimer) scheduleLive({ immediate: true });
 });
 
+document.addEventListener("keydown", (event) => {
+  if (event.key !== " " || event.defaultPrevented || event.isComposing || event.repeat || event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) return;
+  if (document.querySelector("dialog[open]")) return;
+  const target = event.target;
+  if (target instanceof Element && (target.closest("input, textarea, select") || target.isContentEditable)) return;
+  event.preventDefault();
+  input.focus();
+});
+
 new ChallengePicker(input, editor, (command) => {
   editor.setValue(command, { notify: true });
   input.focus({ preventScroll: true });

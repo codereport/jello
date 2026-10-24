@@ -143,7 +143,7 @@ test("live view debounces edits, replaces one preview, and switches back to manu
   await expect(preview.locator(".result")).toHaveText("[1, 2, 3, 4, 5]");
   await expect(suggestions).toBeHidden();
   await input.fill("5 :: ran");
-  await input.press("ArrowDown");
+  await input.press("ArrowRight");
   await input.press("Tab");
   await expect(input).toHaveValue("5 :: range0");
   await expect(suggestions).toBeHidden();
@@ -208,7 +208,7 @@ test("live autocomplete with Tab or Enter skips the typing debounce", async ({ p
   // The page clock stays paused: a debounced evaluation cannot complete here.
   await expect(preview.locator(".result")).toHaveText("[1, 2, 3, 4, 5]");
   await input.fill("6 :: ran");
-  await input.press("ArrowDown");
+  await input.press("ArrowRight");
   await input.press("Enter");
   await expect(suggestions).toBeHidden();
   await expect(preview.locator(".result")).toHaveText("[0, 1, 2, 3, 4, 5]");
@@ -241,7 +241,7 @@ test("suggestions complete the current keyword and syntax colors follow keyword 
   await expect(suggestions).toBeVisible();
   await expect(suggestions.getByRole("option").first()).toContainText("range");
   await page.screenshot({ path: testInfo.outputPath("autocomplete.png"), fullPage: true });
-  await input.press("ArrowDown");
+  await input.press("ArrowRight");
   await input.press("Enter");
   await expect(input).toHaveValue("5 :: range0");
   await expect(suggestions).toBeHidden();
@@ -296,6 +296,7 @@ test("autocomplete browses every prefix match and scrolls the full keyword grid"
   await input.press("ArrowUp");
   await expect(options.first()).toHaveAttribute("aria-selected", "true");
   for (let i = 0; i < prefixMatches.length; i++) await input.press("ArrowDown");
+  for (let i = 0; i < prefixMatches.length; i++) await input.press("ArrowRight");
   await expect(options.last()).toHaveAttribute("aria-selected", "true");
   // Browsing keeps the existing cells and stops at the end instead of cycling.
   expect(await firstOption.evaluate((node) => node.isConnected)).toBe(true);
@@ -335,6 +336,108 @@ test("autocomplete browses every prefix match and scrolls the full keyword grid"
   await expect(options).toHaveCount(words.length);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: testInfo.outputPath("autocomplete-grid.png"), fullPage: true });
+});
+
+test("all four arrows navigate autocomplete rows and columns without moving the expression cursor", async ({ page }) => {
+  await page.goto(`./#${new URLSearchParams({ code: "10 :: " })}`);
+  const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
+  const suggestions = page.getByRole("listbox", { name: "Keyword suggestions" });
+  const options = suggestions.getByRole("option");
+  await input.click();
+  await expect(page.locator("#keyword-match-count")).toHaveText(/^\d+ matches$/);
+  const count = await options.count();
+  const columns = await suggestions.evaluate((node) => getComputedStyle(node).gridTemplateColumns.split(" ").length);
+  expect(columns).toBeGreaterThan(1);
+  expect(count).toBeGreaterThan(columns * 2);
+  const command = await input.inputValue();
+  const caret = await input.evaluate((node) => [node.selectionStart, node.selectionEnd]);
+  const selected = async (index) => {
+    await expect(options.nth(index)).toHaveAttribute("aria-selected", "true");
+    await expect(input).toHaveAttribute("aria-activedescendant", `keyword-option-${index}`);
+    expect(await input.evaluate((node) => [node.selectionStart, node.selectionEnd])).toEqual(caret);
+    await expect(input).toHaveValue(command);
+    await expect(input).toBeFocused();
+  };
+  await input.press("ArrowRight");
+  await selected(1);
+  await input.press("ArrowDown");
+  await selected(columns + 1);
+  await input.press("ArrowLeft");
+  await selected(columns);
+  await input.press("ArrowUp");
+  await selected(0);
+  await input.press("ArrowUp");
+  await input.press("ArrowLeft");
+  await selected(0);
+  for (let i = 0; i < columns; i++) await input.press("ArrowRight");
+  await selected(columns - 1);
+  for (let i = 0; i < Math.ceil(count / columns); i++) await input.press("ArrowDown");
+  await input.press("ArrowRight");
+  await selected(count - 1);
+  expect(await suggestions.evaluate((node) => {
+    const bounds = node.getBoundingClientRect(), option = node.querySelector(".active").getBoundingClientRect();
+    return option.top >= bounds.top - 1 && option.bottom <= bounds.bottom + 1;
+  })).toBe(true);
+  const word = await options.last().locator(".suggestion-word").textContent();
+  await input.press("Enter");
+  await expect(input).toHaveValue(command + word);
+  await expect(suggestions).toBeHidden();
+  // Escape returns horizontal arrows to normal expression editing.
+  await input.fill("10 :: ran");
+  await input.press("Escape");
+  await input.press("ArrowLeft");
+  expect(await input.evaluate((node) => node.selectionStart)).toBe("10 :: ran".length - 1);
+  await expect(suggestions).toBeHidden();
+  await input.press("ArrowLeft");
+  expect(await input.evaluate((node) => node.selectionStart)).toBe("10 :: ran".length - 2);
+  await input.press("ArrowRight");
+  expect(await input.evaluate((node) => node.selectionStart)).toBe("10 :: ran".length - 1);
+  await expect(suggestions).toBeHidden();
+});
+
+test("Space focuses the expression while text fields and dialogs keep their normal keyboard behavior", async ({ page }) => {
+  await page.goto(`./#${new URLSearchParams({ code: "10 :: sq" })}`);
+  const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
+  const suggestions = page.getByRole("listbox", { name: "Keyword suggestions" });
+  await input.fill("10 :: sq");
+  const caret = await input.evaluate((node) => node.selectionStart);
+  await page.locator(".session-label").click();
+  await expect(input).not.toBeFocused();
+  await page.keyboard.press("Control+Space");
+  await expect(input).not.toBeFocused();
+  await page.keyboard.press("Space");
+  await expect(input).toBeFocused();
+  await expect(input).toHaveValue("10 :: sq");
+  expect(await input.evaluate((node) => node.selectionStart)).toBe(caret);
+  await page.keyboard.press("Space");
+  await expect(input).toHaveValue("10 :: sq ");
+  await expect(suggestions).toBeVisible();
+  const search = page.getByRole("searchbox", { name: "Search keywords", exact: true });
+  await search.fill("range");
+  await search.press("Space");
+  await expect(search).toBeFocused();
+  await expect(search).toHaveValue("range ");
+
+  const gear = page.getByRole("button", { name: "Settings", exact: true });
+  await gear.click();
+  const examples = page.getByRole("switch", { name: "Show examples", exact: true });
+  await examples.focus();
+  await examples.press("Space");
+  await expect(examples).not.toBeChecked();
+  await expect(examples).toBeFocused();
+  await page.getByRole("button", { name: "Close settings" }).click();
+  await expect(gear).toBeFocused();
+  await page.keyboard.press("Space");
+  await expect(input).toBeFocused();
+  await expect(input).toHaveValue("10 :: sq ");
+  await expect(page.getByRole("dialog", { name: "settings", exact: true })).toBeHidden();
+
+  await page.keyboard.press("Shift+C");
+  const challengeSearch = page.getByRole("searchbox", { name: "Search challenges", exact: true });
+  await challengeSearch.fill("score");
+  await challengeSearch.press("Space");
+  await expect(challengeSearch).toBeFocused();
+  await expect(challengeSearch).toHaveValue("score ");
 });
 
 test("settings persist and keep the REPL usable in presentation mode", async ({ page }, testInfo) => {
