@@ -61,6 +61,7 @@ test("runs the real interpreter, examples, errors, wordbook, history, and sharin
   await input.press("ArrowDown");
   await expect(input).toHaveValue("draft :: sq");
   await input.fill("5 :: ran");
+  await input.press("Control+Space");
   await input.press("Tab");
   await expect(input).toHaveValue("5 :: range");
   await input.press("Tab");
@@ -134,6 +135,7 @@ test("live view debounces edits, replaces one preview, and switches back to manu
   await expect(page.locator("#run")).toBeHidden();
   const suggestions = page.getByRole("listbox", { name: "Keyword suggestions" });
   await input.fill("5 :: ran");
+  await input.press("Control+Space");
   await expect(suggestions).toBeVisible();
   await input.press("Tab");
   await expect(input).toHaveValue("5 :: range");
@@ -143,6 +145,7 @@ test("live view debounces edits, replaces one preview, and switches back to manu
   await expect(preview.locator(".result")).toHaveText("[1, 2, 3, 4, 5]");
   await expect(suggestions).toBeHidden();
   await input.fill("5 :: ran");
+  await input.press("Control+Space");
   await input.press("ArrowRight");
   await input.press("Tab");
   await expect(input).toHaveValue("5 :: range0");
@@ -203,11 +206,13 @@ test("live autocomplete with Tab or Enter skips the typing debounce", async ({ p
   await page.clock.runFor(599);
   await expect(preview).toHaveAttribute("data-command", DEFAULT_COMMAND);
   await expect(preview.locator(".result")).toHaveText("2.5", { timeout: 90000 });
+  await input.press("Control+Space");
   await input.press("Tab");
   await expect(suggestions).toBeHidden();
   // The page clock stays paused: a debounced evaluation cannot complete here.
   await expect(preview.locator(".result")).toHaveText("[1, 2, 3, 4, 5]");
   await input.fill("6 :: ran");
+  await input.press("Control+Space");
   await input.press("ArrowRight");
   await input.press("Enter");
   await expect(suggestions).toBeHidden();
@@ -238,6 +243,7 @@ test("suggestions complete the current keyword and syntax colors follow keyword 
   await input.fill("5 :: ran");
   await expect(conversion).toBeHidden();
   await expect(conversion).toBeEmpty();
+  await input.press("Control+Space");
   await expect(suggestions).toBeVisible();
   await expect(suggestions.getByRole("option").first()).toContainText("range");
   await page.screenshot({ path: testInfo.outputPath("autocomplete.png"), fullPage: true });
@@ -249,6 +255,7 @@ test("suggestions complete the current keyword and syntax colors follow keyword 
   await expect(page.locator(".result").last()).toHaveText("[0, 1, 2, 3, 4]");
   await input.fill("5 :: ra sum");
   await input.evaluate((node) => { node.setSelectionRange(7, 7); node.dispatchEvent(new Event("click")); });
+  await input.press("Control+Space");
   await suggestions.getByRole("option").filter({ has: page.locator(".suggestion-word", { hasText: /^range$/ }) }).click();
   await expect(input).toHaveValue("5 :: range sum");
   await input.fill("6 7 :: range + each : digits 3");
@@ -279,6 +286,66 @@ test("suggestions complete the current keyword and syntax colors follow keyword 
   await expect(conversion).toBeHidden();
 });
 
+test("autocomplete opens only on Ctrl+Space and filters until dismissed", async ({ page }) => {
+  let releaseKeywords;
+  const keywordsReady = new Promise((resolve) => { releaseKeywords = resolve; });
+  await page.route("**/keywords.json", async (route) => { await keywordsReady; await route.continue(); });
+  await page.goto(`./#${new URLSearchParams({ code: "5 :: ran" })}`);
+  const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
+  const suggestions = page.getByRole("listbox", { name: "Keyword suggestions" });
+  const options = suggestions.getByRole("option");
+  await input.fill("5 :: ran");
+  await input.click();
+  await expect(suggestions).toBeHidden();
+  releaseKeywords();
+  await expect(page.locator(".word").first()).toBeVisible();
+  // Loading vocabulary while the editor is focused must not open the grid.
+  await expect(suggestions).toBeHidden();
+  await input.press("Home");
+  await input.press("End");
+  await expect(suggestions).toBeHidden();
+  await input.press("Tab");
+  await expect(input).not.toBeFocused();
+  await expect(input).toHaveValue("5 :: ran");
+  await input.focus();
+  await expect(suggestions).toBeHidden();
+
+  await input.press("Control+Space");
+  await expect(suggestions).toBeVisible();
+  await expect(input).toHaveValue("5 :: ran");
+  await expect(options.first().locator(".suggestion-word")).toHaveText("range");
+  const matches = await options.count();
+  await input.fill("5 :: range0");
+  await expect(options).toHaveCount(1);
+  await expect(options.locator(".suggestion-word")).toHaveText("range0");
+  await input.fill("5 :: no_such_prefix");
+  await expect(suggestions).toBeHidden();
+  await input.fill("5 :: ran");
+  await expect(suggestions).toBeVisible();
+  await expect(options).toHaveCount(matches);
+
+  await input.press("Escape");
+  await input.pressSequentially("g");
+  await expect(input).toHaveValue("5 :: rang");
+  await input.click();
+  await expect(suggestions).toBeHidden();
+  await input.press("Control+Space");
+  await expect(suggestions).toBeVisible();
+  await input.fill("5 :: ");
+  expect(await options.count()).toBeGreaterThan(100);
+  await page.locator(".session-label").click();
+  await page.keyboard.press("Space");
+  await expect(input).toBeFocused();
+  await expect(input).toHaveValue("5 :: ");
+  await expect(suggestions).toBeHidden();
+  await input.press("Control+Space");
+  await input.press("Enter");
+  await expect(input).toHaveValue("5 :: range");
+  await input.press("Space");
+  await expect(input).toHaveValue("5 :: range ");
+  await expect(suggestions).toBeHidden();
+});
+
 test("autocomplete browses every prefix match and scrolls the full keyword grid", async ({ page }, testInfo) => {
   await page.goto(`./#${new URLSearchParams({ code: "10 :: a" })}`);
   const vocabulary = await (await page.request.get("./keywords.json")).json();
@@ -289,6 +356,7 @@ test("autocomplete browses every prefix match and scrolls the full keyword grid"
   const suggestions = page.getByRole("listbox", { name: "Keyword suggestions" });
   const options = suggestions.getByRole("option");
   await input.click();
+  await input.press("Control+Space");
   await expect(options).toHaveCount(prefixMatches.length);
   expect((await suggestions.locator(".suggestion-word").allTextContents()).sort()).toEqual(prefixMatches.sort());
   await expect(options.filter({ hasText: "all_not_empty" })).toBeVisible();
@@ -307,6 +375,7 @@ test("autocomplete browses every prefix match and scrolls the full keyword grid"
 
   for (const command of ["10 :: ", "10 :: range "]) {
     await input.fill(command);
+    await input.press("Control+Space");
     await expect(options).toHaveCount(words.length);
     expect((await suggestions.locator(".suggestion-word").allTextContents()).sort()).toEqual([...words].sort());
     await expect(page.locator("#keyword-match-count")).toHaveText(`${words.length} matches`);
@@ -333,6 +402,7 @@ test("autocomplete browses every prefix match and scrolls the full keyword grid"
   await page.getByRole("switch", { name: "Presentation mode", exact: true }).check();
   await page.getByRole("button", { name: "Close settings" }).click();
   await input.fill("10 :: ");
+  await input.press("Control+Space");
   await expect(options).toHaveCount(words.length);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: testInfo.outputPath("autocomplete-grid.png"), fullPage: true });
@@ -344,6 +414,7 @@ test("all four arrows navigate autocomplete rows and columns without moving the 
   const suggestions = page.getByRole("listbox", { name: "Keyword suggestions" });
   const options = suggestions.getByRole("option");
   await input.click();
+  await input.press("Control+Space");
   await expect(page.locator("#keyword-match-count")).toHaveText(/^\d+ matches$/);
   const count = await options.count();
   const columns = await suggestions.evaluate((node) => getComputedStyle(node).gridTemplateColumns.split(" ").length);
@@ -411,7 +482,7 @@ test("Space focuses the expression while text fields and dialogs keep their norm
   expect(await input.evaluate((node) => node.selectionStart)).toBe(caret);
   await page.keyboard.press("Space");
   await expect(input).toHaveValue("10 :: sq ");
-  await expect(suggestions).toBeVisible();
+  await expect(suggestions).toBeHidden();
   const search = page.getByRole("searchbox", { name: "Search keywords", exact: true });
   await search.fill("range");
   await search.press("Space");
@@ -477,6 +548,7 @@ test("settings persist and keep the REPL usable in presentation mode", async ({ 
   await expect(page.locator(".wordbook")).toBeHidden();
   const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
   await input.fill("5 :: ran");
+  await input.press("Control+Space");
   await expect(page.getByRole("listbox", { name: "Keyword suggestions" })).toBeVisible();
   await input.press("Tab");
   await expect(input).toHaveValue("5 :: range");

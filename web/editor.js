@@ -21,6 +21,7 @@ export class KeywordEditor {
     this.panel = document.querySelector("#autocomplete");
     this.list = document.querySelector("#keyword-suggestions");
     this.composing = false;
+    this.completionRequested = false;
     this.suggestions = null;
     this.tabCycle = null;
     input.addEventListener("input", (event) => {
@@ -29,14 +30,13 @@ export class KeywordEditor {
     });
     input.addEventListener("compositionstart", () => { this.composing = true; this.closeSuggestions(); });
     input.addEventListener("compositionend", () => { this.composing = false; this.edited(); });
-    input.addEventListener("focus", () => this.showSuggestions());
     input.addEventListener("click", () => { this.tabCycle = null; this.showSuggestions(); });
     input.addEventListener("blur", () => this.closeSuggestions());
     input.addEventListener("scroll", () => this.syncScroll());
     input.addEventListener("keydown", (event) => this.keydown(event));
     input.addEventListener("keyup", (event) => {
       this.syncScroll();
-      if (this.suggestions && ["Home", "End"].includes(event.key)) this.showSuggestions();
+      if (this.completionRequested && ["Home", "End"].includes(event.key)) this.showSuggestions();
     });
     this.renderInput();
   }
@@ -46,7 +46,7 @@ export class KeywordEditor {
     // Match the converter's precedence when a spelling appears in multiple categories.
     for (const word of words) if (!this.vocabulary.has(word.word)) this.vocabulary.set(word.word, word);
     this.renderInput();
-    if (document.activeElement === this.input) this.showSuggestions();
+    this.showSuggestions();
     return [...this.vocabulary.values()];
   }
 
@@ -99,13 +99,12 @@ export class KeywordEditor {
 
   syncScroll() { this.overlay.style.transform = `translateX(${-this.input.scrollLeft}px)`; }
 
-  setValue(value, { notify = false, suggest = false } = {}) {
+  setValue(value, { notify = false } = {}) {
     this.input.value = value;
     this.input.setSelectionRange(value.length, value.length);
     this.closeSuggestions();
     this.tabCycle = null;
     this.renderInput();
-    if (suggest) this.showSuggestions();
     if (notify) this.onChange();
   }
 
@@ -127,6 +126,7 @@ export class KeywordEditor {
   }
 
   showSuggestions() {
+    if (!this.completionRequested) return;
     const context = this.context();
     if (!context || this.composing) { this.closeSuggestions(); return; }
     const matches = [...this.vocabulary.values()]
@@ -139,11 +139,7 @@ export class KeywordEditor {
         }
         return a.word.length - b.word.length || a.word.localeCompare(b.word);
       });
-    if (!matches.length) { this.closeSuggestions(); return; }
-    if (matches.length === 1 && matches[0].word === context.prefix && this.input.value.slice(context.start, context.end) === context.prefix) {
-      this.closeSuggestions();
-      return;
-    }
+    if (!matches.length) { this.hideSuggestions(); return; }
     this.suggestions = { ...context, matches, index: 0, navigated: false };
     this.renderSuggestions();
   }
@@ -200,11 +196,17 @@ export class KeywordEditor {
     this.selectSuggestion(next);
   }
 
-  closeSuggestions() {
+  hideSuggestions() {
     this.suggestions = null;
     this.panel.hidden = true;
     this.input.setAttribute("aria-expanded", "false");
     this.input.removeAttribute("aria-activedescendant");
+  }
+
+  closeSuggestions() {
+    this.completionRequested = false;
+    this.tabCycle = null;
+    this.hideSuggestions();
   }
 
   accept(index, cycle = false) {
@@ -226,9 +228,15 @@ export class KeywordEditor {
 
   keydown(event) {
     if (event.isComposing || this.composing) return;
-    if (event.key === "Escape") {
+    if (event.key === " " && event.ctrlKey && !event.altKey && !event.metaKey && !event.shiftKey) {
       event.preventDefault();
-      if (this.suggestions) this.closeSuggestions();
+      if (event.repeat) return;
+      this.tabCycle = null;
+      this.completionRequested = true;
+      this.showSuggestions();
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      if (this.completionRequested) this.closeSuggestions();
       else this.onStop();
       this.tabCycle = null;
     } else if (event.key === "Tab" && !event.shiftKey) {
@@ -236,8 +244,6 @@ export class KeywordEditor {
       if (cycle && this.tabCycle?.value === this.input.value && this.tabCycle.caret === this.input.selectionStart) {
         this.suggestions = this.tabCycle;
         this.suggestions.index = (this.suggestions.index + 1) % this.suggestions.matches.length;
-      } else if (cycle) {
-        this.showSuggestions();
       }
       if (!this.suggestions) return;
       event.preventDefault();

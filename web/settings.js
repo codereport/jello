@@ -32,7 +32,10 @@ export class PlaygroundSettings {
     this.controls = [...this.dialog.querySelectorAll("[data-setting]")];
     this.button.addEventListener("click", () => this.dialog.showModal());
     document.querySelector("#settings-close").addEventListener("click", () => this.dialog.close());
-    this.dialog.addEventListener("close", () => this.button.focus({ preventScroll: true }));
+    this.dialog.addEventListener("close", () => {
+      // Native focus restoration may finish before this queued event is delivered.
+      if (document.activeElement === document.body || this.dialog.contains(document.activeElement)) this.button.focus({ preventScroll: true });
+    });
     this.dialog.addEventListener("click", (event) => {
       if (event.target !== this.dialog) return;
       const box = this.dialog.getBoundingClientRect();

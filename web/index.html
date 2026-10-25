@@ -41,7 +41,7 @@
                   <span class="input-prompt" aria-hidden="true">›</span>
                   <div class="expression-editor">
                     <pre id="expression-highlight" class="expression-highlight" aria-hidden="true"><span></span></pre>
-                    <input id="expression" name="expression" type="text" role="combobox" value="4 :: range . sum div len" spellcheck="false" autocapitalize="off" autocorrect="off" maxlength="2000" aria-describedby="input-help" aria-autocomplete="list" aria-controls="keyword-suggestions" aria-expanded="false">
+                    <input id="expression" name="expression" type="text" role="combobox" value="4 :: range . sum div len" spellcheck="false" autocapitalize="off" autocorrect="off" maxlength="2000" aria-describedby="input-help" aria-autocomplete="list" aria-controls="keyword-suggestions" aria-expanded="false" aria-keyshortcuts="Control+Space">
                   </div>
                   <div id="autocomplete" class="autocomplete" hidden>
                     <div id="keyword-suggestions" role="listbox" aria-label="Keyword suggestions"></div>
@@ -50,7 +50,7 @@
                   <div id="converted-preview" class="converted-preview" hidden><span class="conversion-arrow" aria-hidden="true">→</span><output id="converted-expression" for="expression" aria-label="Jelly expression" aria-live="off" title="Converted Jelly expression"></output></div>
                   <button id="run" class="run-button" type="submit" disabled><span id="run-label">Run</span><span id="run-icon" aria-hidden="true">↵</span></button>
                 </div>
-                <div id="input-help" class="input-help"><span><kbd>enter</kbd> run <span class="help-dot">/</span> <kbd>↑</kbd> <kbd>↓</kbd> history <span class="help-dot">/</span> <kbd>tab</kbd> complete <span class="help-dot">/</span> <kbd>space</kbd> focus <span class="help-dot">/</span> <kbd>shift+c</kbd> challenges</span><span id="input-state"></span></div>
+                <div id="input-help" class="input-help"><span><kbd>enter</kbd> run <span class="help-dot">/</span> <kbd>↑</kbd> <kbd>↓</kbd> history <span class="help-dot">/</span> <kbd>ctrl+space</kbd> complete <span class="help-dot">/</span> <kbd>space</kbd> focus <span class="help-dot">/</span> <kbd>shift+c</kbd> challenges</span><span id="input-state"></span></div>
               </form>
               <div id="transcript" class="transcript" role="log" aria-label="Expression results" aria-live="polite" aria-relevant="additions">
                 <div id="welcome" class="welcome">
