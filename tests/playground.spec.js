@@ -307,10 +307,10 @@ test("autocomplete opens only on Ctrl+Space and filters until dismissed", async 
   await input.press("Tab");
   await expect(input).not.toBeFocused();
   await expect(input).toHaveValue("5 :: ran");
-  await input.focus();
   await expect(suggestions).toBeHidden();
 
-  await input.press("Control+Space");
+  await page.keyboard.press("Control+Space");
+  await expect(input).toBeFocused();
   await expect(suggestions).toBeVisible();
   await expect(input).toHaveValue("5 :: ran");
   await expect(options.first().locator(".suggestion-word")).toHaveText("range");
@@ -344,6 +344,13 @@ test("autocomplete opens only on Ctrl+Space and filters until dismissed", async 
   await input.press("Space");
   await expect(input).toHaveValue("5 :: range ");
   await expect(suggestions).toBeHidden();
+  // Real desktop input may report "Unidentified" or a control character in `key`.
+  for (const key of ["Unidentified", "\u0000"]) {
+    await input.evaluate((node, key) => node.dispatchEvent(new KeyboardEvent("keydown", { key, code: "Space", ctrlKey: true, bubbles: true, cancelable: true })), key);
+    await expect(suggestions).toBeVisible();
+    await expect(input).toHaveValue("5 :: range ");
+    await input.press("Escape");
+  }
 });
 
 test("autocomplete browses every prefix match and scrolls the full keyword grid", async ({ page }, testInfo) => {
@@ -475,6 +482,10 @@ test("Space focuses the expression while text fields and dialogs keep their norm
   await page.locator(".session-label").click();
   await expect(input).not.toBeFocused();
   await page.keyboard.press("Control+Space");
+  await expect(input).toBeFocused();
+  await expect(suggestions).toBeVisible();
+  await input.press("Escape");
+  await page.locator(".session-label").click();
   await expect(input).not.toBeFocused();
   await page.keyboard.press("Space");
   await expect(input).toBeFocused();
@@ -488,6 +499,9 @@ test("Space focuses the expression while text fields and dialogs keep their norm
   await search.press("Space");
   await expect(search).toBeFocused();
   await expect(search).toHaveValue("range ");
+  await search.press("Control+Space");
+  await expect(search).toBeFocused();
+  await expect(suggestions).toBeHidden();
 
   const gear = page.getByRole("button", { name: "Settings", exact: true });
   await gear.click();

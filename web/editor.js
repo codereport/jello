@@ -38,6 +38,18 @@ export class KeywordEditor {
       this.syncScroll();
       if (this.completionRequested && ["Home", "End"].includes(event.key)) this.showSuggestions();
     });
+    document.addEventListener("keydown", (event) => {
+      if (!(event.code === "Space" || event.key === " ") || !event.ctrlKey || event.altKey || event.metaKey || event.shiftKey || event.defaultPrevented || event.isComposing || this.composing) return;
+      if (document.querySelector("dialog[open]")) return;
+      const target = event.target;
+      if (target !== input && target instanceof Element && (target.closest("input, textarea, select") || target.isContentEditable)) return;
+      event.preventDefault();
+      if (event.repeat) return;
+      input.focus();
+      this.tabCycle = null;
+      this.completionRequested = true;
+      this.showSuggestions();
+    });
     this.renderInput();
   }
 
@@ -228,13 +240,7 @@ export class KeywordEditor {
 
   keydown(event) {
     if (event.isComposing || this.composing) return;
-    if (event.key === " " && event.ctrlKey && !event.altKey && !event.metaKey && !event.shiftKey) {
-      event.preventDefault();
-      if (event.repeat) return;
-      this.tabCycle = null;
-      this.completionRequested = true;
-      this.showSuggestions();
-    } else if (event.key === "Escape") {
+    if (event.key === "Escape") {
       event.preventDefault();
       if (this.completionRequested) this.closeSuggestions();
       else this.onStop();
