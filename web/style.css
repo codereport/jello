@@ -195,7 +195,7 @@ main { padding-top: 24px; }
 .highlighted #expression { color: transparent; -webkit-text-fill-color: transparent; }
 .highlighted #expression::selection { color: transparent; background: var(--input-selection); }
 .autocomplete { position: absolute; top: 100%; left: 0; right: 0; z-index: 20; border: 1px solid var(--completion-border); border-radius: 4px; background: var(--completion-background); box-shadow: 0 8px 24px #0008; overflow: hidden; }
-#keyword-suggestions { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); max-height: min(320px, 42svh); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--scrollbar) transparent; }
+#keyword-suggestions { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 150px), 1fr)); max-height: min(320px, 42svh, var(--completion-space, 320px)); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--scrollbar) transparent; }
 .suggestion { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; padding: 8px 10px; border-left: 2px solid transparent; cursor: pointer; }
 .suggestion.active, .suggestion:hover { background: var(--completion-selected); border-left-color: var(--green); }
 .suggestion-word { font-size: 12px; overflow-wrap: anywhere; }
@@ -315,6 +315,14 @@ label.setting-row { cursor: pointer; }
 .presentation-note { display: none; }
 .examples-hidden .examples-panel, .keywords-hidden .wordbook { display: none; }
 .examples-hidden .playground-grid { grid-template-columns: minmax(0, 1fr); }
+.viewport-fit .page-shell { display: flex; flex-direction: column; height: 100dvh; }
+.viewport-fit .site-header, .viewport-fit .site-footer, .viewport-fit .syntax-note,
+.viewport-fit .repl-toolbar, .viewport-fit .composer, .viewport-fit .repl-footer { flex-shrink: 0; }
+.viewport-fit main { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.viewport-fit .playground-section { flex: 1; min-height: 0; }
+.viewport-fit .playground-grid { height: 100%; grid-template-rows: minmax(0, 1fr); }
+.viewport-fit .repl { height: 100%; min-height: 0; }
+.viewport-fit .transcript { flex: 1; min-height: 0; height: auto; }
 .presentation-mode .site-header, .presentation-mode .examples-panel, .presentation-mode .wordbook, .presentation-mode .syntax-note, .presentation-mode .site-footer,
 .presentation-mode .toolbar-actions, .presentation-mode .syntax-legend, .presentation-mode .input-help, .presentation-mode .copy-result, .presentation-mode .entry-meta .meta-divider, .presentation-mode .entry-meta .timing { display: none; }
 .presentation-mode .page-shell { display: flex; flex-direction: column; justify-content: center; width: 100%; min-height: 100svh; max-width: 1140px; padding: 24px; }

@@ -66,6 +66,7 @@ export class PlaygroundSettings {
     root.classList.toggle("examples-hidden", !this.values.showExamples);
     root.classList.toggle("keywords-hidden", !this.values.showKeywords);
     root.classList.toggle("presentation-mode", this.values.presentationMode);
+    root.classList.toggle("viewport-fit", !this.values.presentationMode && !this.values.showExamples && !this.values.showKeywords);
     document.querySelector('meta[name="theme-color"]').content = this.values.theme === "dracula" ? "#282a36" : "#0b0e11";
     for (const control of this.controls) {
       if (control.type === "checkbox") control.checked = this.values[control.dataset.setting];

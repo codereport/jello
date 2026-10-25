@@ -525,6 +525,64 @@ test("Space focuses the expression while text fields and dialogs keep their norm
   await expect(challengeSearch).toHaveValue("score ");
 });
 
+test("the compact regular REPL fits the window and resizes its session without page scrolling", async ({ page }, testInfo) => {
+  await page.addInitScript(() => localStorage.setItem("jello-settings", JSON.stringify({
+    liveMode: true, showExamples: false, showKeywords: false, theme: "dracula", presentationMode: false,
+  })));
+  await page.goto("./");
+  await expect(page.locator(".result").first()).toHaveText("2.5", { timeout: 90000 });
+  await expect(page.locator("#verification-status")).toHaveText("✓ match", { timeout: 90000 });
+  const transcript = page.locator("#transcript");
+  const input = page.getByRole("combobox", { name: "JELLO EXPRESSION" });
+  const expectPageFits = async () => {
+    await expect.poll(() => page.evaluate(() => {
+      const root = document.documentElement;
+      const footer = document.querySelector(".site-footer").getBoundingClientRect();
+      return root.scrollHeight <= innerHeight && root.scrollWidth <= innerWidth && footer.bottom <= innerHeight + 1;
+    })).toBe(true);
+    await expect(input).toBeInViewport();
+    await expect(page.locator("#execution-status")).toBeInViewport();
+  };
+  const original = page.viewportSize();
+  const initialHeight = await transcript.evaluate((node) => node.clientHeight);
+  await expectPageFits();
+  await page.screenshot({ path: testInfo.outputPath("viewport-fit.png"), fullPage: true });
+
+  await input.fill("4 :: range ");
+  await input.press("Control+Space");
+  const suggestions = page.getByRole("listbox", { name: "Keyword suggestions" });
+  await expect(suggestions).toBeVisible();
+  await page.setViewportSize({ width: original.width, height: original.width > 800 ? 600 : 650 });
+  await expectPageFits();
+  expect(await transcript.evaluate((node) => node.clientHeight)).toBeLessThan(initialHeight);
+  // The completion grid must remain scrollable inside the shorter REPL.
+  await expect.poll(() => page.locator("#autocomplete").evaluate((node) =>
+    node.getBoundingClientRect().bottom <= node.closest(".repl").getBoundingClientRect().bottom + 1)).toBe(true);
+  await suggestions.getByRole("option").last().scrollIntoViewIfNeeded();
+  expect(await suggestions.evaluate((node) => node.scrollTop)).toBeGreaterThan(0);
+  await input.press("Escape");
+  await expect(page.locator(".result").last()).toHaveText("[1, 2, 3, 4]");
+
+  await setLiveMode(page, false);
+  for (const value of [1, 2, 3]) {
+    await input.fill(`${value} :: sq`);
+    await input.press("Enter");
+    await expect(page.locator(".result").last()).toHaveText(String(value * value));
+  }
+  expect(await transcript.evaluate((node) => node.scrollHeight > node.clientHeight && node.scrollTop > 0)).toBe(true);
+  await expectPageFits();
+  const shorterHeight = await transcript.evaluate((node) => node.clientHeight);
+  await page.setViewportSize(original);
+  await expectPageFits();
+  expect(await transcript.evaluate((node) => node.clientHeight)).toBeGreaterThan(shorterHeight);
+
+  await page.getByRole("button", { name: "Settings", exact: true }).click();
+  await page.getByRole("switch", { name: "Show keywords", exact: true }).check();
+  await page.getByRole("button", { name: "Close settings" }).click();
+  await expect(page.locator(".wordbook")).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollHeight > innerHeight)).toBe(true);
+});
+
 test("settings persist and keep the REPL usable in presentation mode", async ({ page }, testInfo) => {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));

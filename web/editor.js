@@ -24,6 +24,8 @@ export class KeywordEditor {
     this.completionRequested = false;
     this.suggestions = null;
     this.tabCycle = null;
+    const layout = new ResizeObserver(() => { if (this.suggestions) this.fitSuggestions(); });
+    document.querySelectorAll(".repl, .repl-toolbar, .composer").forEach((node) => layout.observe(node));
     input.addEventListener("input", (event) => {
       if (event.isComposing || this.composing) this.renderInput();
       else this.edited();
@@ -176,8 +178,15 @@ export class KeywordEditor {
     this.panel.hidden = false;
     this.input.setAttribute("aria-expanded", "true");
     document.querySelector("#keyword-match-count").textContent = `${suggestions.matches.length} ${suggestions.matches.length === 1 ? "match" : "matches"}`;
+    this.fitSuggestions();
     this.list.scrollTop = 0;
     this.selectSuggestion(suggestions.index);
+  }
+
+  fitSuggestions() {
+    const bottom = Math.min(window.innerHeight - 8, this.input.closest(".repl").getBoundingClientRect().bottom - 1);
+    const space = bottom - this.panel.getBoundingClientRect().top - this.panel.lastElementChild.offsetHeight - 2;
+    this.list.style.setProperty("--completion-space", `${Math.max(0, Math.floor(space))}px`);
   }
 
   selectSuggestion(index) {
