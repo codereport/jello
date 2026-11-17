@@ -1,5 +1,6 @@
 #!/usr/bin/env -S .venv/bin/python
 
+import argparse
 import json
 import os
 import sys
@@ -75,9 +76,13 @@ class ChallengeTestRunner(unittest.TextTestRunner):
 
 
 class ChallengeExampleTests(unittest.TestCase):
+    challenge_number = None
+
     def test_all_source_examples(self):
         """Source examples (. = pass, F = failure, E = error)"""
         for challenge, example in read_examples():
+            if self.challenge_number is not None and challenge["number"] != self.challenge_number:
+                continue
             with self.subTest(challenge=challenge["number"], example=example["number"],
                               source=example["source"], command=example["command"]):
                 result = json.loads(evaluate(example["command"]))
@@ -88,6 +93,8 @@ class ChallengeExampleTests(unittest.TestCase):
     def test_sourced_examples_run_with_the_documented_programs(self):
         """Picker samples (. = pass, F = failure, E = error)"""
         for challenge in read_challenges():
+            if self.challenge_number is not None and challenge["number"] != self.challenge_number:
+                continue
             with self.subTest(challenge=challenge["number"], command=challenge["command"]):
                 result = json.loads(evaluate(challenge["command"]))
                 expected = challenge["example"]["expected"]
@@ -98,4 +105,12 @@ class ChallengeExampleTests(unittest.TestCase):
 
 
 if __name__ == "__main__":
-    unittest.main(testRunner=ChallengeTestRunner)
+    parser = argparse.ArgumentParser(
+        description="Run challenge examples with colored results and a summary.",
+        epilog="Standard unittest options such as -v, -f, and -k are also supported.",
+    )
+    parser.add_argument("--challenge", type=int, choices=[challenge["number"] for challenge in read_challenges()],
+                        metavar="NUMBER", help="run only this challenge's source examples and picker sample")
+    options, unittest_args = parser.parse_known_args()
+    ChallengeExampleTests.challenge_number = options.challenge
+    unittest.main(argv=[sys.argv[0], *unittest_args], testRunner=ChallengeTestRunner)

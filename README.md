@@ -90,6 +90,12 @@ Set `CHROMIUM_PATH` to use an existing Chromium installation. Set `PLAYGROUND_UR
 ./tests/test_challenges.py
 ```
 
+To run only challenge #7, including its source examples and picker sample:
+
+```sh
+./tests/test_challenges.py --challenge 7
+```
+
 This checks Python/Jellyfish results, including list structure: `[2]` and `2` remain distinct even though Jelly displays both as `2`. Source booleans map to Jelly's `0` and `1`. Each failing subtest identifies the challenge, source example, URL, and runnable command. Solution failures remain ordinary failing assertions for review.
 
 Run the executable from the repository root; it uses `.venv/bin/python` automatically. Passing examples appear as green dots and failures as red `F`s. The final summary counts passed, failed, errored, and skipped example checks and lists failing challenge numbers. Failures return a nonzero exit status. Redirected output stays plain; set `NO_COLOR=1` to disable terminal colors too.
