@@ -10,7 +10,7 @@
 |   4   |  3038  | b124p1  |       | 2024-02-18 |              `len idiv 2 take c + 2 chunk_fold . = head sum`              |   `L:2ḣ@+2/µ=ḢS`   |
 |   5   |        |         | 250p1 | 2024-02-20 |                     `len iota0 mod 10 = : keep head`                      |    `LḶ%10=ðḳḢ`     |
 |   6   |  1380  |         | 251p2 | 2024-02-20 |                     `minr each rev = maxr * maxr sum`                     |     `Ṃ€Ṛ=Ṁ×ṀS`     |
-|   7   |  2778  |         | 252p1 | 2024-02-20 |                           `divs? len * sq sum`                            |      `ḍL×²S`       |
+|   7   |  2778  |         | 252p1 | 2024-02-20 |                      `len range divs? len * sq sum`                       |      `LRḍL×²S`     |
 |   8   |  1365  |         | 257p1 | 2024-02-20 |                           `< outer w sum each`                            |     ``<þ`S€``      |
 |   9   |  1295  |         | 258p1 | 2024-02-26 |                      `i_to_d len_each odd? not sum`                       |      `DẈḂCS`       |
 |  10   |  2859  |         | 258p2 | 2024-02-28 |                       `len iota0 bits = r * l sum`                        |     `LḶ①=ṛ×ḷS`     |
