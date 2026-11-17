@@ -17,6 +17,7 @@ sys.path[:0] = [str(ROOT / "scripts"), str(ROOT / "web"), str(ROOT / "src")]
 import jelly
 from build_site import read_challenges
 from build_wasm import build_wasm
+from challenge_examples import expected_value, read_examples
 from language import convert, keyword_arity
 from runtime import ARGUMENT_ATOMS, evaluate, split_arguments
 
@@ -82,6 +83,16 @@ class RustEngineTests(unittest.TestCase):
         for challenge in read_challenges():
             with self.subTest(challenge=challenge["number"]):
                 self.compare(challenge["jelly"], [json.dumps(v) for v in challenge["example"]["inputs"]])
+
+    def test_all_source_examples(self):
+        for challenge, example in read_examples():
+            with self.subTest(challenge=challenge["number"], example=example["number"],
+                              source=example["source"], command=example["command"]):
+                code = convert(challenge["expression"].split())
+                self.assertEqual(code, challenge["jelly"])
+                actual = self.compare(code, example["arguments"])
+                self.assertEqual(actual["value"], expected_value(example),
+                                 f"Expected {example['expected']!r}; displayed {actual['result']!r}")
 
     def test_challenge_programs_with_varied_inputs(self):
         rng = random.Random(42)

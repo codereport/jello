@@ -82,6 +82,18 @@ npm test
 
 Set `CHROMIUM_PATH` to use an existing Chromium installation. Set `PLAYGROUND_URL` to test a deployed site instead of a local build. GitHub Actions tests both the terminal and browser versions before deploying the static site to GitHub Pages on pushes to `main`. The repository's Pages publishing source should be **GitHub Actions**.
 
+## Challenge tests
+
+[Challenge examples](data/challenge_examples.json) save 77 examples covering all 30 solutions: every numbered example from one original LeetCode or Weekly Challenge description per solution. Each entry links to its source, and examples keep the source's numbering and expected answers. Tests run offline and execute the current programs from `challenges.md`; expected answers come from the descriptions, independently of the interpreters. Inputs use Jello's argument order (challenge #15 takes capacity before apples).
+
+```sh
+.venv/bin/python -m unittest discover -s tests -p 'test_challenges.py' -v
+```
+
+This checks Python/Jellyfish results, including list structure: `[2]` and `2` remain distinct even though Jelly displays both as `2`. Source booleans map to Jelly's `0` and `1`. Each failing subtest identifies the challenge, source example, URL, and runnable command. Solution failures remain ordinary failing assertions for review.
+
+The full `test_*.py` command above also runs every source example through native Rust and Wasm, comparing their output and lossless typed values with Jellyfish for the same inputs, then checking the source's expected answer. Add sourced examples to this file when adding a solution; keep the picker's single default example in `data/challenge_inputs.json`.
+
 ## Rust evaluator
 
 The [Rust evaluator](rust/README.md) implements the Jellyfish operations used by all 30 challenge examples, with Python comparisons covering varied inputs, large integers, floating-point arithmetic, Unicode, nested arrays, and diagrams in both native and Wasm builds. Install [Rust using rustup](https://rustup.rs/) to run its tests; `rust-toolchain.toml` pins the toolchain and WebAssembly target. Rust supports arbitrary-precision integers and finite 64-bit floats, including fractional division, mixed arithmetic, square roots, rounding, and numeric comparisons. The default average expression runs in Rust and is verified by Python. Float verification compares the exact binary values, including signed zero, as well as the displayed output. Complex and non-finite results, random operations, dynamic evaluation, Python-specific input syntax, and unsupported numeric operations use Python. Arrays and reductions remain eager, with allocation, recursion, operation, and output limits. There are no range-sum shortcuts or operation-fusion optimizations.

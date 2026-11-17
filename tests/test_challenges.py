@@ -7,10 +7,20 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT / "scripts"), str(ROOT / "web"), str(ROOT / "src")]
 
 from build_site import read_challenges
+from challenge_examples import expected_value, read_examples
 from runtime import evaluate
 
 
 class ChallengeExampleTests(unittest.TestCase):
+    def test_all_source_examples(self):
+        for challenge, example in read_examples():
+            with self.subTest(challenge=challenge["number"], example=example["number"],
+                              source=example["source"], command=example["command"]):
+                result = json.loads(evaluate(example["command"]))
+                self.assertEqual(result["code"], challenge["jelly"])
+                self.assertEqual(result["value"], expected_value(example),
+                                 f"Expected {example['expected']!r}; displayed {result['result']!r}")
+
     def test_sourced_examples_run_with_the_documented_programs(self):
         for challenge in read_challenges():
             with self.subTest(challenge=challenge["number"], command=challenge["command"]):

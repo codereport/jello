@@ -1,0 +1,230 @@
+{
+  "1": {
+    "source": "https://leetcode.com/problems/count-elements-with-maximum-frequency/",
+    "examples": [
+      {"inputs": [[1, 2, 2, 3, 1, 4]], "expected": 4},
+      {"inputs": [[1, 2, 3, 4, 5]], "expected": 5}
+    ]
+  },
+  "2": {
+    "source": "https://leetcode.com/problems/divide-an-array-into-subarrays-with-minimum-cost-i/",
+    "examples": [
+      {"inputs": [[1, 2, 3, 12]], "expected": 6},
+      {"inputs": [[5, 4, 3]], "expected": 12},
+      {"inputs": [[10, 3, 1, 1]], "expected": 12}
+    ]
+  },
+  "3": {
+    "source": "https://leetcode.com/problems/ant-on-the-boundary/",
+    "examples": [
+      {"inputs": [[2, 3, -5]], "expected": 1},
+      {"inputs": [[3, 2, -3, -4]], "expected": 0}
+    ]
+  },
+  "4": {
+    "source": "https://leetcode.com/problems/maximum-number-of-operations-with-the-same-score-i/",
+    "examples": [
+      {"inputs": [[3, 2, 1, 4, 5]], "expected": 2},
+      {"inputs": [[1, 5, 3, 3, 4, 1, 3, 2, 2, 3]], "expected": 2},
+      {"inputs": [[5, 3]], "expected": 1}
+    ]
+  },
+  "5": {
+    "source": "https://theweeklychallenge.org/blog/perl-weekly-challenge-250/#task-1-smallest-index",
+    "examples": [
+      {"inputs": [[0, 1, 2]], "expected": 0},
+      {"inputs": [[4, 3, 2, 1]], "expected": 2},
+      {"inputs": [[1, 2, 3, 4, 5, 6, 7, 8, 9, 0]], "expected": -1}
+    ]
+  },
+  "6": {
+    "source": "https://theweeklychallenge.org/blog/perl-weekly-challenge-251/#task-2-lucky-numbers",
+    "examples": [
+      {"inputs": [[[3, 7, 8], [9, 11, 13], [15, 16, 17]]], "expected": 15},
+      {"inputs": [[[1, 10, 4, 2], [9, 3, 8, 7], [15, 16, 17, 12]]], "expected": 12},
+      {"inputs": [[[7, 8], [1, 2]]], "expected": 7}
+    ]
+  },
+  "7": {
+    "source": "https://leetcode.com/problems/sum-of-squares-of-special-elements/",
+    "examples": [
+      {"inputs": [[1, 2, 3, 4]], "expected": 21},
+      {"inputs": [[2, 7, 1, 19, 18, 3]], "expected": 63}
+    ]
+  },
+  "8": {
+    "source": "https://leetcode.com/problems/how-many-numbers-are-smaller-than-the-current-number/",
+    "examples": [
+      {"inputs": [[8, 1, 2, 2, 3]], "expected": [4, 0, 1, 1, 3]},
+      {"inputs": [[6, 5, 4, 8]], "expected": [2, 1, 0, 3]},
+      {"inputs": [[7, 7, 7, 7]], "expected": [0, 0, 0, 0]}
+    ]
+  },
+  "9": {
+    "source": "https://leetcode.com/problems/find-numbers-with-even-number-of-digits/",
+    "examples": [
+      {"inputs": [[12, 345, 2, 6, 7896]], "expected": 2},
+      {"inputs": [[555, 901, 482, 1771]], "expected": 1}
+    ]
+  },
+  "10": {
+    "source": "https://leetcode.com/problems/sum-of-values-at-indices-with-k-set-bits/",
+    "examples": [
+      {"inputs": [[5, 10, 1, 5, 2], 1], "expected": 13},
+      {"inputs": [[4, 3, 2, 1], 2], "expected": 1}
+    ]
+  },
+  "11": {
+    "source": "https://leetcode.com/problems/split-the-array/",
+    "examples": [
+      {"inputs": [[1, 1, 2, 2, 3, 4]], "expected": true},
+      {"inputs": [[1, 1, 1, 1]], "expected": false}
+    ]
+  },
+  "12": {
+    "source": "https://leetcode.com/problems/minimum-operations-to-exceed-threshold-value-i/",
+    "examples": [
+      {"inputs": [[2, 11, 10, 1, 3], 10], "expected": 3},
+      {"inputs": [[1, 1, 2, 4, 9], 1], "expected": 0},
+      {"inputs": [[1, 1, 2, 4, 9], 9], "expected": 4}
+    ]
+  },
+  "13": {
+    "source": "https://leetcode.com/problems/maximum-ice-cream-bars/",
+    "examples": [
+      {"inputs": [[1, 3, 2, 4, 1], 7], "expected": 4},
+      {"inputs": [[10, 6, 8, 7, 7, 8], 5], "expected": 0},
+      {"inputs": [[1, 6, 3, 1, 2, 5], 20], "expected": 6}
+    ]
+  },
+  "14": {
+    "source": "https://leetcode.com/problems/unique-number-of-occurrences/",
+    "examples": [
+      {"inputs": [[1, 2, 2, 1, 1, 3]], "expected": true},
+      {"inputs": [[1, 2]], "expected": false},
+      {"inputs": [[-3, 0, 1, -3, 1, 1, 1, -3, 10, 0]], "expected": true}
+    ]
+  },
+  "15": {
+    "source": "https://leetcode.com/problems/apple-redistribution-into-boxes/",
+    "inputOrder": ["capacity", "apple"],
+    "examples": [
+      {"inputs": [[4, 3, 1, 5, 2], [1, 3, 2]], "expected": 2},
+      {"inputs": [[2, 4, 2, 7], [5, 5, 5]], "expected": 4}
+    ]
+  },
+  "16": {
+    "source": "https://leetcode.com/problems/find-the-sum-of-encrypted-integers/",
+    "examples": [
+      {"inputs": [[1, 2, 3]], "expected": 6},
+      {"inputs": [[10, 21, 31]], "expected": 66}
+    ]
+  },
+  "17": {
+    "source": "https://leetcode.com/problems/difference-between-element-sum-and-digit-sum-of-an-array/",
+    "examples": [
+      {"inputs": [[1, 15, 6, 3]], "expected": 9},
+      {"inputs": [[1, 2, 3, 4]], "expected": 0}
+    ]
+  },
+  "18": {
+    "source": "https://leetcode.com/problems/maximum-count-of-positive-integer-and-negative-integer/",
+    "examples": [
+      {"inputs": [[-2, -1, -1, 1, 2, 3]], "expected": 3},
+      {"inputs": [[-3, -2, -1, 0, 0, 1, 2]], "expected": 3},
+      {"inputs": [[5, 20, 66, 1314]], "expected": 4}
+    ]
+  },
+  "19": {
+    "source": "https://leetcode.com/problems/find-target-indices-after-sorting-array/",
+    "examples": [
+      {"inputs": [[1, 2, 5, 2, 3], 2], "expected": [1, 2]},
+      {"inputs": [[1, 2, 5, 2, 3], 3], "expected": [3]},
+      {"inputs": [[1, 2, 5, 2, 3], 5], "expected": [4]}
+    ]
+  },
+  "20": {
+    "source": "https://leetcode.com/problems/maximum-prime-difference/",
+    "examples": [
+      {"inputs": [[4, 2, 9, 5, 3]], "expected": 3},
+      {"inputs": [[4, 8, 2, 8]], "expected": 0}
+    ]
+  },
+  "21": {
+    "source": "https://leetcode.com/problems/longest-strictly-increasing-or-strictly-decreasing-subarray/",
+    "examples": [
+      {"inputs": [[1, 4, 3, 3, 2]], "expected": 2},
+      {"inputs": [[3, 3, 3, 3]], "expected": 1},
+      {"inputs": [[3, 2, 1]], "expected": 3}
+    ]
+  },
+  "22": {
+    "source": "https://leetcode.com/problems/score-of-a-string/",
+    "examples": [
+      {"inputs": ["hello"], "expected": 13},
+      {"inputs": ["zaz"], "expected": 50}
+    ]
+  },
+  "23": {
+    "source": "https://leetcode.com/problems/find-the-integer-added-to-array-i/",
+    "examples": [
+      {"inputs": [[2, 6, 4], [9, 7, 5]], "expected": 3},
+      {"inputs": [[10], [5]], "expected": -5},
+      {"inputs": [[1, 1, 1, 1], [1, 1, 1, 1]], "expected": 0}
+    ]
+  },
+  "24": {
+    "source": "https://leetcode.com/problems/sign-of-the-product-of-an-array/",
+    "examples": [
+      {"inputs": [[-1, -2, -3, -4, 3, 2, 1]], "expected": 1},
+      {"inputs": [[1, 5, 0, 2, -3]], "expected": 0},
+      {"inputs": [[-1, 1, -1, 1, -1]], "expected": -1}
+    ]
+  },
+  "25": {
+    "source": "https://theweeklychallenge.org/blog/perl-weekly-challenge-269/#task-1-bitwise-or",
+    "examples": [
+      {"inputs": [[1, 2, 3, 4, 5]], "expected": true},
+      {"inputs": [[2, 3, 8, 16]], "expected": true},
+      {"inputs": [[1, 2, 5, 7, 9]], "expected": false}
+    ]
+  },
+  "26": {
+    "source": "https://leetcode.com/problems/special-array-i/",
+    "examples": [
+      {"inputs": [[1]], "expected": true},
+      {"inputs": [[2, 1, 4]], "expected": true},
+      {"inputs": [[4, 3, 1, 6]], "expected": false}
+    ]
+  },
+  "27": {
+    "source": "https://theweeklychallenge.org/blog/perl-weekly-challenge-271/#task-1-maximum-ones",
+    "examples": [
+      {"inputs": [[[0, 1], [1, 0]]], "expected": 1},
+      {"inputs": [[[0, 0, 0], [1, 0, 1]]], "expected": 2},
+      {"inputs": [[[0, 0], [1, 1], [0, 0]]], "expected": 2}
+    ]
+  },
+  "28": {
+    "source": "https://theweeklychallenge.org/blog/perl-weekly-challenge-271/#task-2-sort-by-1-bits",
+    "examples": [
+      {"inputs": [[0, 1, 2, 3, 4, 5, 6, 7, 8]], "expected": [0, 1, 2, 4, 8, 3, 5, 6, 7]},
+      {"inputs": [[1024, 512, 256, 128, 64]], "expected": [64, 128, 256, 512, 1024]}
+    ]
+  },
+  "29": {
+    "source": "https://leetcode.com/problems/find-minimum-operations-to-make-all-elements-divisible-by-three/",
+    "examples": [
+      {"inputs": [[1, 2, 3, 4]], "expected": 3},
+      {"inputs": [[3, 6, 9]], "expected": 0}
+    ]
+  },
+  "30": {
+    "source": "https://leetcode.com/problems/maximum-subarray-with-equal-products/",
+    "examples": [
+      {"inputs": [[1, 2, 1, 2, 1, 1, 1]], "expected": 5},
+      {"inputs": [[2, 3, 4, 5, 6]], "expected": 3},
+      {"inputs": [[1, 2, 3, 1, 4, 5, 1]], "expected": 5}
+    ]
+  }
+}
