@@ -87,10 +87,12 @@ Set `CHROMIUM_PATH` to use an existing Chromium installation. Set `PLAYGROUND_UR
 [Challenge examples](data/challenge_examples.json) save 77 examples covering all 30 solutions: every numbered example from one original LeetCode or Weekly Challenge description per solution. Each entry links to its source, and examples keep the source's numbering and expected answers. Tests run offline and execute the current programs from `challenges.md`; expected answers come from the descriptions, independently of the interpreters. Inputs use Jello's argument order (challenge #15 takes capacity before apples).
 
 ```sh
-.venv/bin/python -m unittest discover -s tests -p 'test_challenges.py' -v
+./tests/test_challenges.py
 ```
 
 This checks Python/Jellyfish results, including list structure: `[2]` and `2` remain distinct even though Jelly displays both as `2`. Source booleans map to Jelly's `0` and `1`. Each failing subtest identifies the challenge, source example, URL, and runnable command. Solution failures remain ordinary failing assertions for review.
+
+Run the executable from the repository root; it uses `.venv/bin/python` automatically. Passing examples appear as green dots and failures as red `F`s. The final summary counts passed, failed, errored, and skipped example checks and lists failing challenge numbers. Failures return a nonzero exit status. Redirected output stays plain; set `NO_COLOR=1` to disable terminal colors too.
 
 The full `test_*.py` command above also runs every source example through native Rust and Wasm, comparing their output and lossless typed values with Jellyfish for the same inputs, then checking the source's expected answer. Add sourced examples to this file when adding a solution; keep the picker's single default example in `data/challenge_inputs.json`.
 
